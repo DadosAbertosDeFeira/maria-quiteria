@@ -19,6 +19,11 @@ class Laws(scrapy.Spider):
     ]
 
     def parse(self, response):
+        """
+        @url http://www.feiradesantana.ba.gov.br/servicos.asp?acao=ir&s=a&link=seadm/leis.asp&p=1&cat=0&ano=2001#links
+        @returns items 8 13
+        @returns requests 1 2
+        """
         if 'SEM INFORMA' not in response.text:  # page found
             rows = response.css('table tr td table tr td table tr td table tr td.txt')
             for row in rows:
@@ -88,6 +93,11 @@ class BidsSpider(scrapy.Spider):
     bid_id = 0
 
     def parse(self, response):
+        """
+        @url http://www.feiradesantana.ba.gov.br/seadm/licitacoes.asp
+        @returns items 0
+        @returns requests 166
+        """
         all_bidding_urls = response.xpath('//table/tbody/tr/td[1]/div/a//@href').extract()
         base_url = 'http://www.feiradesantana.ba.gov.br'
 
