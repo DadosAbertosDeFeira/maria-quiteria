@@ -162,7 +162,7 @@ class BidsSpider(scrapy.Spider):
             for row in raw_bid_history.xpath('.//tr'):
                 when = row.xpath('.//td[2]/text()').get().strip()
                 event = row.xpath('.//td[3]/div/text()').get()
-                url = row.xpath('.//td[4]/div/a//@href').get()
+                url = row.xpath('.//td[4]/div/a//@href').get()  # FIXME adopt .get(default='')
 
                 if event and when:
                     bids_history.append(
@@ -191,3 +191,86 @@ class BidsSpider(scrapy.Spider):
 
     def _parse_when(self, raw_when):
         return [date[1:] for date in raw_when]
+
+
+class ContractsSpider(scrapy.Spider):
+    """Coleta contratos da página de contratos.
+
+    http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=contratos
+    """
+    name = 'contracts'
+    url = 'http://www.transparencia.feiradesantana.ba.gov.br/controller/contrato.php'
+    data = {
+        'POST_PARAMETRO': 'PesquisaContratos',
+        'POST_DATA': '',
+        'POST_NMCREDOR': '',
+        'POST_CPFCNPJ': '',
+        'POST_NUCONTRATO': '',
+    }
+
+    def start_requests(self):
+        return [scrapy.FormRequest(self.url, formdata=self.data, callback=self.parse)]
+
+    def parse(self, response):
+        # ['��� Anterior', '1', '2', '33', 'Pr��ximo ���']
+        pages = response.css('div.pagination li a ::text').extract()
+        last_page = int(pages[-2])
+
+        for page in range(1, last_page + 1):
+            data = self.data.copy()
+            data['POST_PAGINA'] = str(page)
+            data['POST_PAGINAS'] = str(last_page)
+            yield scrapy.FormRequest(self.url, formdata=data, callback=self.parse_page)
+
+    def parse_page(self, response):
+        """Extract contracts from a page.
+
+        Example:
+        CONTRATO N° 11-2017-1926C   REFERENTE A CONTRATAÇÃO DE EMPRESA AQUISIÇÃO DE
+        ÁGUA MINERAL NATURAL PARA A...
+        OBJETO:REFERENTE A CONTRATAÇÃO DE EMPRESA AQUISIÇÃO DE ÁGUA MINERAL NATURAL
+        PARA ATENDER AS NECESSIDADES DA SUPERINTENDÊNCIA MUNICIPAL DE TRÂNSITO.
+        CONTRATADA: 74.096.231/0001-80 - WAMBERTO LOPES DE ARAUJO - ME
+        VALOR: R$ 62.960,00
+        DATA FINAL DE CONTRATO: 01/06/2018
+        """
+
+        headlines = response.css('tbody tr:not([class^="informacao"])')
+        contract_details = response.css('tr.informacao')
+        base_url = 'http://www.transparencia.feiradesantana.ba.gov.br'
+
+        for headline, raw_details in zip(headlines, contract_details):
+            contract_and_date = headline.css('th ::text').extract()
+            contract = contract_and_date[0]
+            starts_at = contract_and_date[1]
+            details = self.clean_details(raw_details)
+            document_url = raw_details.css('a.btn::attr(href)').get(default='')
+            if document_url != '':
+                document_url = f'{base_url}{document_url}'
+
+            yield {
+                'contract': contract,
+                'starts_at': starts_at,
+                'summary': details[0],
+                'contractor': details[1],  # cnpj and company's name
+                'value': details[2],
+                'ends_at': details[3],
+                'document_url': document_url
+            }
+
+    def clean_details(self, raw_details):
+        labels = [
+            'Objeto:',
+            'Contratada:',
+            'Valor:',
+            'Data Final de Contrato:',
+            'VISUALIZAR'
+        ]
+
+        valid_details = []
+        for details in raw_details.css('p ::text').extract():
+            details = details.strip()
+            if details != '' and details not in labels:
+                # assuming that all fields will be there
+                valid_details.append(details)
+        return valid_details
