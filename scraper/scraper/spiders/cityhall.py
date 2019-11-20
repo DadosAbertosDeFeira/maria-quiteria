@@ -3,7 +3,7 @@ import scrapy
 
 
 class LawsSpider(scrapy.Spider):
-    """Parse laws and acts of Feira de Santana city hall until 2015.
+    """Coleta leis e decretos de Feira de Santana até 2015.
 
     Years: 1999 to 2015
     Example: http://www.feiradesantana.ba.gov.br/seadm/leis.asp?acao=ir&p=24&ano=2015
@@ -232,7 +232,7 @@ class ContractsSpider(scrapy.Spider):
             yield scrapy.FormRequest(self.url, formdata=data, callback=self.parse_page)
 
     def parse_page(self, response):
-        """Extract contracts from a page.
+        """Extrai informações sobre um contrato.
 
         Example:
         CONTRATO N° 11-2017-1926C   REFERENTE A CONTRATAÇÃO DE EMPRESA AQUISIÇÃO DE
@@ -283,3 +283,72 @@ class ContractsSpider(scrapy.Spider):
                 # assuming that all fields will be there
                 valid_details.append(details)
         return valid_details
+
+
+class PaymentsSpider(scrapy.Spider):
+    """Coleta pagamentos realizados.
+
+    http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=despesa
+    """
+    name = 'payments'
+    url = 'http://www.transparencia.feiradesantana.ba.gov.br/controller/despesa.php'
+    data = {
+        'POST_PARAMETRO': 'PesquisaDespesas',
+        'POST_FASE': '',
+        'POST_UNIDADE': '',
+        'POST_DATA': '',
+        'POST_NMCREDOR': '',
+        'POST_CPFCNPJ': ''
+    }
+
+    def start_requests(self):
+        return [scrapy.FormRequest(self.url, formdata=self.data, callback=self.parse)]
+
+    def parse(self, response):
+        pages = response.css('div.pagination li a ::text').extract()
+        last_page = int(pages[-2])
+
+        for page in range(1, last_page + 1):
+            data = self.data.copy()
+            data['POST_PAGINA'] = str(page)
+            data['POST_PAGINAS'] = str(last_page)
+            yield scrapy.FormRequest(self.url, formdata=data, callback=self.parse_page)
+
+    def parse_page(self, response):
+        """Extrai informações sobre um pagamento.
+
+        Exemplo:
+        N°: 19000215/0004 	CPF/CNPJ: 90.180.605/0001-02 	\
+            Data: 22/10/2019 		N° do processo: 010-2019
+        Bem / Serviço Prestado: REFERENTE A DESPESA COM SEGURO DE VIDA.
+        Natureza: 339039999400 - Seguros em Geral
+        Ação: 2015 - Manutencao dos serv.tecnicos administrativos
+        Função: 04 - ADMINISTRACAO
+        Subfunção: 122 - ADMINISTRACAO GERAL
+        Processo Licitatório: PREGAO
+        Fonte de Recurso: 0000 - RECURSOS ORDINARIOS
+        """
+
+        # FIXME
+        headlines = response.css('tbody tr:not([class^="informacao"])')
+        contract_details = response.css('tr.informacao')
+        base_url = 'http://www.transparencia.feiradesantana.ba.gov.br'
+
+        for headline, raw_details in zip(headlines, contract_details):
+            contract_and_date = headline.css('th ::text').extract()
+            contract = contract_and_date[0]
+            starts_at = contract_and_date[1]
+            details = self.clean_details(raw_details)
+            document_url = raw_details.css('a.btn::attr(href)').get(default='')
+            if document_url != '':
+                document_url = f'{base_url}{document_url}'
+
+            yield {
+                'contract': contract,
+                'starts_at': starts_at,
+                'summary': details[0],
+                'contractor': details[1],  # cnpj and company's name
+                'value': details[2],
+                'ends_at': details[3],
+                'document_url': document_url
+            }
