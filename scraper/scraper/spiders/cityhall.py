@@ -1,4 +1,6 @@
+from datetime import datetime, date, timedelta
 import re
+
 import scrapy
 
 
@@ -29,12 +31,12 @@ class LawsSpider(scrapy.Spider):
             for row in rows:
                 act = self.extract_acts(row)
                 yield {
-                    'titulo': act['act_and_date'],
-                    'jornal_publicado': act['journal'],
-                    'data': act['date'],
-                    'detalhes': act['details'],
+                    'title': act['act_and_date'],
+                    'published_on': act['journal'],
+                    'date': act['date'],
+                    'details': act['details'],
                     'url': act['url'],
-                    'fonte': response.url,
+                    'source': response.url,
                 }
 
             current_page = self.get_current_page(response)
@@ -302,17 +304,28 @@ class PaymentsSpider(scrapy.Spider):
     }
 
     def start_requests(self):
-        return [scrapy.FormRequest(self.url, formdata=self.data, callback=self.parse)]
+        current_date = date(2010, 1, 1)  # initial date
+        today = datetime.now().date()
+
+        while current_date <= today:
+            formatted_date = current_date.strftime('%d/%m/%Y')
+            data = self.data.copy()
+            data['POST_DATA'] = f'{formatted_date} - {formatted_date}'
+            yield scrapy.FormRequest(
+                self.url, formdata=data, callback=self.parse, meta={'data': data})
+            current_date = current_date + timedelta(days=1)
 
     def parse(self, response):
+        # ['��� Anterior', '1', '2', '33', 'Pr��ximo ���']
         pages = response.css('div.pagination li a ::text').extract()
-        last_page = int(pages[-2])
+        if pages:
+            last_page = int(pages[-2])
 
-        for page in range(1, last_page + 1):
-            data = self.data.copy()
-            data['POST_PAGINA'] = str(page)
-            data['POST_PAGINAS'] = str(last_page)
-            yield scrapy.FormRequest(self.url, formdata=data, callback=self.parse_page)
+            for page in range(1, last_page + 1):
+                data = response.meta['data']
+                data['POST_PAGINA'] = str(page)
+                data['POST_PAGINAS'] = str(last_page)
+                yield scrapy.FormRequest(self.url, formdata=data, callback=self.parse_page)
 
     def parse_page(self, response):
         """Extrai informações sobre um pagamento.
@@ -328,27 +341,34 @@ class PaymentsSpider(scrapy.Spider):
         Processo Licitatório: PREGAO
         Fonte de Recurso: 0000 - RECURSOS ORDINARIOS
         """
+        headlines = response.css('#editable-sample tr.accordion-toggle')
+        details = response.css('#editable-sample div.accordion-inner')
 
-        # FIXME
-        headlines = response.css('tbody tr:not([class^="informacao"])')
-        contract_details = response.css('tr.informacao')
-        base_url = 'http://www.transparencia.feiradesantana.ba.gov.br'
-
-        for headline, raw_details in zip(headlines, contract_details):
-            contract_and_date = headline.css('th ::text').extract()
-            contract = contract_and_date[0]
-            starts_at = contract_and_date[1]
-            details = self.clean_details(raw_details)
-            document_url = raw_details.css('a.btn::attr(href)').get(default='')
-            if document_url != '':
-                document_url = f'{base_url}{document_url}'
-
-            yield {
-                'contract': contract,
-                'starts_at': starts_at,
-                'summary': details[0],
-                'contractor': details[1],  # cnpj and company's name
-                'value': details[2],
-                'ends_at': details[3],
-                'document_url': document_url
+        for headline, raw_details in zip(headlines, details):
+            headline = [text.strip() for text in headline.css('td ::text').extract()]
+            data = {
+                'published_at': headline[0],
+                'phase': headline[1],
+                'company_or_person': headline[2],
+                'value': headline[3],
             }
+            details = [detail.strip() for detail in raw_details.css('td ::text').extract()]
+            mapping = {
+                'N°:': 'number',
+                'CPF/CNPJ:': 'document',
+                'Data:': 'date',
+                'N° do processo:': 'process_number',
+                'Bem / Serviço Prestado:': 'summary',
+                'Natureza:': 'group',
+                'Ação:': 'action',
+                'Função:': 'function',
+                'Subfunção:': 'subfunction',
+                'Processo Licitatório:': 'type_of_process',
+                'Fonte de Recurso:': 'resource'
+            }
+            for index in range(0, len(details)//2, 2):
+                key = details[index]
+                value = details[index + 1]
+                data[mapping[key]] = value
+
+            yield data
