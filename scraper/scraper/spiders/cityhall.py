@@ -366,9 +366,10 @@ class PaymentsSpider(scrapy.Spider):
                 'Processo Licitatório:': 'type_of_process',
                 'Fonte de Recurso:': 'resource'
             }
-            for index in range(0, len(details)//2, 2):
-                key = details[index]
-                value = details[index + 1]
+            details_copy = details.copy()
+            while details_copy:
+                key = details_copy.pop(0)
+                value = details_copy.pop(0)
                 data[mapping[key]] = value
 
             yield data
