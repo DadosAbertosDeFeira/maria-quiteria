@@ -1,9 +1,11 @@
+from datetime import datetime, date, timedelta
 import re
+
 import scrapy
 
 
 class LawsSpider(scrapy.Spider):
-    """Parse laws and acts of Feira de Santana city hall until 2015.
+    """Coleta leis e decretos de Feira de Santana até 2015.
 
     Years: 1999 to 2015
     Example: http://www.feiradesantana.ba.gov.br/seadm/leis.asp?acao=ir&p=24&ano=2015
@@ -29,12 +31,12 @@ class LawsSpider(scrapy.Spider):
             for row in rows:
                 act = self.extract_acts(row)
                 yield {
-                    'titulo': act['act_and_date'],
-                    'jornal_publicado': act['journal'],
-                    'data': act['date'],
-                    'detalhes': act['details'],
+                    'title': act['act_and_date'],
+                    'published_on': act['journal'],
+                    'date': act['date'],
+                    'details': act['details'],
                     'url': act['url'],
-                    'fonte': response.url,
+                    'source': response.url,
                 }
 
             current_page = self.get_current_page(response)
@@ -232,7 +234,7 @@ class ContractsSpider(scrapy.Spider):
             yield scrapy.FormRequest(self.url, formdata=data, callback=self.parse_page)
 
     def parse_page(self, response):
-        """Extract contracts from a page.
+        """Extrai informações sobre um contrato.
 
         Example:
         CONTRATO N° 11-2017-1926C   REFERENTE A CONTRATAÇÃO DE EMPRESA AQUISIÇÃO DE
@@ -283,3 +285,91 @@ class ContractsSpider(scrapy.Spider):
                 # assuming that all fields will be there
                 valid_details.append(details)
         return valid_details
+
+
+class PaymentsSpider(scrapy.Spider):
+    """Coleta pagamentos realizados.
+
+    http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=despesa
+    """
+    name = 'payments'
+    url = 'http://www.transparencia.feiradesantana.ba.gov.br/controller/despesa.php'
+    data = {
+        'POST_PARAMETRO': 'PesquisaDespesas',
+        'POST_FASE': '',
+        'POST_UNIDADE': '',
+        'POST_DATA': '',
+        'POST_NMCREDOR': '',
+        'POST_CPFCNPJ': ''
+    }
+
+    def start_requests(self):
+        current_date = date(2010, 1, 1)  # initial date
+        today = datetime.now().date()
+
+        while current_date <= today:
+            formatted_date = current_date.strftime('%d/%m/%Y')
+            data = self.data.copy()
+            data['POST_DATA'] = f'{formatted_date} - {formatted_date}'
+            yield scrapy.FormRequest(
+                self.url, formdata=data, callback=self.parse, meta={'data': data})
+            current_date = current_date + timedelta(days=1)
+
+    def parse(self, response):
+        # ['��� Anterior', '1', '2', '33', 'Pr��ximo ���']
+        pages = response.css('div.pagination li a ::text').extract()
+        if pages:
+            last_page = int(pages[-2])
+
+            for page in range(1, last_page + 1):
+                data = response.meta['data']
+                data['POST_PAGINA'] = str(page)
+                data['POST_PAGINAS'] = str(last_page)
+                yield scrapy.FormRequest(self.url, formdata=data, callback=self.parse_page)
+
+    def parse_page(self, response):
+        """Extrai informações sobre um pagamento.
+
+        Exemplo:
+        N°: 19000215/0004 	CPF/CNPJ: 90.180.605/0001-02 	\
+            Data: 22/10/2019 		N° do processo: 010-2019
+        Bem / Serviço Prestado: REFERENTE A DESPESA COM SEGURO DE VIDA.
+        Natureza: 339039999400 - Seguros em Geral
+        Ação: 2015 - Manutencao dos serv.tecnicos administrativos
+        Função: 04 - ADMINISTRACAO
+        Subfunção: 122 - ADMINISTRACAO GERAL
+        Processo Licitatório: PREGAO
+        Fonte de Recurso: 0000 - RECURSOS ORDINARIOS
+        """
+        headlines = response.css('#editable-sample tr.accordion-toggle')
+        details = response.css('#editable-sample div.accordion-inner')
+
+        for headline, raw_details in zip(headlines, details):
+            headline = [text.strip() for text in headline.css('td ::text').extract()]
+            data = {
+                'published_at': headline[0],
+                'phase': headline[1],
+                'company_or_person': headline[2],
+                'value': headline[3],
+            }
+            details = [detail.strip() for detail in raw_details.css('td ::text').extract()]
+            mapping = {
+                'N°:': 'number',
+                'CPF/CNPJ:': 'document',
+                'Data:': 'date',
+                'N° do processo:': 'process_number',
+                'Bem / Serviço Prestado:': 'summary',
+                'Natureza:': 'group',
+                'Ação:': 'action',
+                'Função:': 'function',
+                'Subfunção:': 'subfunction',
+                'Processo Licitatório:': 'type_of_process',
+                'Fonte de Recurso:': 'resource'
+            }
+            details_copy = details.copy()
+            while details_copy:
+                key = details_copy.pop(0)
+                value = details_copy.pop(0)
+                data[mapping[key]] = value
+
+            yield data
