@@ -2,7 +2,13 @@
 
 Um projeto para libertar dados do município de [Feira de Santana](https://pt.wikipedia.org/wiki/Feira_de_Santana).
 
-## Scraper
+## Dados
+
+| Base de dados | Descrição        | Status           | Download |
+| ------------- | ------------- |:-------------:| -----:|
+| Pagamentos (Prefeitura) | Pagamentos realizados pela prefeitura entre 2010 e 2019. | ✅ | [Kaggle](https://www.kaggle.com/anapaulagomes/pagamentos-da-prefeitura-de-feira-de-santana) |
+
+## Coleta
 
 No diretório `scraper` você poderá encontrar os _spiders_ responsáveis pela
 coleta dos dados. Para entender melhor como eles funcionam, dê uma olhada
