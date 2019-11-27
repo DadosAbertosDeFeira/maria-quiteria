@@ -8,6 +8,7 @@ Um projeto para libertar dados do município de [Feira de Santana](https://pt.wi
 | ------------- | ------------- | ------------- |:-------------:|:-----:|
 | Agenda | Câmara Municipal | Coleta agenda da Câmara Municipal. | ✅ | 🔜 |
 | Contratos | Prefeitura | Contratos realizados pela prefeitura entre 2016 e 2017. | ✅ | 🔜 |
+| Diário Oficial | Prefeitura/Câmara de Vereadores | Diário oficial do executivo e legislativo desde 2015. | 🔜 | 🔜 |
 | Leis | Prefeitura | Leis e decretos entre 1999 e 2015. | ✅ | 🔜 |
 | Licitações | Prefeitura | Licitações realizadas pela prefeitura desde 2015. | ✅ | 🔜 |
 | Pagamentos | Prefeitura | Pagamentos realizados pela prefeitura desde 2010. | ✅ | [Kaggle](https://www.kaggle.com/anapaulagomes/pagamentos-da-prefeitura-de-feira-de-santana) |
