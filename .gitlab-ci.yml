@@ -1,0 +1,15 @@
+image: python:latest
+
+lint:
+  before_script:
+  - pip install -r dev_requirements.txt
+  script:
+  - black --check .
+  - flake8 .
+
+test:
+  before_script:
+  - python -V
+  - pip install -r requirements.txt
+  script:
+  - cd scraper && scrapy --check
