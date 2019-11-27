@@ -7,3 +7,4 @@ __pycache__
 *.json
 *.csv
 *.xls
+scraper/data/
