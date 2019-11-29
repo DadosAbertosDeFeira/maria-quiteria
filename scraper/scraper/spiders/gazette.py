@@ -126,12 +126,7 @@ class GazetteSecretariatsSpider(scrapy.Spider):
         titles = response.xpath("//tr/td/table/tr/td[@colspan='2']/text()").extract()
         descriptions = response.css('td.destaqt ::text').extract()
         gazette_urls = response.css('td.destaqt ::attr(href)').extract()
-
-        gazette_files_pattern = re.compile(r'edi=(\d+)')
-        gazette_files = {}  # edition and file
-        for gazette_url in gazette_urls:
-            edition = re.findall(gazette_files_pattern, 'abrir.asp?edi=1147&p=1')[0]
-            gazette_files[edition] = response.urljoin(gazette_url)
+        gazette_files = self.files_from_editions(gazette_urls, response)
 
         while titles:
             event = {
@@ -151,13 +146,16 @@ class GazetteSecretariatsSpider(scrapy.Spider):
             descriptions.pop(0)
             event['date'] = descriptions.pop(0).strip()
             event['summary'] = descriptions.pop(0).strip()
-            event['file_url'] = gazette_files.get(edition)
+            event['file_url'] = gazette_files.get(event['edition'])
 
-            yield Request(
-                event['file_url'],
-                callback=self.parse_document_url,
-                meta={'gazette': event}
-            )
+            if event['file_url']:
+                yield Request(
+                    event['file_url'],
+                    callback=self.parse_document_url,
+                    meta={'gazette': event}
+                )
+            else:
+                import pdb; pdb.set_trace();
 
         current_page = response.css('ul li.current ::text').extract_first()
         last_page = response.css('ul li:last-child ::text').extract_first()
@@ -174,5 +172,13 @@ class GazetteSecretariatsSpider(scrapy.Spider):
     def parse_document_url(self, response):
         gazette = response.meta['gazette']
         url = response.headers['Location'].decode('utf-8')
-        # gazette['file_urls'] = [url.replace('https', 'http')]
+        # gazette['file_urls'] = [url.replace('https', 'http')]  # FIXME
         return gazette
+
+    def files_from_editions(self, gazette_urls, response):
+        gazette_files = {}
+        gazette_files_pattern = re.compile(r'edi=(\d+)')
+        for gazette_url in gazette_urls:
+            edition = re.findall(gazette_files_pattern, gazette_url)[0]
+            gazette_files[edition] = response.urljoin(gazette_url)
+        return gazette_files

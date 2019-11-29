@@ -1,6 +1,6 @@
 import pytest
 
-from scraper.scraper.spiders.utils import replace_query_param
+from ..spiders.utils import replace_query_param
 
 
 @pytest.mark.parametrize('old_url,field,value,new_url', [
