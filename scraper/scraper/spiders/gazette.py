@@ -1,8 +1,12 @@
+import re
+
 import scrapy
 from scrapy import Request
 
+from .utils import replace_query_param
 
-class GazetteSpider(scrapy.Spider):
+
+class GazetteExecutiveAndLegislativeSpider(scrapy.Spider):
     """Coleta o Diário Oficial dos poderes executivo e legislativo."""
     name = 'gazettes'
     allowed_domains = ['diariooficial.feiradesantana.ba.gov.br']
@@ -72,7 +76,7 @@ class GazetteSpider(scrapy.Spider):
             if current_page != last_page:
                 next_page = int(current_page) + 1
                 url = response.css('ul li a::attr(href)').extract_first()
-                url = self.build_url(url, next_page)
+                url = replace_query_param(url, 'p', next_page)
 
                 yield Request(
                     response.urljoin(url),

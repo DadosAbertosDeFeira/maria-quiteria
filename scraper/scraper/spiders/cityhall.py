@@ -3,6 +3,8 @@ import re
 
 import scrapy
 
+from .utils import replace_query_param
+
 
 class LawsSpider(scrapy.Spider):
     """Coleta leis e decretos de Feira de Santana até 2015.
@@ -47,17 +49,10 @@ class LawsSpider(scrapy.Spider):
                 next_page = int(current_page.strip()) + 1
 
                 if next_page <= last_page:
-                    url = self.build_url(response.url, next_page)
+                    url = replace_query_param(response.url, 'p', next_page)
                     yield response.follow(url, callback=self.parse)
         else:
             self.logger.info(f'End of pages')
-
-    def build_url(self, url, next_page):
-        page_index = url.find('&p=') + 3
-        end_page_index = url[page_index:].find('&')
-        prefix = url[:page_index]
-        params = url[page_index:][end_page_index:]
-        return f'{prefix}{next_page}{params}'
 
     def get_current_page(self, response):
         current_page = response.xpath(
