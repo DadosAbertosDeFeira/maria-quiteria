@@ -106,10 +106,73 @@ class GazetteExecutiveAndLegislativeSpider(scrapy.Spider):
         edition = url[edition_index:]
         return edition
 
-    def build_url(self, url, next_page):
-        # FIXME duplicated method - find a better approach
-        page_index = url.find('&p=') + 3
-        end_page_index = url[page_index:].find('&')
-        prefix = url[:page_index]
-        params = url[page_index:][end_page_index:]
-        return f'{prefix}{next_page}{params}'
+
+class GazetteSecretariatsSpider(scrapy.Spider):
+    """Coleta o Diário Oficial das secretarias."""
+    name = 'gazettes_secretariats'
+    start_urls = ['http://www.diariooficial.feiradesantana.ba.gov.br']
+    last_page = 1
+    handle_httpstatus_list = [302]
+
+    def parse(self, response):
+        secretariats = response.css('td.style16 a.link_menu2')
+        urls = secretariats.css('::attr(href)').extract()
+
+        for url in urls:
+            yield Request(response.urljoin(url), callback=self.parse_page)
+
+    def parse_page(self, response):
+        secretariats_name = response.css('div.nmsec ::text').extract_first()
+        titles = response.xpath("//tr/td/table/tr/td[@colspan='2']/text()").extract()
+        descriptions = response.css('td.destaqt ::text').extract()
+        gazette_urls = response.css('td.destaqt ::attr(href)').extract()
+
+        gazette_files_pattern = re.compile(r'edi=(\d+)')
+        gazette_files = {}  # edition and file
+        for gazette_url in gazette_urls:
+            edition = re.findall(gazette_files_pattern, 'abrir.asp?edi=1147&p=1')[0]
+            gazette_files[edition] = response.urljoin(gazette_url)
+
+        while titles:
+            event = {
+                'name': secretariats_name,
+                'title': titles.pop(0).strip(),
+                'secretariat': descriptions.pop(0).strip(),
+                'year': descriptions.pop(0).strip(),
+                'found_at': response.url,
+            }
+            titles.pop(0)
+            descriptions.pop(0)
+            descriptions.pop(0)
+            event['edition'] = descriptions.pop(0).strip()
+            descriptions.pop(0)
+            descriptions.pop(0)
+            descriptions.pop(0)
+            descriptions.pop(0)
+            event['date'] = descriptions.pop(0).strip()
+            event['summary'] = descriptions.pop(0).strip()
+            event['file_url'] = gazette_files.get(edition)
+
+            yield Request(
+                event['file_url'],
+                callback=self.parse_document_url,
+                meta={'gazette': event}
+            )
+
+        current_page = response.css('ul li.current ::text').extract_first()
+        last_page = response.css('ul li:last-child ::text').extract_first()
+        if current_page:
+            current_page = current_page.strip()
+            last_page = last_page.strip()
+            if current_page != last_page:
+                next_page = int(current_page) + 1
+                url = response.css('ul li a::attr(href)').extract_first()
+                url = replace_query_param(url, 'p', next_page)
+
+                yield Request(response.urljoin(url), callback=self.parse_page)
+
+    def parse_document_url(self, response):
+        gazette = response.meta['gazette']
+        url = response.headers['Location'].decode('utf-8')
+        # gazette['file_urls'] = [url.replace('https', 'http')]
+        return gazette
