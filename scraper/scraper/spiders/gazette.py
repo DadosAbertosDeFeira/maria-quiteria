@@ -123,39 +123,33 @@ class GazetteSecretariatsSpider(scrapy.Spider):
 
     def parse_page(self, response):
         secretariats_name = response.css('div.nmsec ::text').extract_first()
-        titles = response.xpath("//tr/td/table/tr/td[@colspan='2']/text()").extract()
-        descriptions = response.css('td.destaqt ::text').extract()
+        titles = response.xpath(
+            "//tr/td/table/tr/td[@colspan='2' and @class='destaq']/text()"
+        ).extract()
         gazette_urls = response.css('td.destaqt ::attr(href)').extract()
         gazette_files = self.files_from_editions(gazette_urls, response)
 
-        while titles:
+        rows = response.xpath('//table[2]/tr/td/table/tr/td[3]/table/tr[1]/td/table')
+        extracted_rows = self.extract_publication_details(rows)
+
+        for title, content in zip(titles, extracted_rows):
             event = {
                 'name': secretariats_name,
-                'title': titles.pop(0).strip(),
-                'secretariat': descriptions.pop(0).strip(),
-                'year': descriptions.pop(0).strip(),
+                'title': title.strip(),
+                'secretariat': content[0],
+                'year': content[1],
                 'found_at': response.url,
+                'edition': content[2],
+                'date': content[3],
+                'summary': ' '.join(content[4:])
             }
-            titles.pop(0)
-            descriptions.pop(0)
-            descriptions.pop(0)
-            event['edition'] = descriptions.pop(0).strip()
-            descriptions.pop(0)
-            descriptions.pop(0)
-            descriptions.pop(0)
-            descriptions.pop(0)
-            event['date'] = descriptions.pop(0).strip()
-            event['summary'] = descriptions.pop(0).strip()
             event['file_url'] = gazette_files.get(event['edition'])
 
-            if event['file_url']:
-                yield Request(
-                    event['file_url'],
-                    callback=self.parse_document_url,
-                    meta={'gazette': event}
-                )
-            else:
-                import pdb; pdb.set_trace();
+            yield Request(
+                event['file_url'],
+                callback=self.parse_document_url,
+                meta={'gazette': event}
+            )
 
         current_page = response.css('ul li.current ::text').extract_first()
         last_page = response.css('ul li:last-child ::text').extract_first()
@@ -172,13 +166,23 @@ class GazetteSecretariatsSpider(scrapy.Spider):
     def parse_document_url(self, response):
         gazette = response.meta['gazette']
         url = response.headers['Location'].decode('utf-8')
-        # gazette['file_urls'] = [url.replace('https', 'http')]  # FIXME
+        gazette['file_urls'] = [url.replace('https', 'http')]
         return gazette
 
-    def files_from_editions(self, gazette_urls, response):
+    @staticmethod
+    def files_from_editions(gazette_urls, response):
         gazette_files = {}
         gazette_files_pattern = re.compile(r'edi=(\d+)')
         for gazette_url in gazette_urls:
             edition = re.findall(gazette_files_pattern, gazette_url)[0]
             gazette_files[edition] = response.urljoin(gazette_url)
         return gazette_files
+
+    @staticmethod
+    def extract_publication_details(rows):
+        extracted_rows = []
+        for row in rows:
+            content = row.css('td.destaqt ::text').extract()
+            extracted_content = [line.strip() for line in content if line.strip() != '']
+            extracted_rows.append(extracted_content)
+        return extracted_rows
