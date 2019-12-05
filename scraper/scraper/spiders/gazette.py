@@ -6,6 +6,93 @@ from scrapy import Request
 from .utils import replace_query_param
 
 
+class LegacyGazetteSpider(scrapy.Spider):
+    """Coleta diário oficial de Feira de Santana até 2015.
+
+    Years: 1999 to 2015
+    Example: http://www.feiradesantana.ba.gov.br/seadm/leis.asp?acao=ir&p=24&ano=2015
+    """
+    name = 'legacy_gazette'
+    start_urls = [
+        f'http://www.feiradesantana.ba.gov.br/servicos.asp?'
+        f'acao=ir&s=a&link=seadm/leis.asp&p=1&'
+        f'txtlei=%27Pesquisar%20pelo%20n%FAmero%20do%20ato%20ou%20palavra-chave%27'
+        f'&cat=0'
+        f'&ano={year}#links'
+        for year in range(1999, 2016)
+    ]
+
+    def parse(self, response):
+        """
+        @url http://www.feiradesantana.ba.gov.br/servicos.asp?acao=ir&s=a&link=seadm/leis.asp&p=1&cat=0&ano=2001#links
+        @returns items 8 13
+        @returns requests 1 2
+        """
+        if 'SEM INFORMA' not in response.text:  # it means page found
+            rows = response.css('table tr td table tr td table tr td table tr td.txt')
+            for row in rows:
+                act = self.extract_acts(row)
+                yield {
+                    'title': act['act_and_date'],
+                    'published_on': act['journal'],
+                    'date': act['date'],
+                    'details': act['details'],
+                    'url': act['url'],
+                    'source': response.url,
+                }
+
+            current_page = self.get_current_page(response)
+            last_page = response.xpath('//table/tr[10]/td/ul/li/a/text()')
+
+            if current_page and last_page:
+                last_page = int(last_page[-1].get().strip())
+                next_page = int(current_page.strip()) + 1
+
+                if next_page <= last_page:
+                    url = replace_query_param(response.url, 'p', next_page)
+                    yield response.follow(url, callback=self.parse)
+        else:
+            self.logger.info(f'End of pages')
+
+    def get_current_page(self, response):
+        current_page = response.xpath(
+            "//table/tr[10]/td/ul/li[contains(@class, 'current')]/a/text()"
+        ).get()
+        if current_page is None:
+            current_page = response.css('li.current ::text').get()
+        if current_page is None:
+            current_page = response.css('ul.pagination li.active ::text').get()
+        return current_page
+
+    def extract_acts(self, row):
+        text = row.xpath('span/strong/text()').extract()
+        act = {
+            'url': row.xpath('a//@href').extract_first(),
+            'act_and_date': text[0],
+            'details': row.xpath('a//text()').extract_first(),
+            'journal': '',
+            'date': ''
+        }
+        if len(text) > 1:
+            journal_label = text[1]  # Jornal Publicado:
+            date_label = text[2]  # Data:
+
+            whole_text = ''.join([
+                chunk.strip().replace('-', '')
+                for chunk in row.css('::text').extract()
+            ])
+
+            whole_text = whole_text \
+                .replace(text[0], '') \
+                .replace(act['details'], '') \
+                .replace(journal_label, '')
+            date_index = whole_text.rfind(date_label)
+            act['journal'] = whole_text[:date_index].strip()
+            act['date'] = whole_text[date_index + len(date_label):]
+
+        return act
+
+
 class GazetteExecutiveAndLegislativeSpider(scrapy.Spider):
     """Coleta o Diário Oficial dos poderes executivo e legislativo."""
     name = 'gazettes'
@@ -105,84 +192,3 @@ class GazetteExecutiveAndLegislativeSpider(scrapy.Spider):
         edition_index = url.find('edicao=') + len('edicao=')
         edition = url[edition_index:]
         return edition
-
-
-class GazetteSecretariatsSpider(scrapy.Spider):
-    """Coleta o Diário Oficial das secretarias."""
-    name = 'gazettes_secretariats'
-    start_urls = ['http://www.diariooficial.feiradesantana.ba.gov.br']
-    last_page = 1
-    handle_httpstatus_list = [302]
-
-    def parse(self, response):
-        secretariats = response.css('td.style16 a.link_menu2')
-        urls = secretariats.css('::attr(href)').extract()
-
-        for url in urls:
-            yield Request(response.urljoin(url), callback=self.parse_page)
-
-    def parse_page(self, response):
-        secretariats_name = response.css('div.nmsec ::text').extract_first()
-        titles = response.xpath(
-            "//tr/td/table/tr/td[@colspan='2' and @class='destaq']/text()"
-        ).extract()
-        gazette_urls = response.css('td.destaqt ::attr(href)').extract()
-        gazette_files = self.files_from_editions(gazette_urls, response)
-
-        rows = response.xpath('//table[2]/tr/td/table/tr/td[3]/table/tr[1]/td/table')
-        extracted_rows = self.extract_publication_details(rows)
-
-        for title, content in zip(titles, extracted_rows):
-            event = {
-                'name': secretariats_name,
-                'title': title.strip(),
-                'secretariat': content[0],
-                'year': content[1],
-                'found_at': response.url,
-                'edition': content[2],
-                'date': content[3],
-                'summary': ' '.join(content[4:])
-            }
-            event['file_url'] = gazette_files.get(event['edition'])
-
-            yield Request(
-                event['file_url'],
-                callback=self.parse_document_url,
-                meta={'gazette': event}
-            )
-
-        current_page = response.css('ul li.current ::text').extract_first()
-        last_page = response.css('ul li:last-child ::text').extract_first()
-        if current_page:
-            current_page = current_page.strip()
-            last_page = last_page.strip()
-            if current_page != last_page:
-                next_page = int(current_page) + 1
-                url = response.css('ul li a::attr(href)').extract_first()
-                url = replace_query_param(url, 'p', next_page)
-
-                yield Request(response.urljoin(url), callback=self.parse_page)
-
-    def parse_document_url(self, response):
-        gazette = response.meta['gazette']
-        url = response.headers['Location'].decode('utf-8')
-        gazette['file_urls'] = [url.replace('https', 'http')]
-        return gazette
-
-    @staticmethod
-    def files_from_editions(gazette_urls, response):
-        gazette_files = {}
-        gazette_files_pattern = re.compile(r'edi=(\d+)')
-        for gazette_url in gazette_urls:
-            edition = re.findall(gazette_files_pattern, gazette_url)[0]
-            gazette_files[edition] = response.urljoin(gazette_url)
-        return gazette_files
-
-    @staticmethod
-    def extract_publication_details(rows):
-        extracted_rows = []
-        for row in rows:
-            content = row.css('td.destaqt ::text').extract()
-            extracted_content = [line.strip() for line in content if line.strip() != '']
-            extracted_rows.append(extracted_content)
-        return extracted_rows
