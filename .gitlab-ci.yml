@@ -10,7 +10,7 @@ lint:
 test:
   before_script:
   - python -V
-  - pip install -r requirements.txt
+  - pip install -r dev_requirements.txt
   script:
   - pytest
   - cd scraper && scrapy --check
