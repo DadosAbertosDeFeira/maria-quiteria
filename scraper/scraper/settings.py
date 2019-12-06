@@ -1,4 +1,5 @@
 import os
+from .items import GazetteEventItem, LegacyGazetteItem
 
 
 # general
@@ -25,6 +26,7 @@ HTTPCACHE_EXPIRATION_SECS = 86400  # 24 hours
 # testing
 SPIDERMON_ENABLED = True
 SPIDERMON_VALIDATION_ADD_ERRORS_TO_ITEMS = True
-SPIDERMON_VALIDATION_MODELS = (
-   'scraper.validators.LegacyGazetteItem',
-)
+SPIDERMON_VALIDATION_MODELS = {
+   LegacyGazetteItem: 'scraper.validators.LegacyGazetteItem',
+   GazetteEventItem: 'scraper.validators.GazetteEventItem'
+}

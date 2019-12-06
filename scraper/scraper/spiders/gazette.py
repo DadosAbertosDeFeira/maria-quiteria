@@ -3,7 +3,7 @@ import re
 import scrapy
 from scrapy import Request
 
-from scraper.items import LegacyGazetteItem
+from scraper.items import GazetteEventItem, LegacyGazetteItem
 from .utils import replace_query_param
 
 
@@ -84,7 +84,7 @@ class LegacyGazetteSpider(scrapy.Spider):
         return events, events_urls
 
 
-class GazetteExecutiveAndLegislativeSpider(scrapy.Spider):
+class ExecutiveAndLegislativeGazetteSpider(scrapy.Spider):
     """Coleta o Diário Oficial dos poderes executivo e legislativo."""
     name = 'gazettes'
     allowed_domains = ['diariooficial.feiradesantana.ba.gov.br']
@@ -128,23 +128,25 @@ class GazetteExecutiveAndLegislativeSpider(scrapy.Spider):
     def parse_details(self, response):
         gazette = response.meta['gazette']
 
-        gazette['edition'] = response.css('span.style4 ::text').extract()[1].strip()
-        titles = response.xpath("//tr/td/table/tr/td[@colspan='2']/text()").extract()
+        gazette['year_and_edition'] = response.css(
+            'span.style4 ::text').extract()[1].strip()
+        titles = response.xpath(
+            "//tr/td/table/tr/td[@colspan='2']/text()").extract()
         descriptions = response.css('td.destaqt ::text').extract()
 
-        topics = []
+        events = []
         while titles:
-            topics.append({
+            events.append({
                 'title': titles.pop(0).strip(),
-                'agency': descriptions.pop(0).strip(),
-                'topic': descriptions.pop(0).strip()
+                'secretariat': descriptions.pop(0).strip(),
+                'summary': descriptions.pop(0).strip()
             })
             titles.pop(0)
 
-        if gazette.get('topics') is None:
-            gazette['topics'] = topics
+        if gazette.get('events') is None:
+            gazette['events'] = events
         else:
-            gazette['topics'].extend(topics.copy())
+            gazette['events'].extend(events.copy())
 
         current_page = response.css('ul li.current ::text').extract_first()
         last_page = response.css('ul li:last-child ::text').extract_first()
@@ -162,11 +164,21 @@ class GazetteExecutiveAndLegislativeSpider(scrapy.Spider):
                     meta={'gazette': gazette}
                 )
             else:
-                yield Request(
-                    gazette['file_url'],
-                    callback=self.parse_document_url,
-                    meta={'gazette': gazette}
-                )
+                for event in gazette['events']:
+                    gazette_item = GazetteEventItem(
+                        date=gazette['date'],
+                        power=gazette['power'],
+                        year_and_edition=gazette['year_and_edition'],
+                        crawled_at=response.url,
+                        event_title=event['title'],
+                        event_secretariat=event['secretariat'],
+                        event_summary=event['summary'],
+                    )
+                    yield Request(
+                        gazette['file_url'],
+                        callback=self.parse_document_url,
+                        meta={'gazette': gazette_item}
+                    )
 
     def parse_document_url(self, response):
         gazette = response.meta['gazette']
