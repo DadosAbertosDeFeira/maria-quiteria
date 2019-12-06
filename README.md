@@ -1,5 +1,7 @@
 # Maria Quitéria
 
+![](https://gitlab.com/anapaulagomes/maria-quiteria/badges/master/pipeline.svg)
+
 Um projeto para libertar dados do município de [Feira de Santana](https://pt.wikipedia.org/wiki/Feira_de_Santana).
 
 ## Dados

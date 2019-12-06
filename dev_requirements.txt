@@ -1,1 +1,5 @@
+-r requirements.txt
+black==19.10b0
+flake8==3.7.9
+pre-commit
 pytest==5.2.2

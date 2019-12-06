@@ -3,12 +3,10 @@ import re
 
 import scrapy
 
-from .utils import replace_query_param
-
 
 class BidsSpider(scrapy.Spider):
-    name = 'bids'
-    start_urls = ['http://www.feiradesantana.ba.gov.br/seadm/licitacoes.asp']
+    name = "bids"
+    start_urls = ["http://www.feiradesantana.ba.gov.br/seadm/licitacoes.asp"]
 
     def parse(self, response):
         """
@@ -16,58 +14,56 @@ class BidsSpider(scrapy.Spider):
         @returns items 0
         @returns requests 166
         """
-        urls = response.xpath('//table/tbody/tr/td[1]/div/a//@href').extract()
-        base_url = 'http://www.feiradesantana.ba.gov.br'
+        urls = response.xpath("//table/tbody/tr/td[1]/div/a//@href").extract()
+        base_url = "http://www.feiradesantana.ba.gov.br"
 
         for url in urls:
             if base_url not in url:
                 # all years except 2017 and 2018
-                url = f'{base_url}/seadm/{url}'
+                url = f"{base_url}/seadm/{url}"
             yield response.follow(url, self.parse_page)
 
     def parse_page(self, response):
-        raw_modalities = response.xpath('//tr/td[1]/table/tr/td/text()').extract()
+        raw_modalities = response.xpath("//tr/td[1]/table/tr/td/text()").extract()
         raw_descriptions = response.xpath(
-            '//table/tr[2]/td/table/tr[6]/td/table/tr/td[2]/table[1]'
+            "//table/tr[2]/td/table/tr[6]/td/table/tr/td[2]/table[1]"
         )
         raw_bids_history = response.xpath(
-            '//table/tr[2]/td/table/tr[6]/td/table/tr/td[2]/table[2]'
+            "//table/tr[2]/td/table/tr[6]/td/table/tr/td[2]/table[2]"
         )
-        raw_when = response.xpath('//tr/td[3]/table/tr/td/text()').extract()
+        raw_when = response.xpath("//tr/td[3]/table/tr/td/text()").extract()
         descriptions = self._parse_descriptions(raw_descriptions)
         bids_history = self._parse_bids_history(raw_bids_history)
         modalities = self._parse_modalities(raw_modalities)
         when = self._parse_when(raw_when)
         bid_data = zip(modalities, descriptions, bids_history, when)
 
-        url_pattern = re.compile(
-            r'licitacoes_pm\.asp[\?|&]cat=(\w+)\&dt=(\d+-\d+)'
-        )
+        url_pattern = re.compile(r"licitacoes_pm\.asp[\?|&]cat=(\w+)\&dt=(\d+-\d+)")
         for modality, (description, document_url), history, when in bid_data:
             match = url_pattern.search(response._url)
-            month, year = match.group(2).split('-')
+            month, year = match.group(2).split("-")
 
             yield {
-                'url': response._url,
-                'category': match.group(1).upper(),
-                'month': int(month),
-                'year': int(year),
-                'description': description,
-                'history': history,
-                'modality': modality,
-                'when': when,
-                'document_url': document_url,
+                "url": response._url,
+                "category": match.group(1).upper(),
+                "month": int(month),
+                "year": int(year),
+                "description": description,
+                "history": history,
+                "modality": modality,
+                "when": when,
+                "document_url": document_url,
             }
 
     def _parse_descriptions(self, raw_descriptions):
         descriptions = []
         for raw_description in raw_descriptions:
-            description = raw_description.xpath('.//text()').extract()
-            document_url = raw_description.xpath('.//@href').extract_first()
+            description = raw_description.xpath(".//text()").extract()
+            document_url = raw_description.xpath(".//@href").extract_first()
             description = self._parse_description(description)
 
-            if description != 'Objeto':
-                document_url = document_url if document_url else ''
+            if description != "Objeto":
+                document_url = document_url if document_url else ""
                 descriptions.append((description, document_url))
         return descriptions
 
@@ -75,18 +71,16 @@ class BidsSpider(scrapy.Spider):
         all_bids_history = []
         for raw_bid_history in raw_bids_history:
             bids_history = []
-            for row in raw_bid_history.xpath('.//tr'):
-                when = row.xpath('.//td[2]/text()').get().strip()
-                event = row.xpath('.//td[3]/div/text()').get()
-                url = row.xpath('.//td[4]/div/a//@href').get()
+            for row in raw_bid_history.xpath(".//tr"):
+                when = row.xpath(".//td[2]/text()").get().strip()
+                event = row.xpath(".//td[3]/div/text()").get()
+                url = row.xpath(".//td[4]/div/a//@href").get()
 
                 if event and when:
-                    url = url if url else ''
-                    bids_history.append({
-                        'when': when,
-                        'event': event.capitalize(),
-                        'url': url
-                    })
+                    url = url if url else ""
+                    bids_history.append(
+                        {"when": when, "event": event.capitalize(), "url": url}
+                    )
             all_bids_history.append(bids_history)
 
         return all_bids_history
@@ -97,14 +91,14 @@ class BidsSpider(scrapy.Spider):
             description = raw_description.strip()
             if not description.isspace():
                 descriptions.append(description)
-        return ''.join(descriptions)
+        return "".join(descriptions)
 
     def _parse_modalities(self, raw_modalities):
         modalities = []
         for raw_modality in raw_modalities:
             modality = raw_modality.strip()
-            if modality != '':
-                modality = modality.replace('\r\n', ' / ')
+            if modality != "":
+                modality = modality.replace("\r\n", " / ")
                 modalities.append(modality)
         return modalities
 
@@ -117,14 +111,15 @@ class ContractsSpider(scrapy.Spider):
 
     http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=contratos
     """
-    name = 'contracts'
-    url = 'http://www.transparencia.feiradesantana.ba.gov.br/controller/contrato.php'
+
+    name = "contracts"
+    url = "http://www.transparencia.feiradesantana.ba.gov.br/controller/contrato.php"
     data = {
-        'POST_PARAMETRO': 'PesquisaContratos',
-        'POST_DATA': '',
-        'POST_NMCREDOR': '',
-        'POST_CPFCNPJ': '',
-        'POST_NUCONTRATO': '',
+        "POST_PARAMETRO": "PesquisaContratos",
+        "POST_DATA": "",
+        "POST_NMCREDOR": "",
+        "POST_CPFCNPJ": "",
+        "POST_NUCONTRATO": "",
     }
 
     def start_requests(self):
@@ -132,13 +127,13 @@ class ContractsSpider(scrapy.Spider):
 
     def parse(self, response):
         # ['��� Anterior', '1', '2', '33', 'Pr��ximo ���']
-        pages = response.css('div.pagination li a ::text').extract()
+        pages = response.css("div.pagination li a ::text").extract()
         last_page = int(pages[-2])
 
         for page in range(1, last_page + 1):
             data = self.data.copy()
-            data['POST_PAGINA'] = str(page)
-            data['POST_PAGINAS'] = str(last_page)
+            data["POST_PAGINA"] = str(page)
+            data["POST_PAGINAS"] = str(last_page)
             yield scrapy.FormRequest(self.url, formdata=data, callback=self.parse_page)
 
     def parse_page(self, response):
@@ -155,41 +150,41 @@ class ContractsSpider(scrapy.Spider):
         """
 
         headlines = response.css('tbody tr:not([class^="informacao"])')
-        contract_details = response.css('tr.informacao')
-        base_url = 'http://www.transparencia.feiradesantana.ba.gov.br'
+        contract_details = response.css("tr.informacao")
+        base_url = "http://www.transparencia.feiradesantana.ba.gov.br"
 
         for headline, raw_details in zip(headlines, contract_details):
-            contract_and_date = headline.css('th ::text').extract()
+            contract_and_date = headline.css("th ::text").extract()
             contract = contract_and_date[0]
             starts_at = contract_and_date[1]
             details = self.clean_details(raw_details)
-            document_url = raw_details.css('a.btn::attr(href)').get(default='')
-            if document_url != '':
-                document_url = f'{base_url}{document_url}'
+            document_url = raw_details.css("a.btn::attr(href)").get(default="")
+            if document_url != "":
+                document_url = f"{base_url}{document_url}"
 
             yield {
-                'contract': contract,
-                'starts_at': starts_at,
-                'summary': details[0],
-                'contractor': details[1],  # cnpj and company's name
-                'value': details[2],
-                'ends_at': details[3],
-                'document_url': document_url
+                "contract": contract,
+                "starts_at": starts_at,
+                "summary": details[0],
+                "contractor": details[1],  # cnpj and company's name
+                "value": details[2],
+                "ends_at": details[3],
+                "document_url": document_url,
             }
 
     def clean_details(self, raw_details):
         labels = [
-            'Objeto:',
-            'Contratada:',
-            'Valor:',
-            'Data Final de Contrato:',
-            'VISUALIZAR'
+            "Objeto:",
+            "Contratada:",
+            "Valor:",
+            "Data Final de Contrato:",
+            "VISUALIZAR",
         ]
 
         valid_details = []
-        for details in raw_details.css('p ::text').extract():
+        for details in raw_details.css("p ::text").extract():
             details = details.strip()
-            if details != '' and details not in labels:
+            if details != "" and details not in labels:
                 # assuming that all fields will be there
                 valid_details.append(details)
         return valid_details
@@ -200,15 +195,16 @@ class PaymentsSpider(scrapy.Spider):
 
     http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=despesa
     """
-    name = 'payments'
-    url = 'http://www.transparencia.feiradesantana.ba.gov.br/controller/despesa.php'
+
+    name = "payments"
+    url = "http://www.transparencia.feiradesantana.ba.gov.br/controller/despesa.php"
     data = {
-        'POST_PARAMETRO': 'PesquisaDespesas',
-        'POST_FASE': '',
-        'POST_UNIDADE': '',
-        'POST_DATA': '',
-        'POST_NMCREDOR': '',
-        'POST_CPFCNPJ': ''
+        "POST_PARAMETRO": "PesquisaDespesas",
+        "POST_FASE": "",
+        "POST_UNIDADE": "",
+        "POST_DATA": "",
+        "POST_NMCREDOR": "",
+        "POST_CPFCNPJ": "",
     }
 
     def start_requests(self):
@@ -216,24 +212,27 @@ class PaymentsSpider(scrapy.Spider):
         today = datetime.now().date()
 
         while current_date <= today:
-            formatted_date = current_date.strftime('%d/%m/%Y')
+            formatted_date = current_date.strftime("%d/%m/%Y")
             data = self.data.copy()
-            data['POST_DATA'] = f'{formatted_date} - {formatted_date}'
+            data["POST_DATA"] = f"{formatted_date} - {formatted_date}"
             yield scrapy.FormRequest(
-                self.url, formdata=data, callback=self.parse, meta={'data': data})
+                self.url, formdata=data, callback=self.parse, meta={"data": data}
+            )
             current_date = current_date + timedelta(days=1)
 
     def parse(self, response):
         # ['��� Anterior', '1', '2', '33', 'Pr��ximo ���']
-        pages = response.css('div.pagination li a ::text').extract()
+        pages = response.css("div.pagination li a ::text").extract()
         if pages:
             last_page = int(pages[-2])
 
             for page in range(1, last_page + 1):
-                data = response.meta['data']
-                data['POST_PAGINA'] = str(page)
-                data['POST_PAGINAS'] = str(last_page)
-                yield scrapy.FormRequest(self.url, formdata=data, callback=self.parse_page)
+                data = response.meta["data"]
+                data["POST_PAGINA"] = str(page)
+                data["POST_PAGINAS"] = str(last_page)
+                yield scrapy.FormRequest(
+                    self.url, formdata=data, callback=self.parse_page
+                )
 
     def parse_page(self, response):
         """Extrai informações sobre um pagamento.
@@ -249,30 +248,32 @@ class PaymentsSpider(scrapy.Spider):
         Processo Licitatório: PREGAO
         Fonte de Recurso: 0000 - RECURSOS ORDINARIOS
         """
-        headlines = response.css('#editable-sample tr.accordion-toggle')
-        details = response.css('#editable-sample div.accordion-inner')
+        headlines = response.css("#editable-sample tr.accordion-toggle")
+        details = response.css("#editable-sample div.accordion-inner")
 
         for headline, raw_details in zip(headlines, details):
-            headline = [text.strip() for text in headline.css('td ::text').extract()]
+            headline = [text.strip() for text in headline.css("td ::text").extract()]
             data = {
-                'published_at': headline[0],
-                'phase': headline[1],
-                'company_or_person': headline[2],
-                'value': headline[3],
+                "published_at": headline[0],
+                "phase": headline[1],
+                "company_or_person": headline[2],
+                "value": headline[3],
             }
-            details = [detail.strip() for detail in raw_details.css('td ::text').extract()]
+            details = [
+                detail.strip() for detail in raw_details.css("td ::text").extract()
+            ]
             mapping = {
-                'N°:': 'number',
-                'CPF/CNPJ:': 'document',
-                'Data:': 'date',
-                'N° do processo:': 'process_number',
-                'Bem / Serviço Prestado:': 'summary',
-                'Natureza:': 'group',
-                'Ação:': 'action',
-                'Função:': 'function',
-                'Subfunção:': 'subfunction',
-                'Processo Licitatório:': 'type_of_process',
-                'Fonte de Recurso:': 'resource'
+                "N°:": "number",
+                "CPF/CNPJ:": "document",
+                "Data:": "date",
+                "N° do processo:": "process_number",
+                "Bem / Serviço Prestado:": "summary",
+                "Natureza:": "group",
+                "Ação:": "action",
+                "Função:": "function",
+                "Subfunção:": "subfunction",
+                "Processo Licitatório:": "type_of_process",
+                "Fonte de Recurso:": "resource",
             }
             details_copy = details.copy()
             while details_copy:
