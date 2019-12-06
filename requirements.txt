@@ -1,2 +1,4 @@
+schematics==2.1.0
 scrapy==1.8.0
+spidermon==1.11.0
 xlrd==1.2.0
