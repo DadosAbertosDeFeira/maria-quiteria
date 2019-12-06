@@ -3,6 +3,7 @@ import re
 import scrapy
 from scrapy import Request
 
+from scraper.items import LegacyGazetteItem
 from .utils import replace_query_param
 
 
@@ -23,23 +24,17 @@ class LegacyGazetteSpider(scrapy.Spider):
     ]
 
     def parse(self, response):
-        """
-        @url http://www.feiradesantana.ba.gov.br/servicos.asp?acao=ir&s=a&link=seadm/leis.asp&p=1&cat=0&ano=2001#links
-        @returns items 8 13
-        @returns requests 1 2
-        """
         if 'SEM INFORMA' not in response.text:  # it means page found
-            rows = response.css('table tr td table tr td table tr td table tr td.txt')
-            for row in rows:
-                act = self.extract_acts(row)
-                yield {
-                    'title': act['act_and_date'],
-                    'published_on': act['journal'],
-                    'date': act['date'],
-                    'details': act['details'],
-                    'url': act['url'],
-                    'source': response.url,
-                }
+            events, urls = self.extract_events(response)
+            for event, url in zip(events, urls):
+                yield LegacyGazetteItem(
+                    title=event['event'],
+                    published_on=event['published_on'],
+                    date=event['date'],
+                    details=url['details'],
+                    url=url['url'],
+                    crawled_at=response.url,
+                )
 
             current_page = self.get_current_page(response)
             last_page = response.xpath('//table/tr[10]/td/ul/li/a/text()')
@@ -51,8 +46,6 @@ class LegacyGazetteSpider(scrapy.Spider):
                 if next_page <= last_page:
                     url = replace_query_param(response.url, 'p', next_page)
                     yield response.follow(url, callback=self.parse)
-        else:
-            self.logger.info(f'End of pages')
 
     def get_current_page(self, response):
         current_page = response.xpath(
@@ -64,33 +57,31 @@ class LegacyGazetteSpider(scrapy.Spider):
             current_page = response.css('ul.pagination li.active ::text').get()
         return current_page
 
-    def extract_acts(self, row):
-        text = row.xpath('span/strong/text()').extract()
-        act = {
-            'url': row.xpath('a//@href').extract_first(),
-            'act_and_date': text[0],
-            'details': row.xpath('a//text()').extract_first(),
-            'journal': '',
-            'date': ''
-        }
-        if len(text) > 1:
-            journal_label = text[1]  # Jornal Publicado:
-            date_label = text[2]  # Data:
+    def extract_events(self, response):
+        events = []
+        infos = response.xpath(
+            '//form/table/tr[8]/td/table/tr/td/table/tr/td/table/tr/td/span'
+            )
+        for info in infos:
+            text = info.css(' ::text').extract()
+            event = text[0].strip()
+            published_on = None
+            date = None
+            if len(text) > 3:
+                published_on = text[3].replace('-', '').strip()
+                date = text[-1].strip()
+            events.append({'event': event, 'published_on': published_on, 'date': date})
 
-            whole_text = ''.join([
-                chunk.strip().replace('-', '')
-                for chunk in row.css('::text').extract()
-            ])
-
-            whole_text = whole_text \
-                .replace(text[0], '') \
-                .replace(act['details'], '') \
-                .replace(journal_label, '')
-            date_index = whole_text.rfind(date_label)
-            act['journal'] = whole_text[:date_index].strip()
-            act['date'] = whole_text[date_index + len(date_label):]
-
-        return act
+        events_urls = []
+        urls = response.xpath(
+            '//form/table/tr[8]/td/table/tr/td/table/tr/td/table/tr/td[1]/a'
+        )
+        for label_and_url in urls:
+            details = label_and_url.css(' ::text').extract()
+            details = ' '.join(details).strip()
+            url = label_and_url.css(' ::attr(href)').extract_first()
+            events_urls.append({'details': details, 'url': url})
+        return events, events_urls
 
 
 class GazetteExecutiveAndLegislativeSpider(scrapy.Spider):
