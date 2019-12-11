@@ -10,6 +10,7 @@ class LegacyGazetteItem(Model):
     details = StringType(required=True)
     url = URLType(required=True)
     crawled_at = URLType(required=True)
+    content = StringType()
 
 
 class GazetteEventItem(Model):
@@ -21,3 +22,4 @@ class GazetteEventItem(Model):
     event_secretariat = StringType(required=True)
     event_summary = StringType(required=True)
     file_urls = ListType(StringType)
+    content = StringType()

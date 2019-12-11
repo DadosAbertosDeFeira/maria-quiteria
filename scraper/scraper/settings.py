@@ -14,8 +14,8 @@ EXTENSIONS = {
 
 # pipelines
 ITEM_PIPELINES = {
-    "scrapy.pipelines.files.FilesPipeline": 100,
-    "spidermon.contrib.scrapy.pipelines.ItemValidationPipeline": 800,
+    "scraper.pipelines.ExtractPDFContentPipeline": 100,
+    "spidermon.contrib.scrapy.pipelines.ItemValidationPipeline": 200,
 }
 FILES_STORE = f"{os.getcwd()}/data/"
 

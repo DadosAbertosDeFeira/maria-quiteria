@@ -1,11 +1,15 @@
-# -*- coding: utf-8 -*-
+from scraper.settings import FILES_STORE
+import os
 
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+from scrapy.pipelines.files import FilesPipeline
+from tika import parser
 
 
-class ScraperPipeline(object):
-    def process_item(self, item, spider):
+class ExtractPDFContentPipeline(FilesPipeline):
+    def item_completed(self, results, item, info):
+        file_info = results[0][1]
+        file_path = f"{FILES_STORE}{file_info['path']}"
+        raw = parser.from_file(file_path)
+        item["content"] = raw["content"]
+        os.remove(file_path)  # TODO add env variable for it
         return item
