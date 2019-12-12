@@ -1,4 +1,5 @@
 schematics==2.1.0
 scrapy==1.8.0
 spidermon==1.11.0
+tika==1.22
 xlrd==1.2.0

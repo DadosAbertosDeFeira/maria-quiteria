@@ -17,6 +17,15 @@ Um projeto para libertar dados do município de [Feira de Santana](https://pt.wi
 
 ## Coleta
 
+Para rodar esse projeto localmente, instale as dependências:
+
+```bash
+pip install -r dev_requirements.txt
+```
+
+E tenha o [Apache Tika](https://tika.apache.org/download.html) instalado.
+Esse projeto vai extrair o texto dos PDFs.
+
 No diretório `scraper` você poderá encontrar os _spiders_ responsáveis pela
 coleta dos dados. Para entender melhor como eles funcionam, dê uma olhada
 na documentação do [scrapy](https://docs.scrapy.org/).
