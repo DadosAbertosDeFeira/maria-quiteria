@@ -11,10 +11,6 @@ repos:
   rev: 3.7.6
   hooks:
   - id: flake8
-- repo: https://gitlab.com/pycqa/pydocstyle
-  rev: 4.0.1
-  hooks:
-  - id: pydocstyle
 - repo: https://github.com/ambv/black
   rev: stable
   hooks:
