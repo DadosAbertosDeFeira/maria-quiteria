@@ -1,4 +1,4 @@
-from scraper.settings import FILES_STORE
+from scraper.settings import FILES_STORE, KEEP_FILES
 import os
 
 from scrapy.pipelines.files import FilesPipeline
@@ -11,5 +11,6 @@ class ExtractPDFContentPipeline(FilesPipeline):
         file_path = f"{FILES_STORE}{file_info['path']}"
         raw = parser.from_file(file_path)
         item["content"] = raw["content"]
-        os.remove(file_path)  # TODO add env variable for it
+        if KEEP_FILES is False:
+            os.remove(file_path)
         return item
