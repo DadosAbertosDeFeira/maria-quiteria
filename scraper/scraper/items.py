@@ -8,7 +8,7 @@ class LegacyGazetteItem(scrapy.Item):
     details = scrapy.Field()
     url = scrapy.Field()
     crawled_at = scrapy.Field()
-    content = scrapy.Field()
+    file_content = scrapy.Field()
 
 
 class GazetteEventItem(scrapy.Item):
@@ -20,4 +20,12 @@ class GazetteEventItem(scrapy.Item):
     event_secretariat = scrapy.Field()
     event_summary = scrapy.Field()
     file_urls = scrapy.Field()
-    content = scrapy.Field()
+    file_content = scrapy.Field()
+
+
+class CityCouncilAgendaItem(scrapy.Item):
+    crawled_at = scrapy.Field()
+    date = scrapy.Field()
+    details = scrapy.Field()
+    title = scrapy.Field()
+    event_type = scrapy.Field()

@@ -1,3 +1,4 @@
+from scraper.items import CityCouncilAgendaItem
 import scrapy
 
 
@@ -11,6 +12,8 @@ class AgendaSpider(scrapy.Spider):
             return "ordem_do_dia"
         if "sessão solene" in event_title.lower():
             return "sessao_solene"
+        if "sessão especial" in event_title.lower():
+            return "sessao_especial"
         if "audiência pública" in event_title.lower():
             return "audiencia_publica"
         return "not_found"
@@ -26,8 +29,10 @@ class AgendaSpider(scrapy.Spider):
 
         for year in range(min(years), max(years) + 1):
             for month in range(1, 13):
-                url = f"https://www.feiradesantana.ba.leg.br/"
-                "agenda?mes={month}&ano={year}&Acessar=OK"
+                url = (
+                    "https://www.feiradesantana.ba.leg.br/agenda"
+                    f"?mes={month}&ano={year}&Acessar=OK"
+                )
                 yield scrapy.Request(url=url, callback=self.parse_page)
 
     def parse_page(self, response):
@@ -42,10 +47,10 @@ class AgendaSpider(scrapy.Spider):
                 if line.strip() != ""
             ]
 
-            yield {
-                "url": response.url,
-                "date": date,
-                "details": " ".join(events),
-                "title": title.strip(),
-                "type": self.get_type(title),
-            }
+            yield CityCouncilAgendaItem(
+                crawled_at=response.url,
+                date=date,
+                details=" ".join(events),
+                title=title.strip(),
+                event_type=self.get_type(title),
+            )

@@ -1,5 +1,5 @@
 import os
-from .items import GazetteEventItem, LegacyGazetteItem
+from .items import CityCouncilAgendaItem, GazetteEventItem, LegacyGazetteItem
 
 
 # general
@@ -30,4 +30,5 @@ SPIDERMON_VALIDATION_ADD_ERRORS_TO_ITEMS = True
 SPIDERMON_VALIDATION_MODELS = {
     LegacyGazetteItem: "scraper.validators.LegacyGazetteItem",
     GazetteEventItem: "scraper.validators.GazetteEventItem",
+    CityCouncilAgendaItem: "scraper.validators.CityCouncilAgendaItem",
 }

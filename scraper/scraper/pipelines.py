@@ -7,10 +7,11 @@ from tika import parser
 
 class ExtractPDFContentPipeline(FilesPipeline):
     def item_completed(self, results, item, info):
-        file_info = results[0][1]
-        file_path = f"{FILES_STORE}{file_info['path']}"
-        raw = parser.from_file(file_path)
-        item["content"] = raw["content"]
-        if KEEP_FILES is False:
-            os.remove(file_path)
+        if results:
+            file_info = results[0][1]
+            file_path = f"{FILES_STORE}{file_info['path']}"
+            raw = parser.from_file(file_path)
+            item["files_content"] = raw["files_content"]
+            if KEEP_FILES is False:
+                os.remove(file_path)
         return item
