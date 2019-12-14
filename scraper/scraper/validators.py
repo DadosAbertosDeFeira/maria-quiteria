@@ -8,7 +8,7 @@ class LegacyGazetteItem(Model):
     # important info but not available in years like 2010
     date = DateType(required=False, formats=("%d/%m/%Y", "%d/%m/%y"))
     details = StringType(required=True)
-    url = URLType(required=True)
+    file_urls = ListType(URLType)
     crawled_at = URLType(required=True)
     file_content = StringType()
 
@@ -21,7 +21,7 @@ class GazetteEventItem(Model):
     event_title = StringType(required=True)
     event_secretariat = StringType(required=True)
     event_summary = StringType(required=True)
-    file_urls = ListType(StringType)
+    file_urls = ListType(URLType)
     file_content = StringType()
 
 

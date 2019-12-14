@@ -31,7 +31,7 @@ class LegacyGazetteSpider(scrapy.Spider):
                     published_on=event["published_on"],
                     date=event["date"],
                     details=url["details"],
-                    url=url["url"],
+                    file_urls=[url["url"]],
                     crawled_at=response.url,
                 )
 

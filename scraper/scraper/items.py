@@ -6,7 +6,7 @@ class LegacyGazetteItem(scrapy.Item):
     published_on = scrapy.Field()
     date = scrapy.Field()
     details = scrapy.Field()
-    url = scrapy.Field()
+    file_urls = scrapy.Field()
     crawled_at = scrapy.Field()
     file_content = scrapy.Field()
 
