@@ -1,6 +1,7 @@
 from datetime import datetime, date, timedelta
 import re
 
+from scraper.items import CityHallContractItem
 import scrapy
 
 
@@ -162,15 +163,15 @@ class ContractsSpider(scrapy.Spider):
             if document_url != "":
                 document_url = f"{base_url}{document_url}"
 
-            yield {
-                "contract": contract,
-                "starts_at": starts_at,
-                "summary": details[0],
-                "contractor": details[1],  # cnpj and company's name
-                "value": details[2],
-                "ends_at": details[3],
-                "document_url": document_url,
-            }
+            yield CityHallContractItem(
+                contract_id=contract,
+                starts_at=starts_at,
+                summary=details[0],
+                contractor=details[1],  # FIXME cnpj and company's name
+                value=details[2],
+                ends_at=details[3],
+                file_urls=[document_url],
+            )
 
     def clean_details(self, raw_details):
         labels = [
