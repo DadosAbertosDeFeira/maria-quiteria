@@ -29,3 +29,15 @@ class CityCouncilAgendaItem(scrapy.Item):
     details = scrapy.Field()
     title = scrapy.Field()
     event_type = scrapy.Field()
+
+
+class CityHallContractItem(scrapy.Item):
+    contract_id = scrapy.Field()
+    starts_at = scrapy.Field()
+    summary = scrapy.Field()
+    contractor_document = scrapy.Field()  # CNPJ or CPF
+    contractor_name = scrapy.Field()
+    value = scrapy.Field()
+    ends_at = scrapy.Field()
+    file_urls = scrapy.Field()
+    file_content = scrapy.Field()

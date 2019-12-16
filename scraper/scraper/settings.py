@@ -1,6 +1,10 @@
 import os
-from .items import CityCouncilAgendaItem, GazetteEventItem, LegacyGazetteItem
-
+from .items import (
+    CityCouncilAgendaItem,
+    CityHallContractItem,
+    GazetteEventItem,
+    LegacyGazetteItem,
+)
 
 # general
 BOT_NAME = "maria-quiteria"
@@ -31,4 +35,5 @@ SPIDERMON_VALIDATION_MODELS = {
     LegacyGazetteItem: "scraper.validators.LegacyGazetteItem",
     GazetteEventItem: "scraper.validators.GazetteEventItem",
     CityCouncilAgendaItem: "scraper.validators.CityCouncilAgendaItem",
+    CityHallContractItem: "scraper.validators.CityHallContractItem",
 }

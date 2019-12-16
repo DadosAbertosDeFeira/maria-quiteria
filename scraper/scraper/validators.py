@@ -31,3 +31,15 @@ class CityCouncilAgendaItem(Model):
     details = StringType()
     title = StringType(required=True)
     event_type = StringType(required=True)
+
+
+class CityHallContractItem(Model):
+    contract_id = StringType(required=True)
+    starts_at = DateType(formats=("%d/%m/%Y", "%d/%m/%y"))
+    summary = StringType()
+    contractor_document = StringType()
+    contractor_name = StringType()
+    value = StringType()
+    ends_at = DateType(formats=("%d/%m/%Y", "%d/%m/%y"))
+    file_urls = ListType(StringType)  # TODO check URL type
+    file_content = StringType()

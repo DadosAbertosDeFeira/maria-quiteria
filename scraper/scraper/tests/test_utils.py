@@ -1,6 +1,6 @@
 import pytest
 
-from ..spiders.utils import replace_query_param
+from ..spiders.utils import identify_contract_id, replace_query_param
 
 
 @pytest.mark.parametrize(
@@ -38,3 +38,20 @@ from ..spiders.utils import replace_query_param
 )
 def test_replace_query_parameter_from_a_url(old_url, field, value, new_url):
     assert replace_query_param(old_url, field, value) == new_url
+
+
+@pytest.mark.parametrize(
+    "text, expected_contract_id",
+    [
+        (" CONTRATO N�� 295-2017-10C ", "295-2017-10C"),
+        ("CONTRATO N° 11-2017-10C", "11-2017-10C"),
+        ("4/2016/09C", "4/2016/09C"),
+        ("860/2015/05C", "860/2015/05C"),
+        ("3-2017-1926C", "3-2017-1926C"),
+        ("CONTRATO N�� 23820161111 ", "23820161111"),
+        ("CONTRATO N° 05820171111 ", "05820171111"),
+        ("CONTRATO N° 010521004-2017", "010521004-2017"),
+    ],
+)
+def test_identify_contract_ids(text, expected_contract_id):
+    assert identify_contract_id(text) == expected_contract_id
