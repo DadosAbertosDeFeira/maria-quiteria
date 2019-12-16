@@ -3,6 +3,7 @@ import re
 
 from scraper.items import CityHallContractItem
 import scrapy
+from .utils import identify_contract_id
 
 
 class BidsSpider(scrapy.Spider):
@@ -156,21 +157,28 @@ class ContractsSpider(scrapy.Spider):
 
         for headline, raw_details in zip(headlines, contract_details):
             contract_and_date = headline.css("th ::text").extract()
-            contract = contract_and_date[0]
+            contract_id = identify_contract_id(contract_and_date[0])
             starts_at = contract_and_date[1]
             details = self.clean_details(raw_details)
-            document_url = raw_details.css("a.btn::attr(href)").get(default="")
-            if document_url != "":
-                document_url = f"{base_url}{document_url}"
+            document_url = raw_details.css("a.btn::attr(href)").get(default=None)
+            file_urls = []
+
+            if document_url:
+                file_urls = [f"{base_url}{document_url}"]
+
+            contractor = details[1].split(" - ")
+            contractor_document = contractor[0]
+            contractor_name = contractor[1]
 
             yield CityHallContractItem(
-                contract_id=contract,
+                contract_id=contract_id,
                 starts_at=starts_at,
                 summary=details[0],
-                contractor=details[1],  # FIXME cnpj and company's name
+                contractor_document=contractor_document,
+                contractor_name=contractor_name,
                 value=details[2],
                 ends_at=details[3],
-                file_urls=[document_url],
+                file_urls=file_urls,
             )
 
     def clean_details(self, raw_details):
@@ -259,6 +267,7 @@ class PaymentsSpider(scrapy.Spider):
                 "phase": headline[1],
                 "company_or_person": headline[2],
                 "value": headline[3],
+                "crawled_at": response.url,
             }
             details = [
                 detail.strip() for detail in raw_details.css("td ::text").extract()

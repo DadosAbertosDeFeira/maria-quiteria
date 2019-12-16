@@ -34,11 +34,12 @@ class CityCouncilAgendaItem(Model):
 
 
 class CityHallContractItem(Model):
-    contract_id = StringType()
+    contract_id = StringType(required=True)
     starts_at = DateType(formats=("%d/%m/%Y", "%d/%m/%y"))
     summary = StringType()
-    contractor = StringType()  # FIXME add validation to CNPJ/CPF
-    value = StringType()  # FIXME add validation to finantial
+    contractor_document = StringType()
+    contractor_name = StringType()
+    value = StringType()
     ends_at = DateType(formats=("%d/%m/%Y", "%d/%m/%y"))
-    file_urls = ListType(URLType)  # TODO check URL with white spaces
+    file_urls = ListType(StringType)  # TODO check URL type
     file_content = StringType()
