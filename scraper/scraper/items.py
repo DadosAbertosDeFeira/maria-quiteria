@@ -1,21 +1,24 @@
 import scrapy
 
 
-class LegacyGazetteItem(scrapy.Item):
+class BaseItem(scrapy.Item):
+    crawled_at = scrapy.Field()
+    crawled_from = scrapy.Field()
+
+
+class LegacyGazetteItem(BaseItem):
     title = scrapy.Field()
     published_on = scrapy.Field()
     date = scrapy.Field()
     details = scrapy.Field()
     file_urls = scrapy.Field()
-    crawled_at = scrapy.Field()
     file_content = scrapy.Field()
 
 
-class GazetteEventItem(scrapy.Item):
+class GazetteEventItem(BaseItem):
     date = scrapy.Field()
     power = scrapy.Field()
     year_and_edition = scrapy.Field()
-    crawled_at = scrapy.Field()
     event_title = scrapy.Field()
     event_secretariat = scrapy.Field()
     event_summary = scrapy.Field()
@@ -23,15 +26,14 @@ class GazetteEventItem(scrapy.Item):
     file_content = scrapy.Field()
 
 
-class CityCouncilAgendaItem(scrapy.Item):
-    crawled_at = scrapy.Field()
+class CityCouncilAgendaItem(BaseItem):
     date = scrapy.Field()
     details = scrapy.Field()
     title = scrapy.Field()
     event_type = scrapy.Field()
 
 
-class CityHallContractItem(scrapy.Item):
+class CityHallContractItem(BaseItem):
     contract_id = scrapy.Field()
     starts_at = scrapy.Field()
     summary = scrapy.Field()
@@ -39,5 +41,17 @@ class CityHallContractItem(scrapy.Item):
     contractor_name = scrapy.Field()
     value = scrapy.Field()
     ends_at = scrapy.Field()
+    file_urls = scrapy.Field()
+    file_content = scrapy.Field()
+
+
+class CityHallBidItem(BaseItem):
+    category = scrapy.Field()
+    month = scrapy.Field()
+    year = scrapy.Field()
+    description = scrapy.Field()
+    history = scrapy.Field()
+    modality = scrapy.Field()
+    date = scrapy.Field()
     file_urls = scrapy.Field()
     file_content = scrapy.Field()

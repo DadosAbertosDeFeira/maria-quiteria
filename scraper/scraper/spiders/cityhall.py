@@ -1,7 +1,7 @@
 from datetime import datetime, date, timedelta
 import re
 
-from scraper.items import CityHallContractItem
+from scraper.items import CityHallBidItem, CityHallContractItem
 import scrapy
 from .utils import identify_contract_id
 
@@ -11,18 +11,13 @@ class BidsSpider(scrapy.Spider):
     start_urls = ["http://www.feiradesantana.ba.gov.br/seadm/licitacoes.asp"]
 
     def parse(self, response):
-        """
-        @url http://www.feiradesantana.ba.gov.br/seadm/licitacoes.asp
-        @returns items 0
-        @returns requests 166
-        """
         urls = response.xpath("//table/tbody/tr/td[1]/div/a//@href").extract()
         base_url = "http://www.feiradesantana.ba.gov.br"
 
         for url in urls:
             if base_url not in url:
                 # all years except 2017 and 2018
-                url = f"{base_url}/seadm/{url}"
+                url = response.urljoin(f"{base_url}/seadm/{url}")
             yield response.follow(url, self.parse_page)
 
     def parse_page(self, response):
@@ -33,29 +28,30 @@ class BidsSpider(scrapy.Spider):
         raw_bids_history = response.xpath(
             "//table/tr[2]/td/table/tr[6]/td/table/tr/td[2]/table[2]"
         )
-        raw_when = response.xpath("//tr/td[3]/table/tr/td/text()").extract()
+        raw_date = response.xpath("//tr/td[3]/table/tr/td/text()").extract()
         descriptions = self._parse_descriptions(raw_descriptions)
         bids_history = self._parse_bids_history(raw_bids_history)
         modalities = self._parse_modalities(raw_modalities)
-        when = self._parse_when(raw_when)
-        bid_data = zip(modalities, descriptions, bids_history, when)
+        date = self._parse_date(raw_date)
+        bid_data = zip(modalities, descriptions, bids_history, date)
 
         url_pattern = re.compile(r"licitacoes_pm\.asp[\?|&]cat=(\w+)\&dt=(\d+-\d+)")
-        for modality, (description, document_url), history, when in bid_data:
-            match = url_pattern.search(response._url)
+        for modality, (description, document_url), history, date in bid_data:
+            match = url_pattern.search(response.url)
             month, year = match.group(2).split("-")
 
-            yield {
-                "url": response._url,
-                "category": match.group(1).upper(),
-                "month": int(month),
-                "year": int(year),
-                "description": description,
-                "history": history,
-                "modality": modality,
-                "when": when,
-                "document_url": document_url,
-            }
+            yield CityHallBidItem(
+                crawled_at=datetime.now(),
+                crawled_from=response.url,
+                category=match.group(1).upper(),
+                month=int(month),
+                year=int(year),
+                description=description,
+                history=history,
+                modality=modality,
+                date=date,
+                file_urls=[response.urljoin(document_url)],
+            )
 
     def _parse_descriptions(self, raw_descriptions):
         descriptions = []
@@ -74,14 +70,14 @@ class BidsSpider(scrapy.Spider):
         for raw_bid_history in raw_bids_history:
             bids_history = []
             for row in raw_bid_history.xpath(".//tr"):
-                when = row.xpath(".//td[2]/text()").get().strip()
+                date = row.xpath(".//td[2]/text()").get().strip()
                 event = row.xpath(".//td[3]/div/text()").get()
                 url = row.xpath(".//td[4]/div/a//@href").get()
 
-                if event and when:
+                if event and date:
                     url = url if url else ""
                     bids_history.append(
-                        {"when": when, "event": event.capitalize(), "url": url}
+                        {"date": date, "event": event.capitalize(), "url": url}
                     )
             all_bids_history.append(bids_history)
 
@@ -104,8 +100,8 @@ class BidsSpider(scrapy.Spider):
                 modalities.append(modality)
         return modalities
 
-    def _parse_when(self, raw_when):
-        return [date[1:] for date in raw_when]
+    def _parse_date(self, raw_date):
+        return [date[1:] for date in raw_date]
 
 
 class ContractsSpider(scrapy.Spider):
@@ -179,6 +175,8 @@ class ContractsSpider(scrapy.Spider):
                 value=details[2],
                 ends_at=details[3],
                 file_urls=file_urls,
+                crawled_at=datetime.now(),
+                crawled_from=response.url,
             )
 
     def clean_details(self, raw_details):

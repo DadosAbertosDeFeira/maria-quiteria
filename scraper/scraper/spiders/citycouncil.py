@@ -1,4 +1,6 @@
+from datetime import datetime
 from scraper.items import CityCouncilAgendaItem
+
 import scrapy
 
 
@@ -48,7 +50,8 @@ class AgendaSpider(scrapy.Spider):
             ]
 
             yield CityCouncilAgendaItem(
-                crawled_at=response.url,
+                crawled_at=datetime.now(),
+                crawled_from=response.url,
                 date=date,
                 details=" ".join(events),
                 title=title.strip(),

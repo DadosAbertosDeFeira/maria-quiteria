@@ -1,6 +1,6 @@
+from datetime import datetime
 import scrapy
 from scrapy import Request
-
 from scraper.items import GazetteEventItem, LegacyGazetteItem
 from .utils import replace_query_param
 
@@ -32,7 +32,8 @@ class LegacyGazetteSpider(scrapy.Spider):
                     date=event["date"],
                     details=url["details"],
                     file_urls=[url["url"]],
-                    crawled_at=response.url,
+                    crawled_at=datetime.now(),
+                    crawled_from=response.url,
                 )
 
             current_page = self.get_current_page(response)
@@ -169,10 +170,11 @@ class ExecutiveAndLegislativeGazetteSpider(scrapy.Spider):
                         date=gazette["date"],
                         power=gazette["power"],
                         year_and_edition=gazette["year_and_edition"],
-                        crawled_at=response.url,
                         event_title=event["title"],
                         event_secretariat=event["secretariat"],
                         event_summary=event["summary"],
+                        crawled_at=datetime.now(),
+                        crawled_from=response.url,
                     )
                     yield Request(
                         gazette["file_url"],
