@@ -1,7 +1,7 @@
 from datetime import datetime, date, timedelta
 import re
 
-from scraper.items import CityHallBidItem, CityHallContractItem
+from scraper.items import CityHallBidItem, CityHallContractItem, CityHallPaymentsItem
 import scrapy
 from .utils import identify_contract_id
 
@@ -263,13 +263,14 @@ class PaymentsSpider(scrapy.Spider):
 
         for headline, raw_details in zip(headlines, details):
             headline = [text.strip() for text in headline.css("td ::text").extract()]
-            data = {
-                "published_at": headline[0],
-                "phase": headline[1],
-                "company_or_person": headline[2],
-                "value": headline[3],
-                "crawled_at": response.url,
-            }
+            item = CityHallPaymentsItem(
+                published_at=headline[0],
+                phase=headline[1],
+                company_or_person=headline[2],
+                value=headline[3],
+                crawled_at=datetime.now(),
+                crawled_from=response.url,
+            )
             details = [
                 detail.strip() for detail in raw_details.css("td ::text").extract()
             ]
@@ -290,6 +291,6 @@ class PaymentsSpider(scrapy.Spider):
             while details_copy:
                 key = details_copy.pop(0)
                 value = details_copy.pop(0)
-                data[mapping[key]] = value
+                item[mapping[key]] = value
 
-            yield data
+            yield item
