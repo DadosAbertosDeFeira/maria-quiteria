@@ -65,3 +65,21 @@ class CityHallBidItem(BaseModel):
     date = DateTimeType(formats=("%d/%m/%Y %Hh%M"))
     file_urls = ListType(StringType)
     file_content = StringType()
+
+
+class CityHallPaymentsItem(BaseModel):
+    published_at = DateType(formats=("%d/%m/%Y", "%d/%m/%y"))
+    phase = StringType()
+    company_or_person = StringType(required=True)
+    value = StringType(required=True)
+    number = StringType()
+    document = StringType(required=True)
+    date = DateType(formats=("%d/%m/%Y", "%d/%m/%y"))
+    process_number = StringType()
+    summary = StringType()
+    group = StringType()
+    action = StringType()
+    function = StringType()
+    subfunction = StringType()
+    type_of_process = StringType()
+    resource = StringType()

@@ -55,3 +55,21 @@ class CityHallBidItem(BaseItem):
     date = scrapy.Field()
     file_urls = scrapy.Field()
     file_content = scrapy.Field()
+
+
+class CityHallPaymentsItem(BaseItem):
+    published_at = scrapy.Field()
+    phase = scrapy.Field()
+    company_or_person = scrapy.Field()
+    value = scrapy.Field()
+    number = scrapy.Field()
+    document = scrapy.Field()
+    date = scrapy.Field()
+    process_number = scrapy.Field()
+    summary = scrapy.Field()
+    group = scrapy.Field()
+    action = scrapy.Field()
+    function = scrapy.Field()
+    subfunction = scrapy.Field()
+    type_of_process = scrapy.Field()
+    resource = scrapy.Field()
