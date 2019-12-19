@@ -3,6 +3,7 @@ __pycache__
 .idea
 .scrapy/
 .vscode
+.env
 
 # data
 *.json

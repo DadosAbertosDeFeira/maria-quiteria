@@ -1,23 +1,34 @@
 from schematics.models import Model
-from schematics.types import DateType, ListType, StringType, URLType
+from schematics.types import (
+    DateType,
+    DateTimeType,
+    DictType,
+    IntType,
+    ListType,
+    StringType,
+    URLType,
+)
 
 
-class LegacyGazetteItem(Model):
+class BaseModel(Model):
+    crawled_at = DateTimeType(required=True)
+    crawled_from = URLType(required=True)
+
+
+class LegacyGazetteItem(BaseModel):
     title = StringType(required=True)
     published_on = StringType(required=False)
     # important info but not available in years like 2010
     date = DateType(required=False, formats=("%d/%m/%Y", "%d/%m/%y"))
     details = StringType(required=True)
     file_urls = ListType(URLType)
-    crawled_at = URLType(required=True)
     file_content = StringType()
 
 
-class GazetteEventItem(Model):
+class GazetteEventItem(BaseModel):
     date = DateType(formats=("%d/%m/%Y", "%d/%m/%y"))
     power = StringType(required=True)
     year_and_edition = StringType(required=True)
-    crawled_at = URLType(required=True)
     event_title = StringType(required=True)
     event_secretariat = StringType(required=True)
     event_summary = StringType(required=True)
@@ -25,15 +36,14 @@ class GazetteEventItem(Model):
     file_content = StringType()
 
 
-class CityCouncilAgendaItem(Model):
-    crawled_at = URLType(required=True)
+class CityCouncilAgendaItem(BaseModel):
     date = DateType(formats=("%d/%m/%Y", "%d/%m/%y"))
     details = StringType()
     title = StringType(required=True)
     event_type = StringType(required=True)
 
 
-class CityHallContractItem(Model):
+class CityHallContractItem(BaseModel):
     contract_id = StringType(required=True)
     starts_at = DateType(formats=("%d/%m/%Y", "%d/%m/%y"))
     summary = StringType()
@@ -42,4 +52,16 @@ class CityHallContractItem(Model):
     value = StringType()
     ends_at = DateType(formats=("%d/%m/%Y", "%d/%m/%y"))
     file_urls = ListType(StringType)  # TODO check URL type
+    file_content = StringType()
+
+
+class CityHallBidItem(BaseModel):
+    category = StringType()
+    month = IntType(min_value=1, max_value=12)
+    year = IntType(min_value=1873)  # quando Feira virou cidade :)
+    description = StringType()
+    history = ListType(DictType(StringType))
+    modality = StringType()
+    date = DateTimeType(formats=("%d/%m/%Y %Hh%M"))
+    file_urls = ListType(StringType)
     file_content = StringType()
