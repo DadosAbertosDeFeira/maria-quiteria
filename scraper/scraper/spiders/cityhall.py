@@ -207,7 +207,7 @@ class PaymentsSpider(scrapy.Spider):
     http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=despesa
     """
 
-    name = "payments"
+    name = "cityhall_payments"
     url = "http://www.transparencia.feiradesantana.ba.gov.br/controller/despesa.php"
     data = {
         "POST_PARAMETRO": "PesquisaDespesas",
@@ -219,17 +219,20 @@ class PaymentsSpider(scrapy.Spider):
     }
 
     def start_requests(self):
-        current_date = date(2010, 1, 1)  # initial date
+        if self.start_date:
+            start_date = self.start_date
+        else:
+            start_date = date(2010, 1, 1)
         today = datetime.now().date()
 
-        while current_date <= today:
-            formatted_date = current_date.strftime("%d/%m/%Y")
+        while start_date < today:
+            formatted_date = start_date.strftime("%d/%m/%Y")
             data = self.data.copy()
             data["POST_DATA"] = f"{formatted_date} - {formatted_date}"
             yield scrapy.FormRequest(
                 self.url, formdata=data, callback=self.parse, meta={"data": data}
             )
-            current_date = current_date + timedelta(days=1)
+            start_date = start_date + timedelta(days=1)
 
     def parse(self, response):
         # ['��� Anterior', '1', '2', '33', 'Pr��ximo ���']
