@@ -1,7 +1,7 @@
 from schematics.models import Model
 from schematics.types import (
-    DateType,
     DateTimeType,
+    DateType,
     DictType,
     IntType,
     ListType,

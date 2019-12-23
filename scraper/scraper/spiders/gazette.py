@@ -1,7 +1,9 @@
 from datetime import datetime
+
 import scrapy
-from scrapy import Request
 from scraper.items import GazetteEventItem, LegacyGazetteItem
+from scrapy import Request
+
 from .utils import replace_query_param
 
 
