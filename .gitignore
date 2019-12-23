@@ -4,6 +4,7 @@ __pycache__
 .scrapy/
 .vscode
 .env
+.pytest_cache
 
 # data
 *.json
