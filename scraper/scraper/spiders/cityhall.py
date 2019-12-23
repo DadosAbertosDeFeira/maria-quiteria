@@ -1,11 +1,9 @@
 import re
 from datetime import date, datetime, timedelta
 
-
 import scrapy
-from scraper.items import (
-    CityHallBidItem, CityHallContractItem, CityHallPaymentsItem
-)
+from scraper.items import CityHallBidItem, CityHallContractItem, CityHallPaymentsItem
+
 from .utils import identify_contract_id
 
 
