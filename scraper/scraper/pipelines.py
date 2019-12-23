@@ -1,11 +1,10 @@
-from scraper.settings import FILES_STORE, KEEP_FILES
+import hashlib
 import os
 
-import hashlib
+from scraper.settings import FILES_STORE, KEEP_FILES
+from scrapy.pipelines.files import FilesPipeline
 from scrapy.utils.python import to_bytes
 from six.moves.urllib.parse import urlparse
-
-from scrapy.pipelines.files import FilesPipeline
 from tika import parser
 
 

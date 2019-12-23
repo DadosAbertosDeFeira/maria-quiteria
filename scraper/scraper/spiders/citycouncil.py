@@ -1,7 +1,7 @@
 from datetime import datetime
-from scraper.items import CityCouncilAgendaItem
 
 import scrapy
+from scraper.items import CityCouncilAgendaItem
 
 
 class AgendaSpider(scrapy.Spider):
