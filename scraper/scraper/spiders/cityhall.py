@@ -114,7 +114,7 @@ class ContractsSpider(scrapy.Spider):
     http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=contratos
     """
 
-    name = "contracts"
+    name = "cityhall_contracts"
     url = "http://www.transparencia.feiradesantana.ba.gov.br/controller/contrato.php"
     data = {
         "POST_PARAMETRO": "PesquisaContratos",
@@ -123,20 +123,38 @@ class ContractsSpider(scrapy.Spider):
         "POST_CPFCNPJ": "",
         "POST_NUCONTRATO": "",
     }
+    initial_date = date(2010, 1, 1)
 
     def start_requests(self):
-        return [scrapy.FormRequest(self.url, formdata=self.data, callback=self.parse)]
+        if self.start_date:
+            start_date = self.start_date
+        else:
+            start_date = self.initial_date
+        self.logger.info(f"Data inicial: {start_date}")
+        today = datetime.now().date()
+
+        while start_date < today:
+            formatted_date = start_date.strftime("%d/%m/%Y")
+            data = self.data.copy()
+            data["POST_DATA"] = f"{formatted_date} - {formatted_date}"
+            yield scrapy.FormRequest(
+                self.url, formdata=data, callback=self.parse, meta={"data": data}
+            )
+            start_date = start_date + timedelta(days=1)
 
     def parse(self, response):
         # ['��� Anterior', '1', '2', '33', 'Pr��ximo ���']
         pages = response.css("div.pagination li a ::text").extract()
-        last_page = int(pages[-2])
+        if pages:
+            last_page = int(pages[-2])
 
-        for page in range(1, last_page + 1):
-            data = self.data.copy()
-            data["POST_PAGINA"] = str(page)
-            data["POST_PAGINAS"] = str(last_page)
-            yield scrapy.FormRequest(self.url, formdata=data, callback=self.parse_page)
+            for page in range(1, last_page + 1):
+                data = response.meta["data"]
+                data["POST_PAGINA"] = str(page)
+                data["POST_PAGINAS"] = str(last_page)
+                yield scrapy.FormRequest(
+                    self.url, formdata=data, callback=self.parse_page
+                )
 
     def parse_page(self, response):
         """Extrai informações sobre um contrato.

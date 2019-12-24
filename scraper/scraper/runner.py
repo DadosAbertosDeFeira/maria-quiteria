@@ -8,7 +8,12 @@ from scrapy.utils.project import get_project_settings
 def run_crawlers(start_date):
     process = CrawlerProcess(get_project_settings())
 
+    # FIXME enable this when all spiders are ready
+    # for spider in process.spider_loader.list():
+    #     process.crawl(spider, start_date=start_date)
+
     process.crawl("cityhall_payments", start_date=start_date)
+    process.crawl("cityhall_contracts", start_date=start_date)
     process.start()
 
 
