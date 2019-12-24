@@ -30,6 +30,18 @@ No diretório `scraper` você poderá encontrar os _spiders_ responsáveis pela
 coleta dos dados. Para entender melhor como eles funcionam, dê uma olhada
 na documentação do [scrapy](https://docs.scrapy.org/).
 
+Para executar todos os _spiders_, desde o início execute:
+
+```
+cd scraper && python runner.py --all
+```
+
+Para executar todos os _spiders_, coletando apenas o dia anterior:
+
+```
+cd scraper && python runner.py
+```
+
 Para executar um _spider_, execute:
 
 ```
