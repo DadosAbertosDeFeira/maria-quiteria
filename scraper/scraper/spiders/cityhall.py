@@ -217,12 +217,14 @@ class PaymentsSpider(scrapy.Spider):
         "POST_NMCREDOR": "",
         "POST_CPFCNPJ": "",
     }
+    initial_date = date(2010, 1, 1)
 
     def start_requests(self):
         if self.start_date:
             start_date = self.start_date
         else:
-            start_date = date(2010, 1, 1)
+            start_date = self.initial_date
+        self.logger.info(f"Data inicial: {start_date}")
         today = datetime.now().date()
 
         while start_date < today:
