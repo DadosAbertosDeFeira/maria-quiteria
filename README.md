@@ -8,12 +8,12 @@ Um projeto para libertar dados do município de [Feira de Santana](https://pt.wi
 
 | Base de dados | Fonte | Descrição        | Status           | Download |
 | ------------- | ------------- | ------------- |:-------------:|:-----:|
-| [Agenda](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/11453a30ae43a8ddb1421647c98cb104a1977409/scraper/scraper/spiders/citycouncil.py#L4) | Câmara Municipal | Coleta agenda da Câmara Municipal. | ✅ | 🔜 |
-| [Contratos](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/11453a30ae43a8ddb1421647c98cb104a1977409/scraper/scraper/spiders/cityhall.py#L109) | Prefeitura | Contratos realizados pela prefeitura entre 2016 e 2017. | ✅ | 🔜 |
-| [Diário Oficial](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/11453a30ae43a8ddb1421647c98cb104a1977409/scraper/scraper/spiders/gazette.py#L86) | Prefeitura/Câmara de Vereadores | Diário oficial do executivo e legislativo desde 2015. | ✅ | 🔜 |
-| [Diário Oficial (legado - antes de 2015)](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/11453a30ae43a8ddb1421647c98cb104a1977409/scraper/scraper/spiders/gazette.py#L8) | Prefeitura | Leis e decretos entre 1999 e 2015. | ✅ | 🔜 |
-| [Licitações](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/11453a30ae43a8ddb1421647c98cb104a1977409/scraper/scraper/spiders/cityhall.py#L7) | Prefeitura | Licitações realizadas pela prefeitura desde 2015. | ✅ | 🔜 |
-| [Pagamentos](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/11453a30ae43a8ddb1421647c98cb104a1977409/scraper/scraper/spiders/cityhall.py#L193) | Prefeitura | Pagamentos realizados pela prefeitura desde 2010. | ✅ | [Kaggle](https://www.kaggle.com/anapaulagomes/pagamentos-da-prefeitura-de-feira-de-santana) |
+| Agenda (`citycouncil.py`) | Câmara Municipal | Coleta agenda da Câmara Municipal. | ✅ | 🔜 |
+| Contratos (`cityhall.py`) | Prefeitura | Contratos realizados pela prefeitura entre 2016 e 2017. | ✅ | 🔜 |
+| Diário Oficial (`gazette.py`) | Prefeitura/Câmara de Vereadores | Diário oficial do executivo e legislativo desde 2015. | ✅ | 🔜 |
+| Diário Oficial (legado - antes de 2015) (`gazette.py`) | Prefeitura | Leis e decretos entre 1999 e 2015. | ✅ | 🔜 |
+| Licitações (`cityhall.py`) | Prefeitura | Licitações realizadas pela prefeitura desde 2015. | ✅ | 🔜 |
+| Pagamentos (`cityhall.py`) | Prefeitura | Pagamentos realizados pela prefeitura desde 2010. | ✅ | [Kaggle](https://www.kaggle.com/anapaulagomes/pagamentos-da-prefeitura-de-feira-de-santana) |
 
 ## Coleta
 
