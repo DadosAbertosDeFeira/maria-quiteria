@@ -126,7 +126,7 @@ class ContractsSpider(scrapy.Spider):
     initial_date = date(2010, 1, 1)
 
     def start_requests(self):
-        if self.start_date:
+        if hasattr(self, "start_date") and self.start_date:
             start_date = self.start_date
         else:
             start_date = self.initial_date
@@ -238,7 +238,7 @@ class PaymentsSpider(scrapy.Spider):
     initial_date = date(2010, 1, 1)
 
     def start_requests(self):
-        if self.start_date:
+        if hasattr(self, "start_date") and self.start_date:
             start_date = self.start_date
         else:
             start_date = self.initial_date
