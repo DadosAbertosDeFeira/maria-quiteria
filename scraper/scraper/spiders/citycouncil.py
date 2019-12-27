@@ -1,12 +1,13 @@
-from datetime import datetime
+from datetime import date, datetime
 
 import scrapy
 from scraper.items import CityCouncilAgendaItem
 
 
 class AgendaSpider(scrapy.Spider):
-    name = "agenda"
+    name = "citycouncil_agenda"
     start_urls = ["https://www.feiradesantana.ba.leg.br/agenda"]
+    initial_date = date(2010, 1, 1)
 
     @staticmethod
     def get_type(event_title):
@@ -21,6 +22,11 @@ class AgendaSpider(scrapy.Spider):
         return "not_found"
 
     def parse(self, response):
+        if hasattr(self, "start_date") and self.start_date:
+            start_date = self.start_date
+        else:
+            start_date = self.initial_date
+
         extracted_years = response.css("select#ano option ::text").extract()
         years = []
         for year in extracted_years:
@@ -30,19 +36,21 @@ class AgendaSpider(scrapy.Spider):
                 pass
 
         for year in range(min(years), max(years) + 1):
-            for month in range(1, 13):
-                url = (
-                    "https://www.feiradesantana.ba.leg.br/agenda"
-                    f"?mes={month}&ano={year}&Acessar=OK"
-                )
-                yield scrapy.Request(url=url, callback=self.parse_page)
+            if start_date.year <= year:
+                for month in range(1, 13):
+                    if start_date.month <= month:
+                        url = (
+                            "https://www.feiradesantana.ba.leg.br/agenda"
+                            f"?mes={month}&ano={year}&Acessar=OK"
+                        )
+                        yield scrapy.Request(url=url, callback=self.parse_page)
 
     def parse_page(self, response):
         event_details = response.css("div.feature-box")
         dates = response.xpath("//table/tbody/tr/td[1]/strong/text()").getall()
         event_titles = response.xpath("//table/tbody/tr/td[2]/p/strong/text()").getall()
 
-        for details, date, title in zip(event_details, dates, event_titles):
+        for details, event_date, title in zip(event_details, dates, event_titles):
             events = [
                 line.strip()
                 for line in details.css("p ::text").getall()
@@ -52,7 +60,7 @@ class AgendaSpider(scrapy.Spider):
             yield CityCouncilAgendaItem(
                 crawled_at=datetime.now(),
                 crawled_from=response.url,
-                date=date,
+                date=event_date,
                 details=" ".join(events),
                 title=title.strip(),
                 event_type=self.get_type(title),
