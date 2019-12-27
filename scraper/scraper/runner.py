@@ -15,6 +15,7 @@ def run_crawlers(start_date):
     process.crawl("cityhall_payments", start_date=start_date)
     process.crawl("cityhall_contracts", start_date=start_date)
     process.crawl("citycouncil_agenda", start_date=start_date)
+    process.crawl("gazettes", start_date=start_date)
     process.start()
 
 

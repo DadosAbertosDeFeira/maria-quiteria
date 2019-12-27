@@ -26,6 +26,7 @@ class AgendaSpider(scrapy.Spider):
             start_date = self.start_date
         else:
             start_date = self.initial_date
+        self.logger.info(f"Data inicial: {start_date}")
 
         extracted_years = response.css("select#ano option ::text").extract()
         years = []

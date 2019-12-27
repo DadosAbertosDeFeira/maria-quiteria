@@ -14,7 +14,7 @@ class LegacyGazetteSpider(scrapy.Spider):
     Example: http://www.feiradesantana.ba.gov.br/seadm/leis.asp?acao=ir&p=24&ano=2015
     """
 
-    name = "legacy_gazette"
+    name = "legacy_gazettes"
     start_urls = [
         f"http://www.feiradesantana.ba.gov.br/servicos.asp?"
         f"acao=ir&s=a&link=seadm/leis.asp&p=1&"
@@ -97,34 +97,45 @@ class ExecutiveAndLegislativeGazetteSpider(scrapy.Spider):
     handle_httpstatus_list = [302]
 
     def parse(self, response):
+        if hasattr(self, "start_date") and self.start_date:
+            start_date = self.start_date
+        else:
+            start_date = self.initial_date
+        self.logger.info(f"Data inicial: {start_date}")
+
         gazette_table = response.css(".style166")
         gazettes_links = gazette_table.xpath("a//@href").extract()
         dates = gazette_table.css("a::text").extract()
 
-        for url, date in zip(gazettes_links, dates):
-            edition = self.extract_edition(url)
-            power = self.extract_power(url)
-            power_id = self.powers[power]
+        for url, gazette_date in zip(gazettes_links, dates):
+            date_obj = datetime.strptime(gazette_date, "%d/%m/%Y")
+            if date_obj.date() == start_date:
+                edition = self.extract_edition(url)
+                power = self.extract_power(url)
+                power_id = self.powers[power]
 
-            gazette = dict(
-                date=date,
-                power=power,
-                url=response.urljoin(url),
-                file_url=response.urljoin(f"abrir.asp?edi={edition}&p={power_id}"),
-            )
+                gazette = dict(
+                    date=gazette_date,
+                    power=power,
+                    url=response.urljoin(url),
+                    file_url=response.urljoin(f"abrir.asp?edi={edition}&p={power_id}"),
+                )
 
-            yield Request(
-                gazette["url"], callback=self.parse_details, meta={"gazette": gazette}
-            )
+                yield Request(
+                    gazette["url"],
+                    callback=self.parse_details,
+                    meta={"gazette": gazette},
+                )
 
-        current_page_selector = "#pages ul li.current::text"
-        current_page = response.css(current_page_selector).extract_first()
-        next_page = int(current_page) + 1
-        next_page_url = response.urljoin(f"/?p={next_page}")
+        if hasattr(self, "start_date") is False:  # all gazettes
+            current_page_selector = "#pages ul li.current::text"
+            current_page = response.css(current_page_selector).extract_first()
+            next_page = int(current_page) + 1
+            next_page_url = response.urljoin(f"/?p={next_page}")
 
-        if next_page > self.last_page:
-            self.last_page = next_page
-            yield Request(next_page_url)
+            if next_page > self.last_page:
+                self.last_page = next_page
+                yield Request(next_page_url)
 
     def parse_details(self, response):
         gazette = response.meta["gazette"]
