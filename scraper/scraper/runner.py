@@ -5,19 +5,19 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
 
-def run_crawlers(start_date):
+def run_crawlers(start_from_date):
     process = CrawlerProcess(get_project_settings())
 
     # FIXME enable this when all spiders are ready
     # for spider in process.spider_loader.list():
-    #     process.crawl(spider, start_date=start_date)
+    #     process.crawl(spider, start_from_date=start_from_date)
     # TODO add flag to daily collect
 
-    process.crawl("cityhall_payments", start_date=start_date)
-    process.crawl("cityhall_contracts", start_date=start_date)
-    process.crawl("cityhall_bids", start_date=start_date)
-    process.crawl("citycouncil_agenda", start_date=start_date)
-    process.crawl("gazettes", start_date=start_date)
+    process.crawl("cityhall_payments", start_from_date=start_from_date)
+    process.crawl("cityhall_contracts", start_from_date=start_from_date)
+    process.crawl("cityhall_bids", start_from_date=start_from_date)
+    process.crawl("citycouncil_agenda", start_from_date=start_from_date)
+    process.crawl("gazettes", start_from_date=start_from_date)
     process.start()
 
 
@@ -28,9 +28,9 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     if args.all:
-        start_date = None
+        start_from_date = None
     else:
         yesterday = datetime.now() - timedelta(days=1)
-        start_date = yesterday.date()
+        start_from_date = yesterday.date()
 
-    run_crawlers(start_date)
+    run_crawlers(start_from_date)
