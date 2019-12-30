@@ -4,16 +4,27 @@ from datetime import date, datetime, timedelta
 import scrapy
 from scraper.items import CityHallBidItem, CityHallContractItem, CityHallPaymentsItem
 
-from .utils import identify_contract_id
+from . import BaseSpider
+from .utils import extract_param, identify_contract_id
 
 
-class BidsSpider(scrapy.Spider):
-    name = "bids"
+class BidsSpider(BaseSpider):
+    name = "cityhall_bids"
     start_urls = ["http://www.feiradesantana.ba.gov.br/seadm/licitacoes.asp"]
+    initial_date = date(2001, 1, 1)
+
+    def follow_this_date(self, url):
+        month_year = extract_param(url, "dt")
+        month_year = datetime.strptime(month_year, "%m-%Y")
+
+        match_month = month_year.month >= self.start_date.month
+        match_year = month_year.year >= self.start_date.year
+        return match_month and match_year
 
     def parse(self, response):
         urls = response.xpath("//table/tbody/tr/td[1]/div/a//@href").extract()
         base_url = "http://www.feiradesantana.ba.gov.br"
+        self.logger.info(f"Data inicial: {self.start_date}")
 
         for url in urls:
             if base_url not in url:
@@ -22,7 +33,9 @@ class BidsSpider(scrapy.Spider):
                     url = response.urljoin(f"{base_url}/{url}")
                 else:
                     url = response.urljoin(f"{base_url}/seadm/{url}")
-            yield response.follow(url, self.parse_page)
+
+            if self.collect_all or self.follow_this_date(url):
+                yield response.follow(url, self.parse_page)
 
     def parse_page(self, response):
         raw_modalities = response.xpath("//tr/td[1]/table/tr/td/text()").extract()
@@ -108,7 +121,7 @@ class BidsSpider(scrapy.Spider):
         return [date[1:] for date in raw_date]
 
 
-class ContractsSpider(scrapy.Spider):
+class ContractsSpider(BaseSpider):
     """Coleta contratos da página de contratos.
 
     http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=contratos
@@ -126,10 +139,7 @@ class ContractsSpider(scrapy.Spider):
     initial_date = date(2010, 1, 1)
 
     def start_requests(self):
-        if hasattr(self, "start_date") and self.start_date:
-            start_date = self.start_date
-        else:
-            start_date = self.initial_date
+        start_date = self.start_date
         self.logger.info(f"Data inicial: {start_date}")
         today = datetime.now().date()
 
@@ -219,7 +229,7 @@ class ContractsSpider(scrapy.Spider):
         return valid_details
 
 
-class PaymentsSpider(scrapy.Spider):
+class PaymentsSpider(BaseSpider):
     """Coleta pagamentos realizados.
 
     http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=despesa
@@ -238,10 +248,7 @@ class PaymentsSpider(scrapy.Spider):
     initial_date = date(2010, 1, 1)
 
     def start_requests(self):
-        if hasattr(self, "start_date") and self.start_date:
-            start_date = self.start_date
-        else:
-            start_date = self.initial_date
+        start_date = self.start_date
         self.logger.info(f"Data inicial: {start_date}")
         today = datetime.now().date()
 
