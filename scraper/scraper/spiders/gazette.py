@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 
 import scrapy
 from scraper.items import GazetteEventItem, LegacyGazetteItem
@@ -95,12 +95,16 @@ class ExecutiveAndLegislativeGazetteSpider(scrapy.Spider):
     powers = {"executivo": 1, "legislativo": 2}
     last_page = 1
     handle_httpstatus_list = [302]
+    initial_date = date(2015, 1, 1)
 
     def parse(self, response):
+        # FIXME
         if hasattr(self, "start_date") and self.start_date:
             start_date = self.start_date
+            all_dates = False
         else:
             start_date = self.initial_date
+            all_dates = True
         self.logger.info(f"Data inicial: {start_date}")
 
         gazette_table = response.css(".style166")
@@ -109,7 +113,7 @@ class ExecutiveAndLegislativeGazetteSpider(scrapy.Spider):
 
         for url, gazette_date in zip(gazettes_links, dates):
             date_obj = datetime.strptime(gazette_date, "%d/%m/%Y")
-            if date_obj.date() == start_date:
+            if date_obj.date() == start_date or all_dates:
                 edition = self.extract_edition(url)
                 power = self.extract_power(url)
                 power_id = self.powers[power]
