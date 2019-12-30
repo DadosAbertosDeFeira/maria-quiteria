@@ -3,8 +3,10 @@ from datetime import date, datetime
 import scrapy
 from scraper.items import CityCouncilAgendaItem
 
+from . import BaseSpider
 
-class AgendaSpider(scrapy.Spider):
+
+class AgendaSpider(BaseSpider):
     name = "citycouncil_agenda"
     start_urls = ["https://www.feiradesantana.ba.leg.br/agenda"]
     initial_date = date(2010, 1, 1)
@@ -22,11 +24,7 @@ class AgendaSpider(scrapy.Spider):
         return "not_found"
 
     def parse(self, response):
-        if hasattr(self, "start_date") and self.start_date:
-            start_date = self.start_date
-        else:
-            start_date = self.initial_date
-        self.logger.info(f"Data inicial: {start_date}")
+        self.logger.info(f"Data inicial: {self.start_date}")
 
         extracted_years = response.css("select#ano option ::text").extract()
         years = []
@@ -37,9 +35,9 @@ class AgendaSpider(scrapy.Spider):
                 pass
 
         for year in range(min(years), max(years) + 1):
-            if start_date.year <= year:
+            if self.start_date.year <= year:
                 for month in range(1, 13):
-                    if start_date.month <= month:
+                    if self.start_date.month <= month:
                         url = (
                             "https://www.feiradesantana.ba.leg.br/agenda"
                             f"?mes={month}&ano={year}&Acessar=OK"

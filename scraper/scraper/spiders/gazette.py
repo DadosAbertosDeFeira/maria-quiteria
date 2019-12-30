@@ -1,13 +1,13 @@
 from datetime import date, datetime
 
-import scrapy
 from scraper.items import GazetteEventItem, LegacyGazetteItem
 from scrapy import Request
 
+from . import BaseSpider
 from .utils import replace_query_param
 
 
-class LegacyGazetteSpider(scrapy.Spider):
+class LegacyGazetteSpider(BaseSpider):
     """Coleta diário oficial de Feira de Santana até 2015.
 
     Years: 1999 to 2015
@@ -86,7 +86,7 @@ class LegacyGazetteSpider(scrapy.Spider):
         return events, events_urls
 
 
-class ExecutiveAndLegislativeGazetteSpider(scrapy.Spider):
+class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
     """Coleta o Diário Oficial dos poderes executivo e legislativo."""
 
     name = "gazettes"
@@ -98,14 +98,7 @@ class ExecutiveAndLegislativeGazetteSpider(scrapy.Spider):
     initial_date = date(2015, 1, 1)
 
     def parse(self, response):
-        # FIXME
-        if hasattr(self, "start_date") and self.start_date:
-            start_date = self.start_date
-            all_dates = False
-        else:
-            start_date = self.initial_date
-            all_dates = True
-        self.logger.info(f"Data inicial: {start_date}")
+        self.logger.info(f"Data inicial: {self.start_date}")
 
         gazette_table = response.css(".style166")
         gazettes_links = gazette_table.xpath("a//@href").extract()
@@ -113,7 +106,7 @@ class ExecutiveAndLegislativeGazetteSpider(scrapy.Spider):
 
         for url, gazette_date in zip(gazettes_links, dates):
             date_obj = datetime.strptime(gazette_date, "%d/%m/%Y")
-            if date_obj.date() == start_date or all_dates:
+            if date_obj.date() >= self.start_date:
                 edition = self.extract_edition(url)
                 power = self.extract_power(url)
                 power_id = self.powers[power]
@@ -131,7 +124,7 @@ class ExecutiveAndLegislativeGazetteSpider(scrapy.Spider):
                     meta={"gazette": gazette},
                 )
 
-        if hasattr(self, "start_date") is False:  # all gazettes
+        if self.collect_all:
             current_page_selector = "#pages ul li.current::text"
             current_page = response.css(current_page_selector).extract_first()
             next_page = int(current_page) + 1

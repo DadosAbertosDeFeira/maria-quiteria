@@ -34,7 +34,7 @@ class BidsSpider(BaseSpider):
                 else:
                     url = response.urljoin(f"{base_url}/seadm/{url}")
 
-            if self.follow_this_date(url):
+            if self.collect_all or self.follow_this_date(url):
                 yield response.follow(url, self.parse_page)
 
     def parse_page(self, response):

@@ -8,16 +8,14 @@ from scrapy.utils.project import get_project_settings
 def run_crawlers(start_from_date):
     process = CrawlerProcess(get_project_settings())
 
-    # FIXME enable this when all spiders are ready
-    # for spider in process.spider_loader.list():
-    #     process.crawl(spider, start_from_date=start_from_date)
-    # TODO add flag to daily collect
-
     process.crawl("cityhall_payments", start_from_date=start_from_date)
     process.crawl("cityhall_contracts", start_from_date=start_from_date)
     process.crawl("cityhall_bids", start_from_date=start_from_date)
     process.crawl("citycouncil_agenda", start_from_date=start_from_date)
     process.crawl("gazettes", start_from_date=start_from_date)
+
+    if start_from_date is None:  # --all deve incluir páginas legadas
+        process.crawl("legacy_gazettes")
     process.start()
 
 
