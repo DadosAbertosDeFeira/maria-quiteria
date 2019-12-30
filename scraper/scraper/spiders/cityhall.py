@@ -4,16 +4,33 @@ from datetime import date, datetime, timedelta
 import scrapy
 from scraper.items import CityHallBidItem, CityHallContractItem, CityHallPaymentsItem
 
-from .utils import identify_contract_id
+from .utils import extract_param, identify_contract_id
 
 
 class BidsSpider(scrapy.Spider):
-    name = "bids"
+    name = "cityhall_bids"
     start_urls = ["http://www.feiradesantana.ba.gov.br/seadm/licitacoes.asp"]
+    initial_date = date(2001, 1, 1)
+
+    def _valid_date(self, url, start_date):
+        month_year = extract_param(url, "dt")
+        month_year = datetime.strptime(month_year, "%m-%Y")
+
+        match_month = month_year.month == start_date.month
+        match_year = month_year.year == start_date.year
+        return match_month and match_year
 
     def parse(self, response):
         urls = response.xpath("//table/tbody/tr/td[1]/div/a//@href").extract()
         base_url = "http://www.feiradesantana.ba.gov.br"
+
+        if hasattr(self, "start_date") and self.start_date:
+            start_date = self.start_date
+            all_bids = False
+        else:
+            start_date = self.initial_date
+            all_bids = True
+        self.logger.info(f"Data inicial: {start_date}")
 
         for url in urls:
             if base_url not in url:
@@ -22,7 +39,9 @@ class BidsSpider(scrapy.Spider):
                     url = response.urljoin(f"{base_url}/{url}")
                 else:
                     url = response.urljoin(f"{base_url}/seadm/{url}")
-            yield response.follow(url, self.parse_page)
+
+            if all_bids or self._valid_date(url, start_date):
+                yield response.follow(url, self.parse_page)
 
     def parse_page(self, response):
         raw_modalities = response.xpath("//tr/td[1]/table/tr/td/text()").extract()

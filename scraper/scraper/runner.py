@@ -11,9 +11,11 @@ def run_crawlers(start_date):
     # FIXME enable this when all spiders are ready
     # for spider in process.spider_loader.list():
     #     process.crawl(spider, start_date=start_date)
+    # TODO add flag to daily collect
 
     process.crawl("cityhall_payments", start_date=start_date)
     process.crawl("cityhall_contracts", start_date=start_date)
+    process.crawl("cityhall_bids", start_date=start_date)
     process.crawl("citycouncil_agenda", start_date=start_date)
     process.crawl("gazettes", start_date=start_date)
     process.start()
