@@ -16,8 +16,10 @@ NEWSPIDER_MODULE = "scraper.spiders"
 ROBOTSTXT_OBEY = True
 COOKIES_ENABLED = False
 EXTENSIONS = {
+    "scraper.extensions.SentryLogging": -1,
     "spidermon.contrib.scrapy.extensions.Spidermon": 500,
 }
+SENTRY_DSN = os.getenv("SENTRY_DSN", "")
 
 # pipelines
 ITEM_PIPELINES = {

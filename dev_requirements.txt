@@ -3,3 +3,4 @@ black==19.10b0
 flake8==3.7.9
 pre-commit
 pytest==5.2.2
+sentry-sdk==0.13.5
