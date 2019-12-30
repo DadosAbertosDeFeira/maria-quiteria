@@ -1,4 +1,6 @@
 import re
+import urllib.parse as urlparse
+from urllib.parse import parse_qs
 
 
 def replace_query_param(url, field, value):
@@ -10,3 +12,12 @@ def identify_contract_id(text):
     result = re.findall(CONTRACT_NUMBER_PATTERN, text)
     if result:
         return result[0]
+
+
+def extract_param(url, param):
+    parsed = urlparse.urlparse(url)
+    try:
+        value = parse_qs(parsed.query)[param]
+        return value[0]
+    except KeyError:
+        return

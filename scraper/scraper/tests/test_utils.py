@@ -1,6 +1,6 @@
 import pytest
 
-from ..spiders.utils import identify_contract_id, replace_query_param
+from ..spiders.utils import extract_param, identify_contract_id, replace_query_param
 
 
 @pytest.mark.parametrize(
@@ -55,3 +55,20 @@ def test_replace_query_parameter_from_a_url(old_url, field, value, new_url):
 )
 def test_identify_contract_ids(text, expected_contract_id):
     assert identify_contract_id(text) == expected_contract_id
+
+
+@pytest.mark.parametrize(
+    "url, param, value",
+    [
+        (
+            f"http://www.feiradesantana.ba.gov.br/seadm/servicos.asp?"
+            "id=2&s=a&link=seadm/licitacoes_pm.asp&cat=PMFS&dt=01-2019#links",
+            "dt",
+            "01-2019",
+        ),
+        ("http://www.ba.gov.br/servicos.asp?dt=01-2019#links", "dt", "01-2019"),
+        ("http://www.ba.gov.br/servicos.asp?dt=01-2019#links", "invalid", None),
+    ],
+)
+def test_extract_param(url, param, value):
+    assert extract_param(url, param) == value
