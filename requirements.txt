@@ -2,5 +2,5 @@ schematics==2.1.0
 scrapy==1.8.0
 sentry-sdk==0.13.5
 spidermon==1.11.0
-tika==1.22
+tika==1.23
 xlrd==1.2.0
