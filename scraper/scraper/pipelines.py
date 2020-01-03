@@ -8,7 +8,7 @@ from six.moves.urllib.parse import urlparse
 from tika import parser
 
 
-class ExtractPDFContentPipeline(FilesPipeline):
+class ExtractFileContentPipeline(FilesPipeline):
     def file_path(self, request, response=None, info=None):
         """Retorna onde o arquivo foi baixado.
 

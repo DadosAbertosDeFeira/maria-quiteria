@@ -23,7 +23,7 @@ SENTRY_DSN = os.getenv("SENTRY_DSN", "")
 
 # pipelines
 ITEM_PIPELINES = {
-    "scraper.pipelines.ExtractPDFContentPipeline": 100,
+    "scraper.pipelines.ExtractFileContentPipeline": 100,
     "spidermon.contrib.scrapy.pipelines.ItemValidationPipeline": 200,
 }
 FILES_STORE = f"{os.getcwd()}/data/"
