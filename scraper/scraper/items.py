@@ -5,6 +5,13 @@ class BaseItem(scrapy.Item):
     crawled_at = scrapy.Field()
     crawled_from = scrapy.Field()
 
+    def __repr__(self):
+        copy = self.deepcopy()
+        if copy.get("file_content"):
+            preview = copy["file_content"].strip()[:200]
+            copy["file_content"] = f"Preview: {preview}"
+        return super(BaseItem, copy).__repr__()
+
 
 class LegacyGazetteItem(BaseItem):
     title = scrapy.Field()
