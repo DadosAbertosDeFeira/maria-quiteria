@@ -8,7 +8,7 @@ class BaseItem(scrapy.Item):
     def __repr__(self):
         copy = self.deepcopy()
         if copy.get("file_content"):
-            preview = copy["file_content"][:200].strip()
+            preview = copy["file_content"].strip()[:200]
             copy["file_content"] = f"Preview: {preview}"
         return super(BaseItem, copy).__repr__()
 
