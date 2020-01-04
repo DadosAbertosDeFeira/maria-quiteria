@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import scrapy
 
 
@@ -7,7 +9,10 @@ class BaseSpider(scrapy.Spider):
     @property
     def start_date(self):
         if self.start_from_date:
-            picked_date = self.start_from_date
+            if isinstance(self.start_from_date, str):
+                picked_date = datetime.strptime(self.start_from_date, "%d/%m/%Y")
+            else:
+                picked_date = self.start_from_date
         else:
             picked_date = self.initial_date
 
