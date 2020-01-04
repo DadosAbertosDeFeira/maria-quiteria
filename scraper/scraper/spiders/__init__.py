@@ -11,6 +11,7 @@ class BaseSpider(scrapy.Spider):
         if self.start_from_date:
             if isinstance(self.start_from_date, str):
                 picked_date = datetime.strptime(self.start_from_date, "%d/%m/%Y")
+                picked_date = picked_date.date()
             else:
                 picked_date = self.start_from_date
         else:

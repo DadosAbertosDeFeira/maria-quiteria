@@ -57,7 +57,7 @@ class BidsSpider(BaseSpider):
             match = url_pattern.search(response.url)
             month, year = match.group(2).split("-")
 
-            yield CityHallBidItem(
+            item = CityHallBidItem(
                 crawled_at=datetime.now(),
                 crawled_from=response.url,
                 category=match.group(1).upper(),
@@ -67,8 +67,10 @@ class BidsSpider(BaseSpider):
                 history=history,
                 modality=modality,
                 date=date,
-                file_urls=[response.urljoin(document_url)],
             )
+            if document_url:
+                item["file_urls"] = [response.urljoin(document_url)]
+            yield item
 
     def _parse_descriptions(self, raw_descriptions):
         descriptions = []
@@ -189,16 +191,12 @@ class ContractsSpider(BaseSpider):
             starts_at = contract_and_date[1]
             details = self.clean_details(raw_details)
             document_url = raw_details.css("a.btn::attr(href)").get(default=None)
-            file_urls = []
-
-            if document_url:
-                file_urls = [f"{base_url}{document_url}"]
 
             contractor = details[1].split(" - ")
             contractor_document = contractor[0]
             contractor_name = contractor[1]
 
-            yield CityHallContractItem(
+            item = CityHallContractItem(
                 contract_id=contract_id,
                 starts_at=starts_at,
                 summary=details[0],
@@ -206,10 +204,12 @@ class ContractsSpider(BaseSpider):
                 contractor_name=contractor_name,
                 value=details[2],
                 ends_at=details[3],
-                file_urls=file_urls,
                 crawled_at=datetime.now(),
                 crawled_from=response.url,
             )
+            if document_url:
+                item["file_urls"] = [f"{base_url}{document_url}"]
+            yield item
 
     def clean_details(self, raw_details):
         labels = [
