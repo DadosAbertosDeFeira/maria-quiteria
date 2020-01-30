@@ -10,4 +10,5 @@ __pycache__
 *.json
 *.csv
 *.xls
+*.zip
 **/data/
