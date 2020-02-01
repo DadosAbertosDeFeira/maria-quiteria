@@ -1,7 +1,7 @@
 jinja2==2.10.3
 schematics==2.1.0
 scrapy==1.8.0
-sentry-sdk==0.13.5
+sentry-sdk==0.14.1
 spidermon==1.12.0
 tika==1.23
 xlrd==1.2.0
