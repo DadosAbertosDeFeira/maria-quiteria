@@ -14,7 +14,3 @@ class SpiderCloseMonitorSuite(MonitorSuite):
     monitors_finished_actions = [
         SendTelegramMessageSpiderFinished,
     ]
-
-    monitors_failed_actions = [
-        SendTelegramMessageSpiderFinished,
-    ]
