@@ -1,6 +1,13 @@
 import os
+import sys
 
-from .items import (
+import django
+
+sys.path.append(os.path.dirname(os.path.abspath(".")))  # isort:skip
+os.environ["DJANGO_SETTINGS_MODULE"] = "core.settings"
+django.setup()
+
+from .items import (  # noqa: E402 isort:skip
     CityCouncilAgendaItem,
     CityHallBidItem,
     CityHallContractItem,
@@ -8,6 +15,7 @@ from .items import (
     GazetteEventItem,
     LegacyGazetteItem,
 )
+
 
 # general
 BOT_NAME = "maria-quiteria"
@@ -25,6 +33,7 @@ SENTRY_DSN = os.getenv("SENTRY_DSN", "")
 ITEM_PIPELINES = {
     "scraper.pipelines.ExtractFileContentPipeline": 100,
     "spidermon.contrib.scrapy.pipelines.ItemValidationPipeline": 200,
+    "scraper.pipelines.CityCouncilAgendaPipeline": 300,
 }
 FILES_STORE = f"{os.getcwd()}/data/"
 KEEP_FILES = os.getenv("KEEP_FILES", False)

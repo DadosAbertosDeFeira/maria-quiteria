@@ -1,6 +1,8 @@
 import hashlib
 import os
+from datetime import datetime
 
+from scraper.items import CityCouncilAgendaItem
 from scraper.settings import FILES_STORE, KEEP_FILES
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.utils.python import to_bytes
@@ -35,4 +37,15 @@ class ExtractFileContentPipeline(FilesPipeline):
             item["file_content"] = raw["content"]
             if KEEP_FILES is False:
                 os.remove(file_path)
+        return item
+
+
+class CityCouncilAgendaPipeline(object):
+    def process_item(self, item, spider):
+        if not isinstance(item, CityCouncilAgendaItem):
+            return item
+
+        date_obj = datetime.strptime(item["date"], "%d/%m/%Y")
+        item["date"] = date_obj
+        item.save()
         return item
