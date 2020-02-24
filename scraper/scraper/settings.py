@@ -5,6 +5,8 @@ import configurations
 
 # torna o app django visível para o scrapy
 sys.path.append(os.path.dirname(os.path.abspath(".")))  # isort:skip
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+os.environ.setdefault("DJANGO_CONFIGURATION", "Dev")
 configurations.setup()
 
 

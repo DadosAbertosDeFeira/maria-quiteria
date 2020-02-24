@@ -93,3 +93,4 @@ class Dev(Common):
 
 class Prod(Common):
     SECRET_KEY = values.SecretValue()
+    ALLOWED_HOSTS = values.ListValue()

@@ -1,2 +1,2 @@
 release: PGOPTIONS= bin/release.sh
-web: PGOPTIONS=${PGOPTIONS_WEB} gunicorn core.wsgi --log-file -
+web: PGOPTIONS=${PGOPTIONS_WEB} gunicorn core.wsgi:application --log-file -
