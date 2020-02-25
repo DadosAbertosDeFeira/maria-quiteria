@@ -12,3 +12,7 @@ __pycache__
 *.xls
 *.zip
 **/data/
+.log
+
+# django
+static/
