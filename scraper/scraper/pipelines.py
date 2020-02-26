@@ -1,6 +1,7 @@
 import hashlib
 import os
 
+from datasets.models import CityCouncilAgenda
 from scraper.items import CityCouncilAgendaItem
 from scraper.settings import FILES_STORE, KEEP_FILES
 from scraper.spiders.utils import from_str_to_datetime
@@ -45,7 +46,12 @@ class CityCouncilAgendaPipeline(object):
         if not isinstance(item, CityCouncilAgendaItem):
             return item
 
-        date_formats = ["%d/%m/%Y", "%d/%m/%y"]
-        item["date"] = from_str_to_datetime(item["date"], date_formats).date()
-        item.save()
+        supported_formats = ["%d/%m/%Y", "%d/%m/%y"]
+        CityCouncilAgenda.objects.update_or_create(
+            date=from_str_to_datetime(item["date"], supported_formats).date(),
+            details=item["details"],
+            title=item["title"],
+            event_type=item["event_type"],
+        )
+
         return item

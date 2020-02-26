@@ -1,6 +1,4 @@
 import scrapy
-from datasets.models import CityCouncilAgenda
-from scrapy_djangoitem import DjangoItem
 
 
 class BaseItem(scrapy.Item):
@@ -35,13 +33,11 @@ class GazetteEventItem(BaseItem):
     file_content = scrapy.Field()
 
 
-class CityCouncilAgendaItem(BaseItem, DjangoItem):
+class CityCouncilAgendaItem(BaseItem):
     date = scrapy.Field()
     details = scrapy.Field()
     title = scrapy.Field()
     event_type = scrapy.Field()
-
-    django_model = CityCouncilAgenda
 
 
 class CityHallContractItem(BaseItem):

@@ -16,3 +16,6 @@ class CityCouncilAgenda(models.Model):
     details = models.TextField(null=True, blank=True)
     event_type = models.CharField(max_length=20, choices=EVENT_TYPE)
     title = models.CharField(max_length=100, null=True, blank=True)
+
+    def __repr__(self):
+        return f"{self.date} {self.event_type} {self.title} ({self.updated_at})"
