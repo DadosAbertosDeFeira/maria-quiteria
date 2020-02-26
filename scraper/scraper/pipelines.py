@@ -1,9 +1,9 @@
 import hashlib
 import os
-from datetime import datetime
 
 from scraper.items import CityCouncilAgendaItem
 from scraper.settings import FILES_STORE, KEEP_FILES
+from scraper.spiders.utils import from_str_to_datetime
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.utils.python import to_bytes
 from six.moves.urllib.parse import urlparse
@@ -45,7 +45,7 @@ class CityCouncilAgendaPipeline(object):
         if not isinstance(item, CityCouncilAgendaItem):
             return item
 
-        date_obj = datetime.strptime(item["date"], "%d/%m/%Y")
-        item["date"] = date_obj
+        date_formats = ["%d/%m/%Y", "%d/%m/%y"]
+        item["date"] = from_str_to_datetime(item["date"], date_formats).date()
         item.save()
         return item

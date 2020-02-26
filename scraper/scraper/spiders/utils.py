@@ -1,5 +1,6 @@
 import re
 import urllib.parse as urlparse
+from datetime import datetime
 from urllib.parse import parse_qs
 
 
@@ -21,3 +22,11 @@ def extract_param(url, param):
         return value[0]
     except KeyError:
         return
+
+
+def from_str_to_datetime(date_str, supported_formats):
+    for supported_format in supported_formats:
+        try:
+            return datetime.strptime(date_str, supported_format)
+        except ValueError:
+            pass
