@@ -33,7 +33,7 @@ Esta seção irá te guiar sobre como sugerir melhorias ao Maria Quiteria, inclu
 
 ## Criando pull requests
 
-Os processos aqui descritos possuem diversos objetivos
+Os processos aqui descritos possuem diversos objetivos:
 
 1. Manter a qualidade do Maria Quitéria
 2. Consertar problemas que são importantes para os usuários
