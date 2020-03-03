@@ -19,7 +19,7 @@ Os detalhes de como instalar e executar este projeto podem ser encontrados no [`
 Você encontrou um bug ?
 Esta seção irá te guiar sobre como você deve agir para reportar um Bug no Maria Quitéria. Seguir estas etapas ajuda os mantenedores do projeto e a comunidade a entender o que aconteceu, reproduzir o erro e encontrar a solução.
 
-- Bugs são rastreados através de [Github issues](https://guides.github.com/features/issues/) verifique que nenhuma issue foi criada por outro usuário reportando o mesmo erro.
+- Bugs são rastreados através de [_issues_ no GitHub](https://guides.github.com/features/issues/), verifique que nenhuma _issue_ foi criada por outro usuário reportando o mesmo erro.
 - Crie uma issue explicando o problema e adicionando novas informações detalhadas que ajudem os mantenedores do projeto a reproduzir o problema
 
 ## Sugerindo melhorias
