@@ -29,7 +29,7 @@ Esta seção irá te guiar sobre como sugerir melhorias ao Maria Quiteria, inclu
 
 - Discuta sobre a sua sugestão em nosso [grupo no Telegram](https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg) com outros participantes e mantenedores do projeto
 - Sugestões de melhoria são rastreados através de [Github issues](https://guides.github.com/features/issues/) verifique que nenhuma issue foi criada por outro usuário com a mesma sugestão.
-- Crie sua issue, com linguagem clara, e com o máximo de detalhes explicando todas as suas sugestões de melhoria para o repositório .
+- Crie sua issue, com linguagem clara, e com o máximo de detalhes explicando todas as suas sugestões de melhoria para o repositório.
 
 ## Criando pull requests
 
