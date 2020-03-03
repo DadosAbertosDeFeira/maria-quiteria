@@ -27,7 +27,7 @@ Esta seção irá te guiar sobre como você deve agir para reportar um Bug no Ma
 Esta seção irá te guiar sobre como sugerir melhorias ao Maria Quiteria, incluindo novas funcionalidades. Quando está criando uma sugestão de melhoria, por favor inclua o máximo de detalhes possíveis.
 
 - Discuta sobre a sua sugestão em nosso [grupo no Telegram](https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg) com outros participantes e mantenedores do projeto
-- Sugestões de melhoria são rastreados através de [Github issues](https://guides.github.com/features/issues/) verifique que nenhuma issue foi criada por outro usuário com a mesma sugestão.
+- Sugestões de melhoria são rastreados através de [_issue_](https://guides.github.com/features/issues/) e [_pull requests_](https://guides.github.com/activities/hello-world/#pr) no GitHub, verifique que nenhuma _issue_ ou _pull request_ foi criada por outro usuário com a mesma sugestão.
 - Crie sua issue, com linguagem clara, e com o máximo de detalhes explicando todas as suas sugestões de melhoria para o repositório.
 
 ## Criando pull requests
