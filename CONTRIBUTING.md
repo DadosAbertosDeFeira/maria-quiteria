@@ -40,7 +40,7 @@ Os processos aqui descritos possuem diversos objetivos:
 3. Engajar a comunidade a trabalhar pelo Maria Quitéria
 4. Permitir a sustentabilidade do sistema de revisão de contribuições pelos mantenedores
 
-Siga as seguintes etapas para ter a sua contribuição neste repositório consideradas
+Siga as seguintes etapas para ter a sua contribuição neste repositório consideradas:
 
 - Use o tempo presente ("Adiciona funcionalidade" e não "Adicionada a funcionalidade")
 - Atualize o README.md com os detalhes da mudança caso esta inclua uma nova base de dados ou um novo comando na CLI
