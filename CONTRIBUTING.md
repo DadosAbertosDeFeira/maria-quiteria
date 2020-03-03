@@ -29,56 +29,12 @@ Esta seção irá te guiar sobre como sugerir melhorias ao Maria Quiteria, inclu
 
 - Discuta sobre a sua sugestão em nosso [grupo no Telegram](https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg) com outros participantes e mantenedores do projeto
 - Sugestões de melhoria são rastreados através de [Github issues](https://guides.github.com/features/issues/) verifique que nenhuma issue foi criada por outro usuário com a mesma sugestão.
-- Crie sua issue, com linguagem clara, e com o máximo de detalhes explicando todas as suas sugestões de melhoria para o repositório.
+- Crie sua _issue_ ou _pull request_, com linguagem clara, e com o máximo de detalhes explicando todas as suas sugestões de melhoria para o repositório.
 
 ## Criando pull requests
-
-Os processos aqui descritos possuem diversos objetivos:
-
-1. Manter a qualidade do Maria Quitéria
-2. Consertar problemas que são importantes para os usuários
-3. Engajar a comunidade a trabalhar pelo Maria Quitéria
-4. Permitir a sustentabilidade do sistema de revisão de contribuições pelos mantenedores
 
 Siga as seguintes etapas para ter a sua contribuição neste repositório consideradas
 
 - Use o tempo presente ("Adiciona funcionalidade" e não "Adicionada a funcionalidade")
 - Atualize o README.md com os detalhes da mudança caso esta inclua uma nova base de dados ou um novo comando na CLI
-
-### O básico do Github
-
-1. Dê um fork neste repositório
-
-Ao lado direito da página inicial do repositório há um botão escrito Fork.
-
-2. Clone o fork do seu repositório
-
-```console
-$ git clone http://github.com/<SEU-USERNAME-NO-GITHUB>/maria-quiteria.git
-```
-
-3. Crie um branch com a funcionalidade
-
-```console
-$ git checkout -b <NOVA-FUNCIONALIDADE>
-```
-
-4. Faça o que você faz de melhor
-
-Agora é a sua hora de brilhar e escrever um bom código que irá fazer este projeto ficar em outro nível
-
-5. Dê um commit de suas mudanças
-
-```console
-$ git commit -m 'Minha excelente contribuição'
-```
-
-6. Dê um push da sua branch no seu fork
-
-```console
-$ git push origin <NOVA-FUNCIONALIDADE>
-```
-
-7. Crie um novo Pull Request
-
-A partir da página do seu fork clique no botão para abrir uma nova pull request.
+- Quando necessários, adicione comentários e testes para as novas funcionalidades implementadas
