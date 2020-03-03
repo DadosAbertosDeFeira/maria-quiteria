@@ -1,23 +1,37 @@
 # Guia de contribuição
 
+Ficamos muito felizes que você está lendo este guia de contribuição, sempre precisamos
+de pessoas voluntárias que acreditem na ideia e queiram contribuir com o projeto.
+
+Se você ainda não fez isso, junte-se também a nós [nosso grupo aberto do Telegram](https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg)
+e participe das discussões. Não hesite em nos procurar para tirar todas as suas dúvidas.
+
 ## Antes de começar
 
-Ficamos muito felizes que você está lendo este guia de contribuição, sempre precisamos de desenvolvedores voluntários que acreditem na ideia e queiram contribuir com o projeto.
+Aqui estão alguns recursos importantes que você deve estar ciente antes de começar:
 
-Se você ainda não fez isso, junte-se também a nós [nosso grupo aberto do Telegram](https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg) e participe das discussões. Não hesite em nos procurar para tirar todas as suas dúvidas.
+- [Manual de dados abertos para desenvolvedores](https://www.w3c.br/pub/Materiais/PublicacoesW3C/manual_dados_abertos_desenvolvedores_web.pdf)
+te explicará um pouco sobre o que são e os principais conceitos por trás dos dados abertos.
 
-Aqui estão alguns importantes recursos que você deve estar ciente antes de começar:
+- Nossos [projetos](https://github.com/DadosAbertosDeFeira/maria-quiteria/projects),
+são um conjunto de funcionalidades e melhorias que queremos desenvolver nesse repositório.
+Caso não tenha nada que seja a sua praia, você pode dar uma olhada nos
+[projetos gerais](https://github.com/orgs/DadosAbertosDeFeira/projects) do projeto.
 
-- [Manual de dados abertos para desenvolvedores](https://www.w3c.br/pub/Materiais/PublicacoesW3C/manual_dados_abertos_desenvolvedores_web.pdf) te explicará um pouco sobre o que são dados abertos.
+- No [nosso Trello](https://trello.com/b/E8v20MFs/dados-abertos-de-feira) você pode
+acompanhar o que a comunidade em geral vem trabalhando. Lá você encontrá coisas desde
+fotografia até pedidos de acesso a informação.
 
-Não possuímos um roadmap público, mas você pode acompanhar o que a comunidade vem trabalhando através do [nosso Trello](https://trello.com/b/E8v20MFs/dados-abertos-de-feira)
-
-Os detalhes de como instalar e executar este projeto podem ser encontrados no [`README.md`](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/master/README.md)
+Os detalhes de como instalar e executar este projeto podem ser encontrados no
+[`README.md`](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/master/README.md).
 
 ## Reportando bugs
 
-Você encontrou um bug ?
-Esta seção irá te guiar sobre como você deve agir para reportar um Bug no Maria Quitéria. Seguir estas etapas ajuda os mantenedores do projeto e a comunidade a entender o que aconteceu, reproduzir o erro e encontrar a solução.
+Você encontrou um bug?
+
+Esta seção irá te guiar sobre como você deve agir para reportar um Bug no Maria Quitéria.
+Seguir estas etapas ajuda os mantenedores do projeto e a comunidade a entender o que
+aconteceu, como reproduzir o erro e encontrar a solução.
 
 - Bugs são rastreados através de [_issues_ no GitHub](https://guides.github.com/features/issues/), verifique que nenhuma _issue_ foi criada por outro usuário reportando o mesmo erro.
 - Crie uma issue explicando o problema e adicionando novas informações detalhadas que ajudem os mantenedores do projeto a reproduzir o problema
@@ -43,6 +57,7 @@ Siga as seguintes etapas para ter a sua contribuição neste repositório consid
 
 - Use o tempo presente ("Adiciona funcionalidade" e não "Adicionada a funcionalidade")
 - Atualize o `README.md` com os detalhes da mudança caso esta inclua uma nova base de dados ou um novo comando na CLI
+- Quando necessários, adicione comentários e testes para as novas funcionalidades implementadas
 
 ### O básico do GitHub
 
