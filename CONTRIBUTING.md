@@ -12,7 +12,7 @@ Aqui estão alguns importantes recursos que você deve estar ciente antes de com
 
 Não possuímos um roadmap público, mas você pode acompanhar o que a comunidade vem trabalhando através do [nosso Trello](https://trello.com/b/E8v20MFs/dados-abertos-de-feira)
 
-Os detalhes de como instalar e executar este projeto podem ser encontrados no [README.md](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/master/README.md)
+Os detalhes de como instalar e executar este projeto podem ser encontrados no [`README.md`](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/master/README.md)
 
 ## Reportando bugs
 
