@@ -42,7 +42,7 @@ Os processos aqui descritos possuem diversos objetivos:
 Siga as seguintes etapas para ter a sua contribuição neste repositório consideradas:
 
 - Use o tempo presente ("Adiciona funcionalidade" e não "Adicionada a funcionalidade")
-- Atualize o README.md com os detalhes da mudança caso esta inclua uma nova base de dados ou um novo comando na CLI
+- Atualize o `README.md` com os detalhes da mudança caso esta inclua uma nova base de dados ou um novo comando na CLI
 
 ### O básico do Github
 
