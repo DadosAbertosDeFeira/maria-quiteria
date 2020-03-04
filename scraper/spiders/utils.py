@@ -30,3 +30,7 @@ def from_str_to_datetime(date_str, supported_formats):
             return datetime.strptime(date_str, supported_format)
         except ValueError:
             pass
+
+
+def from_str_to_date(date_str, supported_formats):
+    return from_str_to_datetime(date_str, supported_formats).date()

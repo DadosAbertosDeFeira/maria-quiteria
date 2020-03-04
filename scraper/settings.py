@@ -1,16 +1,6 @@
 import os
-import sys
 
-import configurations
-
-# torna o app django visível para o scrapy
-sys.path.append(os.path.dirname(os.path.abspath(".")))  # isort:skip
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
-os.environ.setdefault("DJANGO_CONFIGURATION", "Dev")
-configurations.setup()
-
-
-from .items import (  # noqa: E402 isort:skip
+from .items import (
     CityCouncilAgendaItem,
     CityHallBidItem,
     CityHallContractItem,
@@ -18,7 +8,6 @@ from .items import (  # noqa: E402 isort:skip
     GazetteEventItem,
     LegacyGazetteItem,
 )
-
 
 # general
 BOT_NAME = "maria-quiteria"
@@ -36,7 +25,6 @@ SENTRY_DSN = os.getenv("SENTRY_DSN", "")
 ITEM_PIPELINES = {
     "scraper.pipelines.ExtractFileContentPipeline": 100,
     "spidermon.contrib.scrapy.pipelines.ItemValidationPipeline": 200,
-    "scraper.pipelines.CityCouncilAgendaPipeline": 300,
 }
 FILES_STORE = f"{os.getcwd()}/data/"
 KEEP_FILES = os.getenv("KEEP_FILES", False)

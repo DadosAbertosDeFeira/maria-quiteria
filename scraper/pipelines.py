@@ -1,10 +1,7 @@
 import hashlib
 import os
 
-from datasets.models import CityCouncilAgenda
-from scraper.items import CityCouncilAgendaItem
 from scraper.settings import FILES_STORE, KEEP_FILES
-from scraper.spiders.utils import from_str_to_datetime
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.utils.python import to_bytes
 from six.moves.urllib.parse import urlparse
@@ -38,20 +35,4 @@ class ExtractFileContentPipeline(FilesPipeline):
             item["file_content"] = raw["content"]
             if KEEP_FILES is False:
                 os.remove(file_path)
-        return item
-
-
-class CityCouncilAgendaPipeline(object):
-    def process_item(self, item, spider):
-        if not isinstance(item, CityCouncilAgendaItem):
-            return item
-
-        supported_formats = ["%d/%m/%Y", "%d/%m/%y"]
-        CityCouncilAgenda.objects.update_or_create(
-            date=from_str_to_datetime(item["date"], supported_formats).date(),
-            details=item["details"],
-            title=item["title"],
-            event_type=item["event_type"],
-        )
-
         return item

@@ -84,14 +84,28 @@ def test_extract_param(url, param, value):
 @pytest.mark.parametrize(
     "datetime_str,expected_obj",
     [
-        ("26/02/20", datetime(2020, 2, 26)),
-        ("26/02/2020", datetime(2020, 2, 26)),
         ("26/02/2020 19:28", datetime(2020, 2, 26, 19, 28)),
         ("26/02/2020 19:28:00", None),
+        ("26/02/2020", None),
         ("26.02.20", None),
     ],
 )
 def test_possible_datetime_formats(datetime_str, expected_obj):
-    formats = ["%d/%m/%Y", "%d/%m/%y", "%d/%m/%Y %H:%M"]
+    formats = ["%d/%m/%Y %H:%M"]
+
+    assert from_str_to_datetime(datetime_str, formats) == expected_obj
+
+
+@pytest.mark.parametrize(
+    "datetime_str,expected_obj",
+    [
+        ("26/02/20", datetime(2020, 2, 26)),
+        ("26/02/2020", datetime(2020, 2, 26)),
+        ("26/02/2020 19:28", None),
+        ("26.02.20", None),
+    ],
+)
+def test_possible_date_formats(datetime_str, expected_obj):
+    formats = ["%d/%m/%Y", "%d/%m/%y"]
 
     assert from_str_to_datetime(datetime_str, formats) == expected_obj
