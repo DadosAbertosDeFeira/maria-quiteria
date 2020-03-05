@@ -55,19 +55,8 @@ class Common(Configuration):
 
     WSGI_APPLICATION = "core.wsgi.application"
 
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql_psycopg2",
-            "NAME": "mariaquiteria",
-            "USER": "myprojectuser",
-            "PASSWORD": "password",
-            "HOST": "localhost",
-            "PORT": "",
-        }
-    }
-
-    db_from_env = dj_database_url.config()
-    DATABASES["default"].update(db_from_env)
+    default_db = "sqlite:///" + os.path.join(BASE_DIR, "db.sqlite3")
+    DATABASES = {"default": dj_database_url.config(default=default_db)}
 
     AUTH_PASSWORD_VALIDATORS = [
         {
