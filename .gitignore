@@ -5,6 +5,7 @@ __pycache__
 .vscode
 .env
 .pytest_cache
+*.log
 
 # data
 *.json
@@ -12,3 +13,7 @@ __pycache__
 *.xls
 *.zip
 **/data/
+*.sqlite*
+
+# django
+static/

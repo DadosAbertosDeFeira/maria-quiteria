@@ -1,6 +1,6 @@
 import re
-import urllib.parse as urlparse
-from urllib.parse import parse_qs
+from datetime import datetime
+from urllib.parse import parse_qs, urlparse
 
 
 def replace_query_param(url, field, value):
@@ -15,9 +15,21 @@ def identify_contract_id(text):
 
 
 def extract_param(url, param):
-    parsed = urlparse.urlparse(url)
+    parsed = urlparse(url)
     try:
         value = parse_qs(parsed.query)[param]
         return value[0]
     except KeyError:
         return
+
+
+def from_str_to_datetime(date_str, supported_formats):
+    for supported_format in supported_formats:
+        try:
+            return datetime.strptime(date_str, supported_format)
+        except ValueError:
+            pass
+
+
+def from_str_to_date(date_str, supported_formats):
+    return from_str_to_datetime(date_str, supported_formats).date()
