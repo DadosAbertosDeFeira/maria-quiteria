@@ -5,6 +5,7 @@ from .items import (
     CityHallBidItem,
     CityHallContractItem,
     CityHallPaymentsItem,
+    EmployeesItem,
     GazetteEventItem,
     LegacyGazetteItem,
 )
@@ -43,6 +44,7 @@ SPIDERMON_VALIDATION_MODELS = {
     CityHallContractItem: "scraper.validators.CityHallContractItem",
     CityHallBidItem: "scraper.validators.CityHallBidItem",
     CityHallPaymentsItem: "scraper.validators.CityHallPaymentsItem",
+    EmployeesItem: "scraper.validators.EmployeesItem",
 }
 
 # monitoring
@@ -60,3 +62,7 @@ SPIDERMON_SENTRY_ENVIRONMENT_TYPE = os.getenv(
     "SPIDERMON_SENTRY_ENVIRONMENT_TYPE", "Prod"
 )
 SPIDERMON_SENTRY_FAKE = os.getenv("SPIDERMON_SENTRY_FAKE", False)
+
+USER_AGENT = (
+    "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:73.0) Gecko/20100101 Firefox/73.0"
+)
