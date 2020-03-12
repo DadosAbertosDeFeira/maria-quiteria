@@ -33,3 +33,37 @@ def from_str_to_datetime(date_str, supported_formats):
 
 def from_str_to_date(date_str, supported_formats):
     return from_str_to_datetime(date_str, supported_formats).date()
+
+
+def currency_from_str_to_float(money):
+    """
+    Parser salary with the following pattern:
+    - R$ 788,00
+    - R$ 2.109,74
+    - R$ 0,00
+    To:
+    - 788.00
+    - 2109.74
+    - 0.00
+    """
+    money = re.sub(r"R[$]\s+", "", money)
+    money = money.replace(".", "").replace(",", ".")
+    return float(money)
+
+
+def months_and_years(start_date, end_date):
+    pairs = []
+    for year in range(start_date.year, end_date.year + 1):
+        for month in range(1, 13):
+            if start_date.year == end_date.year:
+                if start_date.month < month <= end_date.month:
+                    pairs.append((month, year))
+            elif year == start_date.year:
+                if month > start_date.month:
+                    pairs.append((month, year))
+            elif year == end_date.year:
+                if month <= end_date.month:
+                    pairs.append((month, year))
+            elif year not in (start_date.year, end_date.year):
+                pairs.append((month, year))
+    return pairs

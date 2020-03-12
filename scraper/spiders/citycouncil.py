@@ -2,6 +2,7 @@ from datetime import date, datetime
 
 import scrapy
 from scraper.items import CityCouncilAgendaItem
+from scraper.spiders.utils import from_str_to_datetime
 
 from . import BaseSpider
 
@@ -55,6 +56,9 @@ class AgendaSpider(BaseSpider):
                 for line in details.css("p ::text").getall()
                 if line.strip() != ""
             ]
+
+            supported_formats = ["%d/%m/%Y", "%d/%m/%y"]
+            event_date = from_str_to_datetime(event_date, supported_formats).date()
 
             yield CityCouncilAgendaItem(
                 crawled_at=datetime.now(),

@@ -1,9 +1,10 @@
 from datetime import date, datetime
 
 import scrapy
-from scraper.items import EmployeesItem
+from scraper.items import EmployeeItem
 
 from . import BaseSpider
+from .utils import currency_from_str_to_float, from_str_to_datetime, months_and_years
 
 
 class EmployeesSpider(BaseSpider):
@@ -99,20 +100,35 @@ class EmployeesSpider(BaseSpider):
                 for field, column in zip(fields, columns):
                     extracted_data[field] = column.css("::text").extract_first()
 
-                yield EmployeesItem(
+                if extracted_data["ingresso_ou_admissao"]:
+                    supported_formats = ["%d/%m/%Y", "%d/%m/%y"]
+                    admission = from_str_to_datetime(
+                        extracted_data["ingresso_ou_admissao"], supported_formats
+                    ).date()
+                else:
+                    admission = extracted_data["ingresso_ou_admissao"]
+                base_salary = currency_from_str_to_float(extracted_data["salario_base"])
+                benefits_salary = currency_from_str_to_float(
+                    extracted_data["salario_vantagens"]
+                )
+                bonus_salary = currency_from_str_to_float(
+                    extracted_data["salario_gratificacao"]
+                )
+
+                yield EmployeeItem(
                     crawled_at=datetime.now(),
                     crawled_from=response.url,
                     agency=extracted_data["orgao"],
-                    month=extracted_data["mes"],
-                    year=extracted_data["ano"],
+                    month=int(extracted_data["mes"]),
+                    year=int(extracted_data["ano"]),
                     name=extracted_data["nome"],
                     registration_number=extracted_data["matricula"],
                     condition=extracted_data["tipo_servidor"],
                     role=extracted_data["cargo"],
-                    base_salary=extracted_data["salario_base"],
-                    benefits_salary=extracted_data["salario_vantagens"],
-                    bonus_salary=extracted_data["salario_gratificacao"],
-                    workload=extracted_data["carga_horaria"],
+                    base_salary=base_salary,
+                    benefits_salary=benefits_salary,
+                    bonus_salary=bonus_salary,
+                    workload=int(extracted_data["carga_horaria"]),
                     status=extracted_data["situacao"],
-                    admission=extracted_data["ingresso_ou_admissao"],
+                    admission=admission,
                 )
