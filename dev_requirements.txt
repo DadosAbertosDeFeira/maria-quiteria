@@ -3,3 +3,4 @@ black==19.10b0
 flake8==3.7.9
 pre-commit
 pytest==5.3.5
+pytest-django==3.8.0

@@ -3,6 +3,7 @@ from schematics.types import (
     DateTimeType,
     DateType,
     DictType,
+    FloatType,
     IntType,
     ListType,
     StringType,
@@ -83,3 +84,19 @@ class CityHallPaymentsItem(BaseModel):
     subfunction = StringType()
     type_of_process = StringType()
     resource = StringType()
+
+
+class EmployeeItem(BaseModel):
+    agency = StringType(required=True)
+    month = IntType(required=True)
+    year = IntType(required=True)
+    name = StringType(required=True)
+    registration_number = StringType(required=True)
+    condition = StringType()
+    role = StringType()
+    base_salary = FloatType(required=True)
+    benefits_salary = FloatType()
+    bonus_salary = FloatType()
+    workload = IntType()
+    status = StringType()
+    admission = DateType()

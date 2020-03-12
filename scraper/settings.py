@@ -5,7 +5,7 @@ from .items import (
     CityHallBidItem,
     CityHallContractItem,
     CityHallPaymentsItem,
-    EmployeesItem,
+    EmployeeItem,
     GazetteEventItem,
     LegacyGazetteItem,
 )
@@ -36,7 +36,6 @@ HTTPCACHE_EXPIRATION_SECS = 86400  # 24 horas
 
 # testing
 SPIDERMON_ENABLED = True
-SPIDERMON_VALIDATION_ADD_ERRORS_TO_ITEMS = True
 SPIDERMON_VALIDATION_MODELS = {
     LegacyGazetteItem: "scraper.validators.LegacyGazetteItem",
     GazetteEventItem: "scraper.validators.GazetteEventItem",
@@ -44,7 +43,7 @@ SPIDERMON_VALIDATION_MODELS = {
     CityHallContractItem: "scraper.validators.CityHallContractItem",
     CityHallBidItem: "scraper.validators.CityHallBidItem",
     CityHallPaymentsItem: "scraper.validators.CityHallPaymentsItem",
-    EmployeesItem: "scraper.validators.EmployeesItem",
+    EmployeeItem: "scraper.validators.EmployeeItem",
 }
 
 # monitoring

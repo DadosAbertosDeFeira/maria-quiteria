@@ -80,3 +80,19 @@ class CityHallPaymentsItem(BaseItem):
     subfunction = scrapy.Field()
     type_of_process = scrapy.Field()
     resource = scrapy.Field()
+
+
+class EmployeeItem(BaseItem):
+    agency = scrapy.Field()
+    month = scrapy.Field()
+    year = scrapy.Field()
+    name = scrapy.Field()
+    registration_number = scrapy.Field()
+    condition = scrapy.Field()
+    role = scrapy.Field()
+    base_salary = scrapy.Field()
+    benefits_salary = scrapy.Field()
+    bonus_salary = scrapy.Field()
+    workload = scrapy.Field()
+    status = scrapy.Field()
+    admission = scrapy.Field()
