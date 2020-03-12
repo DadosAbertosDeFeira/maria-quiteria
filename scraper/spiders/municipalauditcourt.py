@@ -45,27 +45,13 @@ class EmployeesSpider(BaseSpider):
         start_date = self.start_date
         self.logger.info(f"Data inicial: {start_date}")
 
-        if start_date == self.initial_date:  # coleta desde o início
-            today = datetime.now().date()
-            for year in range(start_date.year, today.year + 1):
-                for month in range(start_date.month, 13):
-                    for entitity_id, entitity_name in self.entities.items():
-                        data = self.data.copy()
-                        data["entidades"] = entitity_id
-                        data["ano"] = str(year)
-                        data["mes"] = str(month)
-                        meta = {"data": data, "agency": entitity_name}
-                        yield scrapy.FormRequest(
-                            self.url, formdata=data, callback=self.parse, meta=meta
-                        )
-        else:
-            month = start_date.month
-            year = start_date.year
+        today = datetime.now().date()
+        for month, year in months_and_years(start_date, today):
             for entitity_id, entitity_name in self.entities.items():
                 data = self.data.copy()
                 data["entidades"] = entitity_id
-                data["ano"] = str(year)
-                data["mes"] = str(month)
+                data["ano"] = str(start_date.year)
+                data["mes"] = str(start_date.month)
                 meta = {"data": data, "agency": entitity_name}
                 yield scrapy.FormRequest(
                     self.url, formdata=data, callback=self.parse, meta=meta
