@@ -1,10 +1,10 @@
 from datetime import date, datetime
 
-from scraper.items import GazetteEventItem, LegacyGazetteItem
+from scraper.items import GazetteItem, LegacyGazetteItem
 from scrapy import Request
 
 from . import BaseSpider
-from .utils import replace_query_param
+from .utils import from_str_to_date, replace_query_param
 
 
 class LegacyGazetteSpider(BaseSpider):
@@ -175,9 +175,10 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
                     meta={"gazette": gazette},
                 )
             else:
+                supported_formats = ["%d/%m/%Y", "%d/%m/%y"]
                 for event in gazette["events"]:
-                    gazette_item = GazetteEventItem(
-                        date=gazette["date"],
+                    gazette_item = GazetteItem(
+                        date=from_str_to_date(gazette["date"], supported_formats),
                         power=gazette["power"],
                         year_and_edition=gazette["year_and_edition"],
                         event_title=event["title"],

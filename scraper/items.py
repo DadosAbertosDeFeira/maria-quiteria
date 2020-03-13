@@ -22,7 +22,7 @@ class LegacyGazetteItem(BaseItem):
     file_content = scrapy.Field()
 
 
-class GazetteEventItem(BaseItem):
+class GazetteItem(BaseItem):
     date = scrapy.Field()
     power = scrapy.Field()
     year_and_edition = scrapy.Field()

@@ -25,8 +25,8 @@ class LegacyGazetteItem(BaseModel):
     file_content = StringType()
 
 
-class GazetteEventItem(BaseModel):
-    date = DateType(formats=("%d/%m/%Y", "%d/%m/%y"))
+class GazetteItem(BaseModel):
+    date = DateType()
     power = StringType(required=True)
     year_and_edition = StringType(required=True)
     event_title = StringType(required=True)
@@ -37,7 +37,7 @@ class GazetteEventItem(BaseModel):
 
 
 class CityCouncilAgendaItem(BaseModel):
-    date = DateType(formats=("%d/%m/%Y", "%d/%m/%y"))
+    date = DateType()
     details = StringType()
     title = StringType(required=True)
     event_type = StringType(required=True)

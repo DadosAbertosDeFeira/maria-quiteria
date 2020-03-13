@@ -5,7 +5,7 @@ from .items import (
     CityHallBidItem,
     CityHallContractItem,
     CityHallPaymentsItem,
-    GazetteEventItem,
+    GazetteItem,
     LegacyGazetteItem,
 )
 
@@ -38,7 +38,7 @@ SPIDERMON_ENABLED = True
 SPIDERMON_VALIDATION_ADD_ERRORS_TO_ITEMS = True
 SPIDERMON_VALIDATION_MODELS = {
     LegacyGazetteItem: "scraper.validators.LegacyGazetteItem",
-    GazetteEventItem: "scraper.validators.GazetteEventItem",
+    GazetteItem: "scraper.validators.GazetteItem",
     CityCouncilAgendaItem: "scraper.validators.CityCouncilAgendaItem",
     CityHallContractItem: "scraper.validators.CityHallContractItem",
     CityHallBidItem: "scraper.validators.CityHallBidItem",
