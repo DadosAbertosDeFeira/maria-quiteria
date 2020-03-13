@@ -2,7 +2,6 @@ import os
 
 from datasets.models import CityCouncilAgenda, Gazette, GazetteEvent
 from django.core.management.base import BaseCommand
-from django.utils.timezone import make_aware
 from scraper.items import CityCouncilAgendaItem, GazetteItem
 from scraper.spiders.citycouncil import AgendaSpider
 from scraper.spiders.gazette import ExecutiveAndLegislativeGazetteSpider
@@ -10,6 +9,8 @@ from scrapy import signals
 from scrapy.crawler import CrawlerProcess
 from scrapy.signalmanager import dispatcher
 from scrapy.utils.project import get_project_settings
+
+from ._gazette import save_gazette
 
 
 class Command(BaseCommand):
@@ -36,28 +37,12 @@ class Command(BaseCommand):
                 event_type=item["event_type"],
                 crawled_from=item["crawled_from"],
                 defaults={
-                    "crawled_at": make_aware(item["crawled_at"]),
+                    "crawled_at": item["crawled_at"],
                     "details": item["details"],
                 },
             )  # TODO test it
         if isinstance(item, GazetteItem):
-            gazette, created = Gazette.objects.update_or_create(
-                date=item["date"],
-                power=item["power"],
-                year_and_edition=item["year_and_edition"],
-                file_urls=item["file_urls"],
-                file_content=item.get("file_content"),
-                crawled_from=item["crawled_from"],
-                crawled_at=make_aware(item["crawled_at"]),
-            )
-            GazetteEvent.objects.update_or_create(
-                gazette=gazette,
-                title=item["event_title"],
-                secretariat=item["event_secretariat"],
-                summary=item["event_summary"],
-                crawled_from=item["crawled_from"],
-                crawled_at=make_aware(item["crawled_at"]),
-            )
+            save_gazette(item)
 
     def handle(self, *args, **options):
         if options.get("drop_all"):

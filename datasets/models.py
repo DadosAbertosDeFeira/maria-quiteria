@@ -42,7 +42,7 @@ class Gazette(DatasetMixin):
     )
     date = models.DateField()
     power = models.CharField(max_length=25, choices=POWER_TYPE)
-    year_and_edition = models.CharField(max_length=100, null=True, blank=True)
+    year_and_edition = models.CharField(max_length=100)
     file_urls = ArrayField(models.URLField(null=True, blank=True), blank=True)
     file_content = models.TextField(null=True, blank=True)
 
