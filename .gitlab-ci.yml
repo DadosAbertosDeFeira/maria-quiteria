@@ -8,6 +8,8 @@ lint:
   - flake8 .
 
 test:
+  variables:
+    DJANGO_SETTINGS_MODULE: "core.settings"
   before_script:
   - python -V
   - pip install -r dev_requirements.txt
