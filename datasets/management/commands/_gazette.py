@@ -10,7 +10,7 @@ def save_gazette(item):
         defaults={
             "crawled_at": make_aware(item["crawled_at"]),
             "crawled_from": item["crawled_from"],
-            "file_urls": item["file_urls"],
+            "file_url": item["file_urls"][0],
             "file_content": item.get("file_content"),
         },
     )

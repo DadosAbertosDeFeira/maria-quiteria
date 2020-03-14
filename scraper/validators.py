@@ -30,7 +30,7 @@ class GazetteItem(BaseModel):
     power = StringType(required=True)
     year_and_edition = StringType(required=True)
     events = ListType(DictType(StringType), required=True)
-    file_urls = ListType(URLType)
+    file_urls = ListType(URLType, required=True)
     file_content = StringType()
 
 

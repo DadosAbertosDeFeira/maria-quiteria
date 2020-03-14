@@ -1,4 +1,3 @@
-from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 
@@ -44,10 +43,13 @@ class Gazette(DatasetMixin):
     date = models.DateField()
     power = models.CharField(max_length=25, choices=POWER_TYPE)
     year_and_edition = models.CharField(max_length=100)
-    file_urls = ArrayField(models.URLField(null=True, blank=True), blank=True)
+    file_url = models.URLField(null=True, blank=True)
     file_content = models.TextField(null=True, blank=True)
 
     def __repr__(self):
+        return f"{self.date} {self.power} {self.year_and_edition}"
+
+    def __str__(self):
         return f"{self.date} {self.power} {self.year_and_edition}"
 
 

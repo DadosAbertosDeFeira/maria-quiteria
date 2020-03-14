@@ -32,7 +32,7 @@ def test_save_gazette():
     assert gazette.crawled_at.replace(tzinfo=None) == item["crawled_at"]
     assert gazette.crawled_from == item["crawled_from"]
     assert gazette.file_content == item["file_content"]
-    assert gazette.file_urls == item["file_urls"]
+    assert gazette.file_url == item["file_urls"][0]
 
     event = gazette.gazetteevent_set.first()
     assert event.title == item["events"][0]["title"]
