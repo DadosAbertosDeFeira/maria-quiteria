@@ -176,22 +176,19 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
                 )
             else:
                 supported_formats = ["%d/%m/%Y", "%d/%m/%y"]
-                for event in gazette["events"]:
-                    gazette_item = GazetteItem(
-                        date=from_str_to_date(gazette["date"], supported_formats),
-                        power=gazette["power"],
-                        year_and_edition=gazette["year_and_edition"],
-                        event_title=event["title"],
-                        event_secretariat=event["secretariat"],
-                        event_summary=event["summary"],
-                        crawled_at=datetime.now(),
-                        crawled_from=response.url,
-                    )
-                    yield Request(
-                        gazette["file_url"],
-                        callback=self.parse_document_url,
-                        meta={"gazette": gazette_item},
-                    )
+                gazette_item = GazetteItem(
+                    date=from_str_to_date(gazette["date"], supported_formats),
+                    power=gazette["power"],
+                    year_and_edition=gazette["year_and_edition"],
+                    events=gazette["events"],
+                    crawled_at=datetime.now(),
+                    crawled_from=response.url,
+                )
+                yield Request(
+                    gazette["file_url"],
+                    callback=self.parse_document_url,
+                    meta={"gazette": gazette_item},
+                )
 
     def parse_document_url(self, response):
         gazette = response.meta["gazette"]

@@ -14,12 +14,13 @@ def save_gazette(item):
             "file_content": item.get("file_content"),
         },
     )
-    event, _ = GazetteEvent.objects.get_or_create(
-        gazette=gazette,
-        title=item["event_title"],
-        secretariat=item["event_secretariat"],
-        crawled_from=item["crawled_from"],
-        summary=item["event_summary"],
-        defaults={"crawled_at": make_aware(item["crawled_at"])},
-    )
-    return gazette, event
+    for event in item["events"]:
+        GazetteEvent.objects.get_or_create(
+            gazette=gazette,
+            title=event["title"],
+            secretariat=event["secretariat"],
+            crawled_from=item["crawled_from"],
+            summary=event["summary"],
+            defaults={"crawled_at": make_aware(item["crawled_at"])},
+        )
+    return gazette

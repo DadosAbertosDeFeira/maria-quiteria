@@ -3,8 +3,9 @@ from django.db import models
 
 
 class DatasetMixin(models.Model):
-    crawled_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    crawled_at = models.DateTimeField()
     crawled_from = models.URLField()
     notes = models.TextField(null=True, blank=True)
 
@@ -32,7 +33,7 @@ class CityCouncilAgenda(DatasetMixin):
     title = models.CharField(max_length=100, null=True, blank=True)
 
     def __repr__(self):
-        return f"{self.date} {self.event_type} {self.title} ({self.updated_at})"
+        return f"{self.date} {self.event_type} {self.title}"
 
 
 class Gazette(DatasetMixin):
@@ -46,9 +47,16 @@ class Gazette(DatasetMixin):
     file_urls = ArrayField(models.URLField(null=True, blank=True), blank=True)
     file_content = models.TextField(null=True, blank=True)
 
+    def __repr__(self):
+        return f"{self.date} {self.power} {self.year_and_edition}"
+
 
 class GazetteEvent(DatasetMixin):
     gazette = models.ForeignKey(Gazette, on_delete=models.CASCADE)
     title = models.CharField(max_length=300, null=True, blank=True)
     secretariat = models.CharField(max_length=100, null=True, blank=True)
     summary = models.TextField(null=True, blank=True)
+
+    def __repr__(self):
+        gazette_info = f"{self.gazette.power} {self.gazette.year_and_edition}"
+        return f"[{gazette_info}] {self.title} {self.secretariat}"

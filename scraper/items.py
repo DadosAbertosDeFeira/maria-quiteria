@@ -26,9 +26,7 @@ class GazetteItem(BaseItem):
     date = scrapy.Field()
     power = scrapy.Field()
     year_and_edition = scrapy.Field()
-    event_title = scrapy.Field()
-    event_secretariat = scrapy.Field()
-    event_summary = scrapy.Field()
+    events = scrapy.Field()
     file_urls = scrapy.Field()
     file_content = scrapy.Field()
 
