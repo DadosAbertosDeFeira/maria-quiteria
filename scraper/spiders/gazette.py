@@ -104,12 +104,16 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
         gazettes_links = gazette_table.xpath("a//@href").extract()
         dates = gazette_table.css("a::text").extract()
 
+        limit_date_by_power = {}
         for url, gazette_date in zip(gazettes_links, dates):
             date_obj = datetime.strptime(gazette_date, "%d/%m/%Y")
             if date_obj.date() >= self.start_date:
                 edition = self.extract_edition(url)
                 power = self.extract_power(url)
                 power_id = self.powers[power]
+
+                if date_obj.date() == self.start_date:
+                    limit_date_by_power[power] = date_obj.date()
 
                 gazette = dict(
                     date=gazette_date,
@@ -124,15 +128,17 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
                     meta={"gazette": gazette},
                 )
 
-        if self.collect_all:
+        # as datas do legislativo e do executivo podem não estar na mesma página
+        if len(limit_date_by_power) < 2:
             current_page_selector = "#pages ul li.current::text"
             current_page = response.css(current_page_selector).extract_first()
-            next_page = int(current_page) + 1
-            next_page_url = response.urljoin(f"/?p={next_page}")
+            if current_page:
+                next_page = int(current_page) + 1
+                next_page_url = response.urljoin(f"/?p={next_page}")
 
-            if next_page > self.last_page:
-                self.last_page = next_page
-                yield Request(next_page_url)
+                if next_page > self.last_page:
+                    self.last_page = next_page
+                    yield Request(next_page_url)
 
     def parse_details(self, response):
         gazette = response.meta["gazette"]
