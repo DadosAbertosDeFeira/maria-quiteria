@@ -19,9 +19,9 @@ class LegacyGazetteItem(BaseModel):
     title = StringType(required=True)
     published_on = StringType(required=False)
     # important info but not available in years like 2010
-    date = DateType(required=False, formats=("%d/%m/%Y", "%d/%m/%y"))
+    date = DateType(required=False)
     details = StringType(required=True)
-    file_urls = ListType(URLType)
+    file_urls = ListType(StringType)
     file_content = StringType()
 
 
@@ -30,7 +30,7 @@ class GazetteItem(BaseModel):
     power = StringType(required=True)
     year_and_edition = StringType(required=True)
     events = ListType(DictType(StringType), required=True)
-    file_urls = ListType(URLType, required=True)
+    file_urls = ListType(StringType, required=True)
     file_content = StringType()
 
 
@@ -49,7 +49,7 @@ class CityHallContractItem(BaseModel):
     contractor_name = StringType()
     value = StringType()
     ends_at = DateType(formats=("%d/%m/%Y", "%d/%m/%y"))
-    file_urls = ListType(StringType)  # TODO check URL type
+    file_urls = ListType(StringType)
     file_content = StringType()
 
 

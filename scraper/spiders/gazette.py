@@ -31,7 +31,7 @@ class LegacyGazetteSpider(BaseSpider):
                 yield LegacyGazetteItem(
                     title=event["event"],
                     published_on=event["published_on"],
-                    date=event["date"],
+                    date=from_str_to_date(event["date"]),
                     details=url["details"],
                     file_urls=[url["url"]],
                     crawled_at=datetime.now(),

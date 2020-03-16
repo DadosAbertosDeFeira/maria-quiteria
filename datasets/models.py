@@ -40,9 +40,10 @@ class Gazette(DatasetMixin):
         ("executivo", "Poder Executivo"),
         ("legislativo", "Poder Legislativo"),
     )
-    date = models.DateField()
+    date = models.DateField(null=True)
     power = models.CharField(max_length=25, choices=POWER_TYPE)
     year_and_edition = models.CharField(max_length=100)
+    is_legacy = models.BooleanField(default=False)
     file_url = models.URLField(null=True, blank=True)
     file_content = models.TextField(null=True, blank=True)
 
@@ -58,6 +59,7 @@ class GazetteEvent(DatasetMixin):
     title = models.CharField(max_length=300, null=True, blank=True)
     secretariat = models.CharField(max_length=100, null=True, blank=True)
     summary = models.TextField(null=True, blank=True)
+    published_on = models.CharField(max_length=100, null=True, blank=True)
 
     def __repr__(self):
         gazette_info = f"{self.gazette.power} {self.gazette.year_and_edition}"
