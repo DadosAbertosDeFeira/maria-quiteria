@@ -58,7 +58,6 @@ class Command(BaseCommand):
 
         dispatcher.connect(self.save, signal=signals.item_passed)
         os.environ["SCRAPY_SETTINGS_MODULE"] = "scraper.settings"
-
         process = CrawlerProcess(settings=get_project_settings())
         process.crawl(AgendaSpider)
 

@@ -6,6 +6,8 @@ from django.utils.timezone import make_aware
 
 
 def save_gazette(item):
+    """Salva diários oficiais do executivo a partir de 2015."""
+
     gazette, _ = Gazette.objects.update_or_create(
         date=item["date"],
         power=item["power"],
@@ -30,6 +32,15 @@ def save_gazette(item):
 
 
 def save_legacy_gazette(item):
+    """Salva diários oficiais do executivo de antes de 2015.
+
+    Os diários oficiais eram publicados em um site diferente do atual e
+    também em jornais. Além disso, tinham um formato diferente, sendo um
+    arquivo para cada evento (decreto, leis etc).
+    Alguns não possuem data (especialmente os do ano de 2010). Por isso a
+    tentativa de extrair a data do título.
+    """
+
     if item["date"] is None:
         item["date"] = _extract_date(item["title"])
         notes = "Data extraída do título."
@@ -37,7 +48,7 @@ def save_legacy_gazette(item):
         notes = ""
 
     gazette, _ = Gazette.objects.get_or_create(
-        date=item["date"],  # alguns estão sem data (especialmente 2010)
+        date=item["date"],
         power="executivo",
         crawled_from=item["crawled_from"],
         file_url=item["file_urls"][0],

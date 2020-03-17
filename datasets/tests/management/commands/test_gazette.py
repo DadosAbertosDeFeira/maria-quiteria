@@ -16,7 +16,7 @@ class TestSaveGazette:
             "power": "executivo",
             "year_and_edition": "Ano V - Edi\u00e7\u00e3o N\u00ba 1131",
             "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
-            "crawled_from": "http://www.diariooficial.br/st=1&publicacao=1&edicao=1131",
+            "crawled_from": "http://www.diariooficial.br/st=1&publ=1&edicao=1131",
             "events": [
                 {
                     "title": "DECRETO INDIVIDUAL N\u00ba 1.294/2019",
@@ -27,7 +27,7 @@ class TestSaveGazette:
             "file_urls": [
                 "http://www.diariooficial.feiradesantana.ba.gov.br/1VFJCB4112019.pdf"
             ],
-            "file_content": "O Prefeito Municipal de Feira no uso de suas atribuições...",
+            "file_content": "O Prefeito Municipal de Feira...",
         }
 
         gazette = save_gazette(item)
@@ -50,7 +50,7 @@ class TestSaveGazette:
             "power": "executivo",
             "year_and_edition": "Ano V - Edi\u00e7\u00e3o N\u00ba 1131",
             "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
-            "crawled_from": "http://www.diariooficial.br/st=1&publicacao=1&edicao=1131",
+            "crawled_from": "http://www.diariooficial.br/st=1&edicao=1131",
             "events": [
                 {
                     "title": "DECRETO INDIVIDUAL N\u00ba 1.294/2019",
@@ -61,7 +61,7 @@ class TestSaveGazette:
             "file_urls": [
                 "http://www.diariooficial.feiradesantana.ba.gov.br/1VFJCB4112019.pdf"
             ],
-            "file_content": "O Prefeito Municipal de Feira no uso de suas atribuições...",
+            "file_content": "O Prefeito Municipal de Feira...",
         }
 
         gazette = save_gazette(item)
@@ -76,7 +76,7 @@ class TestSaveGazette:
             "power": "executivo",
             "year_and_edition": "Ano V - Edi\u00e7\u00e3o N\u00ba 1131",
             "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
-            "crawled_from": "http://www.diariooficial.br/st=1&publicacao=1&edicao=1131",
+            "crawled_from": "http://www.diariooficial.br/st=1&edicao=1131",
             "events": [
                 {
                     "title": "DECRETO INDIVIDUAL N\u00ba 1.294/2019",
@@ -92,7 +92,7 @@ class TestSaveGazette:
             "file_urls": [
                 "http://www.diariooficial.feiradesantana.ba.gov.br/1VFJCB4112019.pdf"
             ],
-            "file_content": "O Prefeito Municipal de Feira no uso de suas atribuições...",
+            "file_content": "O Prefeito Municipal de Feira...",
         }
 
         gazette = save_gazette(item)
@@ -108,7 +108,7 @@ class TestSaveLegacyGazette:
             "date": datetime(2014, 11, 27),
             "details": "ABRE CRÉDITO SUPLEMENTAR AO ORÇAMENTO DO MUNICÍPIO...",
             "file_urls": ["http://www.feiradesantana.ba.gov.br/leis/Deno20149416.pdf"],
-            "file_content": "O Prefeito Municipal de Feira no uso de suas atribuições...",
+            "file_content": "O Prefeito Municipal de Feira...",
             "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
             "crawled_from": "http://www.diariooficial.br/st=1&publicacao=1&edicao=1131",
         }
@@ -141,33 +141,33 @@ class TestSaveLegacyGazette:
                 "file_urls": [
                     "http://www.feiradesantana.ba.gov.br/leis/Deno20149416.pdf"
                 ],
-                "file_content": "O Prefeito Municipal de Feira no uso de suas atribuições...",
+                "file_content": "O Prefeito Municipal de Feira...",
                 "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
-                "crawled_from": "http://www.diariooficial.br/st=1&publicacao=1&edicao=1131",
+                "crawled_from": "http://www.diariooficial.br/st=1&&edicao=1131",
             },
             {
                 "title": "DECRETO Nº 9.415, DE 26 DE NOVEMBRO DE 2014.",
                 "published_on": "Folha do Estado",
                 "date": datetime(2014, 11, 27),
-                "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA DO PODER EXECUTIVO...",
+                "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA...",
                 "file_urls": [
-                    "http://www.feiradesantana.ba.gov.br/leis/Deno20149415.pdf"
+                    "http://www.feiradesantana.ba.gov.br/leis/Deno20149416.pdf"
                 ],
-                "file_content": "O Prefeito Municipal de Feira no uso de suas atribuições...",
+                "file_content": "O Prefeito Municipal de Feira...",
                 "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
-                "crawled_from": "http://www.diariooficial.br/st=1&publicacao=1&edicao=1131",
+                "crawled_from": "http://www.diariooficial.br/st=1&&edicao=1131",
             },
             {
                 "title": "DECRETO Nº 9.414, DE 26 DE NOVEMBRO DE 2014.",
                 "published_on": "Folha do Estado",
                 "date": datetime(2014, 11, 27),
-                "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA DO PODER EXECUTIVO...",
+                "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA...",
                 "file_urls": [
-                    "http://www.feiradesantana.ba.gov.br/leis/Deno20149414.pdf"
+                    "http://www.feiradesantana.ba.gov.br/leis/Deno20149416.pdf"
                 ],
-                "file_content": "O Prefeito Municipal de Feira no uso de suas atribuições...",
+                "file_content": "O Prefeito Municipal de Feira...",
                 "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
-                "crawled_from": "http://www.diariooficial.br/st=1&publicacao=1&edicao=1131",
+                "crawled_from": "http://www.diariooficial.br/st=1&&edicao=1131",
             },
         ]
 
@@ -186,41 +186,40 @@ class TestSaveLegacyGazette:
                 "file_urls": [
                     "http://www.feiradesantana.ba.gov.br/leis/Deno20149416.pdf"
                 ],
-                "file_content": "O Prefeito Municipal de Feira no uso de suas atribuições...",
+                "file_content": "O Prefeito Municipal de Feira...",
                 "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
-                "crawled_from": "http://www.diariooficial.br/st=1&publicacao=1&edicao=1131",
+                "crawled_from": "http://www.diariooficial.br/?st=1&edicao=1130",
             },
             {
                 "title": "DECRETO Nº 9.415, DE 26 DE NOVEMBRO DE 2014.",
                 "published_on": "Folha do Estado",
                 "date": datetime(2014, 11, 27),
-                "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA DO PODER EXECUTIVO...",
+                "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA...",
                 "file_urls": [
                     "http://www.feiradesantana.ba.gov.br/leis/Deno20149415.pdf"
                 ],
-                "file_content": "O Prefeito Municipal de Feira no uso de suas atribuições...",
+                "file_content": "O Prefeito Municipal de Feira...",
                 "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
-                "crawled_from": "http://www.diariooficial.br/st=1&publicacao=1&edicao=1131",
+                "crawled_from": "http://www.diariooficial.br/?&edicao=1131",
             },
             {
                 "title": "DECRETO Nº 9.414, DE 26 DE NOVEMBRO DE 2014.",
                 "published_on": "Folha do Estado",
                 "date": datetime(2014, 11, 27),
-                "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA DO PODER EXECUTIVO...",
+                "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA...",
                 "file_urls": [
                     "http://www.feiradesantana.ba.gov.br/leis/Deno20149414.pdf"
                 ],
-                "file_content": "O Prefeito Municipal de Feira no uso de suas atribuições...",
+                "file_content": "O Prefeito Municipal de Feira...",
                 "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
-                "crawled_from": "http://www.diariooficial.br/st=1&publicacao=1&edicao=1131",
+                "crawled_from": "http://www.diariooficial.br/?&edicao=1131",
             },
         ]
 
         gazettes = [save_legacy_gazette(legacy_item) for legacy_item in legacy_items]
 
-        assert len(set([g.pk for g in gazettes])) == 2
+        assert len(set([g.pk for g in gazettes])) == 3
         assert gazettes[0].notes == "Data extraída do título."
-        assert gazettes[1].gazetteevent_set.count() == 2
 
 
 class TestExtractDate:
@@ -236,7 +235,7 @@ class TestExtractDate:
 
     @pytest.mark.parametrize(
         "str_date",
-        ["DECRETO Nº 9.414, DE NOVEMBRO DE 2014.", "DECRETO Nº 9.414", "", None,],
+        ["DECRETO Nº 9.414, DE NOVEMBRO DE 2014.", "DECRETO Nº 9.414", "", None],
     )
     def test_return_none_if_no_date_is_found(self, str_date):
         assert _extract_date(str_date) is None
