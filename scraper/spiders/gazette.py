@@ -181,9 +181,8 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
                     meta={"gazette": gazette},
                 )
             else:
-                supported_formats = ["%d/%m/%Y", "%d/%m/%y"]
                 gazette_item = GazetteItem(
-                    date=from_str_to_date(gazette["date"], supported_formats),
+                    date=from_str_to_date(gazette["date"]),
                     power=gazette["power"],
                     year_and_edition=gazette["year_and_edition"],
                     events=gazette["events"],

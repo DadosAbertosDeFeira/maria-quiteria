@@ -36,4 +36,6 @@ def from_str_to_datetime(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y"]):
 def from_str_to_date(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y"]):
     if date_str is None:
         return
-    return from_str_to_datetime(date_str, supported_formats).date()
+    datetime_obj = from_str_to_datetime(date_str, supported_formats)
+    if datetime_obj:
+        return datetime_obj.date()

@@ -56,8 +56,7 @@ class AgendaSpider(BaseSpider):
                 for line in details.css("p ::text").getall()
                 if line.strip() != ""
             ]
-            supported_formats = ["%d/%m/%Y", "%d/%m/%y"]
-            event_date = from_str_to_date(event_date, supported_formats)
+            event_date = from_str_to_date(event_date)
             yield CityCouncilAgendaItem(
                 crawled_at=datetime.now(),
                 crawled_from=response.url,
