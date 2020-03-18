@@ -1,9 +1,5 @@
 image: python:latest
 
-variables:
-  DJANGO_SETTINGS_MODULE: "core.settings"
-  DJANGO_CONFIGURATION: "Dev"
-
 lint:
   before_script:
   - pip install -r dev_requirements.txt

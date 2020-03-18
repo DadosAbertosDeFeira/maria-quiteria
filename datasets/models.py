@@ -46,6 +46,7 @@ class Gazette(DatasetMixin):
     is_legacy = models.BooleanField(default=False)
     file_url = models.URLField(null=True, blank=True)
     file_content = models.TextField(null=True, blank=True)
+    checksum = models.CharField(max_length=128, null=True, blank=True)
 
     def __repr__(self):
         return f"{self.date} {self.power} {self.year_and_edition}"

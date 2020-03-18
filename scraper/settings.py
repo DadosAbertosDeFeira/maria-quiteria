@@ -28,6 +28,7 @@ ITEM_PIPELINES = {
 }
 FILES_STORE = f"{os.getcwd()}/data/"
 KEEP_FILES = os.getenv("KEEP_FILES", False)
+ASYNC_FILE_DOWLOAD = os.getenv("ASYNC_FILE_DOWLOAD", False)
 
 # http cache
 HTTPCACHE_ENABLED = True
