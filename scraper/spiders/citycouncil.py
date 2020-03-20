@@ -1,7 +1,7 @@
 from datetime import date, datetime
 
 import scrapy
-from scraper.items import CityCouncilAgendaItem
+from scraper.items import CityCouncilAgendaItem, CityCouncilAttendanceListItem
 
 from . import BaseSpider
 from .utils import from_str_to_date, extract_date, months_and_years
@@ -110,11 +110,11 @@ class AttendanceListSpider(BaseSpider):
         status = response.xpath("//tr/td[2]/div/text()").extract()
 
         for council_member, status in zip(council_members, status):
-            yield {
-                "crawled_at": datetime.now(),
-                "crawled_from": response.url,
-                "date": extract_date(title),
-                "description": description,
-                "council_member": council_member,
-                "status": self.get_status(status),
-            }
+            yield CityCouncilAttendanceListItem(
+                crawled_at=datetime.now(),
+                crawled_from=response.url,
+                date=extract_date(title),
+                description=description.strip() if description else "",
+                council_member=council_member,
+                status=self.get_status(status),
+            )

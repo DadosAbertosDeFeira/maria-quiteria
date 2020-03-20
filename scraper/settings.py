@@ -2,6 +2,7 @@ import os
 
 from .items import (
     CityCouncilAgendaItem,
+    CityCouncilAttendanceListItem,
     CityHallBidItem,
     CityHallContractItem,
     CityHallPaymentsItem,
@@ -43,6 +44,7 @@ SPIDERMON_VALIDATION_MODELS = {
     CityHallContractItem: "scraper.validators.CityHallContractItem",
     CityHallBidItem: "scraper.validators.CityHallBidItem",
     CityHallPaymentsItem: "scraper.validators.CityHallPaymentsItem",
+    CityCouncilAttendanceListItem: "scraper.validators.CityCouncilAttendanceListItem",
 }
 
 # monitoring
