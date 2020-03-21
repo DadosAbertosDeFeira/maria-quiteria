@@ -19,7 +19,3 @@ class BaseSpider(scrapy.Spider):
             picked_date = self.initial_date
 
         return picked_date
-
-    @property
-    def collect_all(self):
-        return bool(self.start_from_date) is False

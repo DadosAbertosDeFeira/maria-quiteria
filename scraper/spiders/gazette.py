@@ -1,10 +1,10 @@
 from datetime import date, datetime
 
-from scraper.items import GazetteEventItem, LegacyGazetteItem
+from scraper.items import GazetteItem, LegacyGazetteItem
 from scrapy import Request
 
 from . import BaseSpider
-from .utils import replace_query_param
+from .utils import from_str_to_date, replace_query_param
 
 
 class LegacyGazetteSpider(BaseSpider):
@@ -31,7 +31,7 @@ class LegacyGazetteSpider(BaseSpider):
                 yield LegacyGazetteItem(
                     title=event["event"],
                     published_on=event["published_on"],
-                    date=event["date"],
+                    date=from_str_to_date(event["date"]),
                     details=url["details"],
                     file_urls=[url["url"]],
                     crawled_at=datetime.now(),
@@ -104,12 +104,16 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
         gazettes_links = gazette_table.xpath("a//@href").extract()
         dates = gazette_table.css("a::text").extract()
 
+        limit_date_by_power = {}
         for url, gazette_date in zip(gazettes_links, dates):
             date_obj = datetime.strptime(gazette_date, "%d/%m/%Y")
             if date_obj.date() >= self.start_date:
                 edition = self.extract_edition(url)
                 power = self.extract_power(url)
                 power_id = self.powers[power]
+
+                if date_obj.date() == self.start_date:
+                    limit_date_by_power[power] = date_obj.date()
 
                 gazette = dict(
                     date=gazette_date,
@@ -124,15 +128,17 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
                     meta={"gazette": gazette},
                 )
 
-        if self.collect_all:
+        # as datas do legislativo e do executivo podem não estar na mesma página
+        if len(limit_date_by_power) < 2:
             current_page_selector = "#pages ul li.current::text"
             current_page = response.css(current_page_selector).extract_first()
-            next_page = int(current_page) + 1
-            next_page_url = response.urljoin(f"/?p={next_page}")
+            if current_page:
+                next_page = int(current_page) + 1
+                next_page_url = response.urljoin(f"/?p={next_page}")
 
-            if next_page > self.last_page:
-                self.last_page = next_page
-                yield Request(next_page_url)
+                if next_page > self.last_page:
+                    self.last_page = next_page
+                    yield Request(next_page_url)
 
     def parse_details(self, response):
         gazette = response.meta["gazette"]
@@ -175,22 +181,19 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
                     meta={"gazette": gazette},
                 )
             else:
-                for event in gazette["events"]:
-                    gazette_item = GazetteEventItem(
-                        date=gazette["date"],
-                        power=gazette["power"],
-                        year_and_edition=gazette["year_and_edition"],
-                        event_title=event["title"],
-                        event_secretariat=event["secretariat"],
-                        event_summary=event["summary"],
-                        crawled_at=datetime.now(),
-                        crawled_from=response.url,
-                    )
-                    yield Request(
-                        gazette["file_url"],
-                        callback=self.parse_document_url,
-                        meta={"gazette": gazette_item},
-                    )
+                gazette_item = GazetteItem(
+                    date=from_str_to_date(gazette["date"]),
+                    power=gazette["power"],
+                    year_and_edition=gazette["year_and_edition"],
+                    events=gazette["events"],
+                    crawled_at=datetime.now(),
+                    crawled_from=response.url,
+                )
+                yield Request(
+                    gazette["file_url"],
+                    callback=self.parse_document_url,
+                    meta={"gazette": gazette_item},
+                )
 
     def parse_document_url(self, response):
         gazette = response.meta["gazette"]

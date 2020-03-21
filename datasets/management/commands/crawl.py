@@ -1,11 +1,25 @@
-from datasets.models import CityCouncilAgenda, Employee
+import os
+
+from datasets.models import CityCouncilAgenda, Employee, Gazette, GazetteEvent
 from django.core.management.base import BaseCommand
-from scraper.items import CityCouncilAgendaItem, EmployeeItem
+from scraper.items import (
+    CityCouncilAgendaItem,
+    EmployeeItem,
+    GazetteItem,
+    LegacyGazetteItem,
+)
 from scraper.spiders.citycouncil import AgendaSpider
+from scraper.spiders.gazette import (
+    ExecutiveAndLegislativeGazetteSpider,
+    LegacyGazetteSpider,
+)
 from scraper.spiders.municipalauditcourt import EmployeesSpider
 from scrapy import signals
 from scrapy.crawler import CrawlerProcess
 from scrapy.signalmanager import dispatcher
+from scrapy.utils.project import get_project_settings
+
+from ._gazette import save_gazette, save_legacy_gazette
 
 
 class Command(BaseCommand):
@@ -27,14 +41,19 @@ class Command(BaseCommand):
     def save(self, signal, sender, item, response, spider):
         if isinstance(item, CityCouncilAgendaItem):
             CityCouncilAgenda.objects.update_or_create(
-                crawled_at=item["crawled_at"],
-                crawled_from=item["crawled_from"],  # FIXME defaults?
                 date=item["date"],
-                details=item["details"],
                 title=item["title"],
                 event_type=item["event_type"],
-            )
-
+                crawled_from=item["crawled_from"],
+                defaults={
+                    "crawled_at": item["crawled_at"],
+                    "details": item["details"],
+                },
+            )  # TODO test it
+        if isinstance(item, LegacyGazetteItem):
+            save_legacy_gazette(item)
+        if isinstance(item, GazetteItem):
+            save_gazette(item)
         if isinstance(item, EmployeeItem):
             Employee.objects.update_or_create(**item)
 
@@ -44,11 +63,26 @@ class Command(BaseCommand):
             CityCouncilAgenda.objects.all().delete()
             Employee.objects.all().delete()
 
+            if os.getenv("FEATURE_FLAG__SAVE_GAZETTE", False):
+                Gazette.objects.all().delete()
+                GazetteEvent.objects.all().delete()
+
         dispatcher.connect(self.save, signal=signals.item_passed)
-        process = CrawlerProcess()
+        os.environ["SCRAPY_SETTINGS_MODULE"] = "scraper.settings"
+        process = CrawlerProcess(settings=get_project_settings())
         process.crawl(AgendaSpider)
+
+        if os.getenv("FEATURE_FLAG__SAVE_GAZETTE", False):
+            last_collected_gazette = Gazette.last_collected_item_date()
+            if last_collected_gazette is None:
+                process.crawl(LegacyGazetteSpider)
+            process.crawl(
+                ExecutiveAndLegislativeGazetteSpider,
+                start_from_date=last_collected_gazette,
+            )
         process.crawl(
             EmployeesSpider, start_from_date=Employee.last_collected_item_date()
         )
+
         process.start()
         self.success("Done!")

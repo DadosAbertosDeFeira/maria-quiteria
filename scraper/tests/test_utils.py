@@ -90,6 +90,8 @@ def test_extract_param(url, param, value):
         ("26/02/2020 19:28:00", None),
         ("26/02/2020", None),
         ("26.02.20", None),
+        (None, None),
+        ("", None),
     ],
 )
 def test_possible_datetime_formats(datetime_str, expected_obj):
@@ -105,6 +107,8 @@ def test_possible_datetime_formats(datetime_str, expected_obj):
         ("26/02/2020", datetime(2020, 2, 26)),
         ("26/02/2020 19:28", None),
         ("26.02.20", None),
+        (None, None),
+        ("", None),
     ],
 )
 def test_possible_date_formats(datetime_str, expected_obj):
