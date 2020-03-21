@@ -11,11 +11,7 @@ def run_crawlers(start_from_date):
     process.crawl("cityhall_payments", start_from_date=start_from_date)
     process.crawl("cityhall_contracts", start_from_date=start_from_date)
     process.crawl("cityhall_bids", start_from_date=start_from_date)
-    process.crawl("citycouncil_agenda", start_from_date=start_from_date)
-    process.crawl("gazettes", start_from_date=start_from_date)
 
-    if start_from_date is None:  # --all deve incluir páginas legadas
-        process.crawl("legacy_gazettes")
     process.start()
 
 

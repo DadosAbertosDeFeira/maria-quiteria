@@ -23,7 +23,9 @@ def extract_param(url, param):
         return
 
 
-def from_str_to_datetime(date_str, supported_formats):
+def from_str_to_datetime(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y"]):
+    if date_str is None:
+        return
     for supported_format in supported_formats:
         try:
             return datetime.strptime(date_str, supported_format)
@@ -31,5 +33,9 @@ def from_str_to_datetime(date_str, supported_formats):
             pass
 
 
-def from_str_to_date(date_str, supported_formats):
-    return from_str_to_datetime(date_str, supported_formats).date()
+def from_str_to_date(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y"]):
+    if date_str is None:
+        return
+    datetime_obj = from_str_to_datetime(date_str, supported_formats)
+    if datetime_obj:
+        return datetime_obj.date()
