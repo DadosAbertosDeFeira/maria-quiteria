@@ -4,7 +4,7 @@ import scrapy
 from scraper.items import CityCouncilAgendaItem, CityCouncilAttendanceListItem
 
 from . import BaseSpider
-from .utils import from_str_to_date, extract_date, months_and_years
+from .utils import extract_date, from_str_to_date, months_and_years
 
 
 class AgendaSpider(BaseSpider):
@@ -81,14 +81,16 @@ class AttendanceListSpider(BaseSpider):
             "A": "ausente",
         }
 
-        return status_labels.get(status.strip())
+        return status_labels.get(status.upper().strip())
 
     def start_requests(self):
+        today = datetime.now().date()
+        if self.start_date != self.initial_date:
+            # pega do início do ano corrente
+            self.start_date = date(today.year, 1, 1)
         self.logger.info(f"Data inicial: {self.start_date}")
 
-        today = datetime.now().date()
         for month, year in months_and_years(self.start_date, today):
-            print(month, year)
             url = (
                 "https://www.feiradesantana.ba.leg.br/lista-presenca"
                 f"?mes={month}&ano={year}&Acessar=OK"

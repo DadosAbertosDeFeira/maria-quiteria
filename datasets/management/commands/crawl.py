@@ -69,10 +69,7 @@ class Command(BaseCommand):
         process.crawl(
             AgendaSpider, start_from_date=CityCouncilAgenda.last_collected_item_date(),
         )
-        process.crawl(
-            AttendanceListSpider,
-            start_from_date=CityCouncilAttendanceList.last_collected_item_date(),
-        )
+        process.crawl(AttendanceListSpider)
 
         if os.getenv("FEATURE_FLAG__SAVE_GAZETTE", False):
             last_collected_gazette = Gazette.last_collected_item_date()
