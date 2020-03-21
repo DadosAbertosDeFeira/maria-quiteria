@@ -48,6 +48,14 @@ class CityCouncilAttendanceListItem(BaseModel):
     status = StringType(required=True)
 
 
+class CityCouncilMinuteItem(BaseModel):
+    date = DateType()
+    title = StringType(required=True)
+    event_type = StringType(required=True)
+    file_urls = ListType(StringType, required=True)
+    file_content = StringType()
+
+
 class CityHallContractItem(BaseModel):
     contract_id = StringType(required=True)
     starts_at = DateType(formats=("%d/%m/%Y", "%d/%m/%y"))
