@@ -53,20 +53,24 @@ class Command(BaseCommand):
         if options.get("drop_all"):
             self.warn("Dropping existing records...")
             CityCouncilAgenda.objects.all().delete()
-            Gazette.objects.all().delete()
-            GazetteEvent.objects.all().delete()
+
+            if os.getenv("FEATURE_FLAG__SAVE_GAZETTE", False):
+                Gazette.objects.all().delete()
+                GazetteEvent.objects.all().delete()
 
         dispatcher.connect(self.save, signal=signals.item_passed)
         os.environ["SCRAPY_SETTINGS_MODULE"] = "scraper.settings"
         process = CrawlerProcess(settings=get_project_settings())
         process.crawl(AgendaSpider)
 
-        last_collected_gazette = Gazette.last_collected_item_date()
-        if last_collected_gazette is None:
-            process.crawl(LegacyGazetteSpider)
-        process.crawl(
-            ExecutiveAndLegislativeGazetteSpider, start_from_date=last_collected_gazette
-        )
+        if os.getenv("FEATURE_FLAG__SAVE_GAZETTE", False):
+            last_collected_gazette = Gazette.last_collected_item_date()
+            if last_collected_gazette is None:
+                process.crawl(LegacyGazetteSpider)
+            process.crawl(
+                ExecutiveAndLegislativeGazetteSpider,
+                start_from_date=last_collected_gazette,
+            )
 
         process.start()
         self.success("Done!")
