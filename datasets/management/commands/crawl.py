@@ -66,7 +66,9 @@ class Command(BaseCommand):
         dispatcher.connect(self.save, signal=signals.item_passed)
         os.environ["SCRAPY_SETTINGS_MODULE"] = "scraper.settings"
         process = CrawlerProcess(settings=get_project_settings())
-        process.crawl(AgendaSpider)
+        process.crawl(
+            AgendaSpider, start_from_date=CityCouncilAgenda.last_collected_item_date(),
+        )
         process.crawl(
             AttendanceListSpider,
             start_from_date=CityCouncilAttendanceList.last_collected_item_date(),
