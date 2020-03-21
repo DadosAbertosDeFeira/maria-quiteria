@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from .models import Gazette
+from .models import CityCouncilAgenda, CityCouncilAttendanceList, Gazette
 
 
 class ReadOnlyMixin:
@@ -46,3 +46,32 @@ class GazetteAdmin(ReadOnlyMixin, admin.ModelAdmin):
     @mark_safe
     def page(self, obj):
         return f"<a href={obj.crawled_from}>{obj.crawled_from}</a>"
+
+
+@admin.register(CityCouncilAgenda)
+class CityCouncilAgendaAdmin(ReadOnlyMixin, admin.ModelAdmin):
+    ordering = ["-date"]
+    search_fields = ["title", "details"]
+    list_filter = ["date", "event_type"]
+    list_display = (
+        "date",
+        "title",
+        "event_type",
+        "details",
+        "crawled_at",
+        "crawled_from",
+    )
+
+
+@admin.register(CityCouncilAttendanceList)
+class CityCouncilAttendanceListAdmin(ReadOnlyMixin, admin.ModelAdmin):
+    ordering = ["-date"]
+    list_filter = ["date", "status", "council_member"]
+    list_display = (
+        "date",
+        "description",
+        "council_member",
+        "status",
+        "crawled_at",
+        "crawled_from",
+    )
