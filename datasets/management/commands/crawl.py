@@ -1,9 +1,19 @@
 import os
 
-from datasets.models import CityCouncilAgenda, Gazette, GazetteEvent
+from datasets.models import (
+    CityCouncilAgenda,
+    CityCouncilAttendanceList,
+    Gazette,
+    GazetteEvent,
+)
 from django.core.management.base import BaseCommand
-from scraper.items import CityCouncilAgendaItem, GazetteItem, LegacyGazetteItem
-from scraper.spiders.citycouncil import AgendaSpider
+from scraper.items import (
+    CityCouncilAgendaItem,
+    CityCouncilAttendanceListItem,
+    GazetteItem,
+    LegacyGazetteItem,
+)
+from scraper.spiders.citycouncil import AgendaSpider, AttendanceListSpider
 from scraper.spiders.gazette import (
     ExecutiveAndLegislativeGazetteSpider,
     LegacyGazetteSpider,
@@ -13,6 +23,7 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.signalmanager import dispatcher
 from scrapy.utils.project import get_project_settings
 
+from ._citycouncil import save_agenda, save_attendance_list
 from ._gazette import save_gazette, save_legacy_gazette
 
 
@@ -34,16 +45,9 @@ class Command(BaseCommand):
 
     def save(self, signal, sender, item, response, spider):
         if isinstance(item, CityCouncilAgendaItem):
-            CityCouncilAgenda.objects.update_or_create(
-                date=item["date"],
-                title=item["title"],
-                event_type=item["event_type"],
-                crawled_from=item["crawled_from"],
-                defaults={
-                    "crawled_at": item["crawled_at"],
-                    "details": item["details"],
-                },
-            )  # TODO test it
+            save_agenda(item)
+        if isinstance(item, CityCouncilAttendanceListItem):
+            save_attendance_list(item)
         if isinstance(item, LegacyGazetteItem):
             save_legacy_gazette(item)
         if isinstance(item, GazetteItem):
@@ -53,6 +57,7 @@ class Command(BaseCommand):
         if options.get("drop_all"):
             self.warn("Dropping existing records...")
             CityCouncilAgenda.objects.all().delete()
+            CityCouncilAttendanceList.objects.all().delete()
 
             if os.getenv("FEATURE_FLAG__SAVE_GAZETTE", False):
                 Gazette.objects.all().delete()
@@ -62,6 +67,10 @@ class Command(BaseCommand):
         os.environ["SCRAPY_SETTINGS_MODULE"] = "scraper.settings"
         process = CrawlerProcess(settings=get_project_settings())
         process.crawl(AgendaSpider)
+        process.crawl(
+            AttendanceListSpider,
+            start_from_date=CityCouncilAttendanceList.last_collected_item_date(),
+        )
 
         if os.getenv("FEATURE_FLAG__SAVE_GAZETTE", False):
             last_collected_gazette = Gazette.last_collected_item_date()
