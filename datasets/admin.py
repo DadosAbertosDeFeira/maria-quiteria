@@ -19,7 +19,7 @@ class ReadOnlyMixin:
 class GazetteAdmin(ReadOnlyMixin, admin.ModelAdmin):
     ordering = ["-date"]
     search_fields = ["year_and_edition", "file_content"]
-    list_filter = ["power", "year_and_edition"]
+    list_filter = ["power", "date"]
     list_display = (
         "date",
         "power",
