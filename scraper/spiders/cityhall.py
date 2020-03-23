@@ -8,9 +8,53 @@ from . import BaseSpider
 from .utils import extract_param, identify_contract_id
 
 
+class LegacyBidsSpider(scrapy.Spider):
+    name = "cityhall_legacybids"
+    start_urls = [
+        "http://www.feiradesantana.ba.gov.br/seadm/licita01_02.asp",
+        "http://www.feiradesantana.ba.gov.br/seadm/licita03_04.asp",
+        "http://www.feiradesantana.ba.gov.br/seadm/licita05_06.asp",
+        "http://www.feiradesantana.ba.gov.br/seadm/licita07_08.asp",
+    ]
+
+    def parse(self, response):
+        titles = response.xpath(
+            "//td[@background='imagens/fundo.gif' and @valign='middle']//text()"
+        ).extract()
+        titles = [self.clean(title) for title in titles if self.clean(title) != ""]
+        anchor_with_labels = response.xpath(
+            "//td[@background='imagens/fundo.gif' and @valign='top']//a[text()!='']"
+        )
+
+        for anchor in anchor_with_labels:
+            text = self.clean(anchor.css("::text").extract_first())
+            if text != "":
+                url = anchor.css("::attr(href)").extract_first()
+                # para corrigir o caso de Fev 2002
+                cityhall_website = "http://www.feiradesantana.ba.gov.br/"
+                if url.count(cityhall_website) == 2:
+                    url = url.replace(
+                        f"{cityhall_website}{cityhall_website}", f"{cityhall_website}"
+                    )
+                # TODO identificar o órgão
+                print(f"{text}\t{url}")
+                # TODO
+                # yield response.follow(url, self.parse_page)
+
+    @staticmethod
+    def clean(string):
+        return " ".join(string.replace("\r\n", "").split())
+
+
 class BidsSpider(BaseSpider):
     name = "cityhall_bids"
-    start_urls = ["http://www.feiradesantana.ba.gov.br/seadm/licitacoes.asp"]
+    start_urls = [
+        "http://www.feiradesantana.ba.gov.br/seadm/licitacoes.asp",
+        # TODO testar se funciona
+        "http://www.feiradesantana.ba.gov.br/seadm/licitacoes_09_10.asp",
+        "http://www.feiradesantana.ba.gov.br/seadm/licitacoes_11_12.asp",
+        "http://www.feiradesantana.ba.gov.br/seadm/licitacoes_13e14.asp",
+    ]
     initial_date = date(2001, 1, 1)
 
     def follow_this_date(self, url):
