@@ -39,3 +39,30 @@ def from_str_to_date(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y"]):
     datetime_obj = from_str_to_datetime(date_str, supported_formats)
     if datetime_obj:
         return datetime_obj.date()
+
+
+def months_and_years(start_date, end_date):
+    pairs = []
+    for year in range(start_date.year, end_date.year + 1):
+        for month in range(1, 13):
+            if start_date.year == end_date.year:
+                if start_date.month < month <= end_date.month:
+                    pairs.append((month, year))
+            elif year == start_date.year:
+                if month > start_date.month:
+                    pairs.append((month, year))
+            elif year == end_date.year:
+                if month <= end_date.month:
+                    pairs.append((month, year))
+            elif year not in (start_date.year, end_date.year):
+                pairs.append((month, year))
+    return pairs
+
+
+def extract_date(str_with_date):
+    DATE_PATTERN = re.compile(r"\d+\/\d+\/\d+")
+    result = re.search(DATE_PATTERN, str_with_date)
+    if result:
+        supported_formats = ["%d/%m/%Y", "%d/%m/%y"]
+        return from_str_to_date(result.group(0), supported_formats)
+    return

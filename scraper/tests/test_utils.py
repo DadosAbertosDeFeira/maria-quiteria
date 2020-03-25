@@ -1,11 +1,13 @@
-from datetime import datetime
+from datetime import date, datetime
 
 import pytest
 
 from ..spiders.utils import (
+    extract_date,
     extract_param,
     from_str_to_datetime,
     identify_contract_id,
+    months_and_years,
     replace_query_param,
 )
 
@@ -113,3 +115,42 @@ def test_possible_date_formats(datetime_str, expected_obj):
     formats = ["%d/%m/%Y", "%d/%m/%y"]
 
     assert from_str_to_datetime(datetime_str, formats) == expected_obj
+
+
+@pytest.mark.parametrize(
+    "start_date,end_date,expected_month_and_year",
+    [
+        (datetime(2020, 1, 10), datetime(2020, 3, 1), [(2, 2020), (3, 2020)]),
+        (
+            datetime(2019, 10, 1),
+            datetime(2020, 3, 1),
+            [(11, 2019), (12, 2019), (1, 2020), (2, 2020), (3, 2020)],
+        ),
+        (datetime(2020, 2, 10), datetime(2020, 3, 1), [(3, 2020)]),
+        (datetime(2020, 3, 1), datetime(2020, 3, 1), []),
+        (datetime(2020, 6, 1), datetime(2020, 3, 1), []),
+        (
+            datetime(2008, 10, 11),
+            datetime(2012, 3, 29),
+            [(11, 2008), (12, 2008)]
+            + [(m, y) for y in range(2009, 2012) for m in range(1, 13)]
+            + [(1, 2012), (2, 2012), (3, 2012)],
+        ),
+    ],
+)
+def test_months_and_years(start_date, end_date, expected_month_and_year):
+    assert months_and_years(start_date, end_date) == expected_month_and_year
+
+
+@pytest.mark.parametrize(
+    "str_with_date,expected_obj",
+    [
+        ("26/02/2020", date(2020, 2, 26)),
+        ("26/02/2020 19:28", date(2020, 2, 26)),
+        ("26/02/20", date(2020, 2, 26)),
+        ("26.02.20", None),
+        ("Random", None),
+    ],
+)
+def test_extract_date(str_with_date, expected_obj):
+    assert extract_date(str_with_date) == expected_obj

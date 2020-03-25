@@ -31,6 +31,10 @@ class CityCouncilAgenda(DatasetMixin):
     event_type = models.CharField(max_length=20, choices=EVENT_TYPE)
     title = models.CharField(max_length=100, null=True, blank=True)
 
+    class Meta:
+        verbose_name = "Câmara de Vereadores - Agenda"
+        verbose_name_plural = "Câmara de Vereadores - Agendas"
+
     def __repr__(self):
         return f"{self.date} {self.event_type} {self.title}"
 
@@ -47,6 +51,10 @@ class Gazette(DatasetMixin):
     file_url = models.URLField(null=True, blank=True)
     file_content = models.TextField(null=True, blank=True)
 
+    class Meta:
+        verbose_name = "Diário Oficial"
+        verbose_name_plural = "Diários Oficiais"
+
     def __repr__(self):
         return f"{self.date} {self.power} {self.year_and_edition}"
 
@@ -61,6 +69,30 @@ class GazetteEvent(DatasetMixin):
     summary = models.TextField(null=True, blank=True)
     published_on = models.CharField(max_length=100, null=True, blank=True)
 
+    class Meta:
+        verbose_name = "Diário Oficial - Evento"
+        verbose_name_plural = "Diário Oficial - Eventos"
+
     def __repr__(self):
         gazette_info = f"{self.gazette.power} {self.gazette.year_and_edition}"
         return f"[{gazette_info}] {self.title} {self.secretariat}"
+
+
+class CityCouncilAttendanceList(DatasetMixin):
+    STATUS = (
+        ("presente", "Presente"),
+        ("falta_justificada", "Falta Justificada"),
+        ("licenca_justificada", "Licença Justificada"),
+        ("ausente", "Ausente"),
+    )
+    date = models.DateField()
+    description = models.CharField(max_length=200, null=True, blank=True)
+    council_member = models.CharField(max_length=200)
+    status = models.CharField(max_length=20, choices=STATUS)
+
+    class Meta:
+        verbose_name = "Câmara de Vereadores - Lista de Presença"
+        verbose_name_plural = "Câmara de Vereadores - Listas de Presença"
+
+    def __repr__(self):
+        return f"{self.date} {self.council_member} {self.status}"
