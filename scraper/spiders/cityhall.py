@@ -28,13 +28,13 @@ class BidsSpider(BaseSpider):
 
         for url in urls:
             if base_url not in url:
-                # all years except 2017 and 2018
+                # todos os anos exceto 2017 e 2018
                 if url.startswith("servicos.asp"):
                     url = response.urljoin(f"{base_url}/{url}")
                 else:
                     url = response.urljoin(f"{base_url}/seadm/{url}")
 
-            if self.collect_all or self.follow_this_date(url):
+            if self.follow_this_date(url):
                 yield response.follow(url, self.parse_page)
 
     def parse_page(self, response):
