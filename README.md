@@ -33,13 +33,27 @@ Para rodar esse projeto localmente, instale as dependências:
 pip install -r dev_requirements.txt
 ```
 
+* Carregue as variáveis de ambiente.
+
+Um exemplo das configurações pode ser encontrado no arquivo `.env.example` (que pode ser copiado para um arquivo `.env` na raiz do projeto)
+
+
 * Postgres
 
 Esse projeto usa o Postgres. Para rodar o banco de dados local, crie um
-banco de dados com o nome `mariaquiteria`. Depois basta aplicar as `migrations`:
+banco de dados com o nome `mariaquiteria`. 
+
+Adicione a variável de ambiente `DATABASE_URL` com a url de conexão ao seu postgres. Ex: `DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/NAME`
+
+Depois basta aplicar as `migrations`:
 
 ```
 python manage.py migrate
+```
+
+Para navegar na admin, crie um super usuário:
+```
+python manage createsuperuser
 ```
 
 * Java
