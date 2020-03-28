@@ -2,6 +2,7 @@ import os
 
 from .items import (
     CityCouncilAgendaItem,
+    CityCouncilAttendanceListItem,
     CityHallBidItem,
     CityHallContractItem,
     CityHallPaymentsItem,
@@ -28,7 +29,7 @@ ITEM_PIPELINES = {
 }
 FILES_STORE = f"{os.getcwd()}/data/"
 KEEP_FILES = os.getenv("KEEP_FILES", False)
-ASYNC_FILE_DOWLOAD = os.getenv("ASYNC_FILE_DOWLOAD", False)
+ASYNC_FILE_PROCESSING = os.getenv("ASYNC_FILE_PROCESSING", False)
 
 # http cache
 HTTPCACHE_ENABLED = True
@@ -44,6 +45,7 @@ SPIDERMON_VALIDATION_MODELS = {
     CityHallContractItem: "scraper.validators.CityHallContractItem",
     CityHallBidItem: "scraper.validators.CityHallBidItem",
     CityHallPaymentsItem: "scraper.validators.CityHallPaymentsItem",
+    CityCouncilAttendanceListItem: "scraper.validators.CityCouncilAttendanceListItem",
 }
 
 # monitoring

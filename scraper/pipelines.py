@@ -2,7 +2,7 @@ from hashlib import sha1
 from pathlib import Path
 from urllib.parse import urlparse
 
-from scraper.settings import ASYNC_FILE_DOWLOAD
+from scraper.settings import ASYNC_FILE_PROCESSING, FILES_STORE, KEEP_FILES
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.utils.python import to_bytes
 
@@ -35,10 +35,17 @@ class ExtractFileContentPipeline(FilesPipeline):
             if not ok:
                 continue
 
-            if ASYNC_FILE_DOWLOAD:
-                content_from_file.send(item.__name__, **file_info)
+            kwargs = {
+                "item_name": item.__name__,
+                "url": file_info["url"],
+                "path": f"{FILES_STORE}{file_info['path']}",
+                "checkusm": file_info["checksum"],
+                "save_to_db": ASYNC_FILE_PROCESSING,
+                "keep_file": KEEP_FILES,
+            }
+            if ASYNC_FILE_PROCESSING:
+                content_from_file.send(**kwargs)
             else:
-                content = content_from_file(item.__name__, **file_info)
-                item["file_content"] = content
+                item["file_content"] = content_from_file(**kwargs)
 
             yield item

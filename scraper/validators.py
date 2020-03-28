@@ -41,6 +41,13 @@ class CityCouncilAgendaItem(BaseModel):
     event_type = StringType(required=True)
 
 
+class CityCouncilAttendanceListItem(BaseModel):
+    date = DateType()
+    description = StringType()
+    council_member = StringType(required=True)
+    status = StringType(required=True)
+
+
 class CityHallContractItem(BaseModel):
     contract_id = StringType(required=True)
     starts_at = DateType(formats=("%d/%m/%Y", "%d/%m/%y"))

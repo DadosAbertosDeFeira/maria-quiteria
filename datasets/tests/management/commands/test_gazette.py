@@ -66,6 +66,7 @@ class TestSaveGazette:
 
         gazette = save_gazette(item)
         item["file_content"] = "O Prefeito no uso de suas atribuições..."
+        item["crawled_at"] = datetime(2020, 3, 22, 7, 15, 17, 908831)
         updated_gazette = save_gazette(item)
 
         assert gazette.pk == updated_gazette.pk
