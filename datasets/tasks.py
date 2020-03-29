@@ -7,7 +7,7 @@ from dramatiq import actor
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from tika import parser
 
-# This ugly block makes this module works inside and outside Django architecture
+# Esse bloco (feio) faz com que esse módulo funcione dentro ou fora do Django
 try:
     from datasets.models import Gazette
 except ImproperlyConfigured:
