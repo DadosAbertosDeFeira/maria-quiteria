@@ -92,4 +92,4 @@ class Dev(Common):
 class Prod(Common):
     SECRET_KEY = values.SecretValue()
     ALLOWED_HOSTS = values.ListValue()
-    CLOUDAMQP_URL = values.ListValue()
+    CLOUDAMQP_URL = values.Value("CLOUDAMQP_URL")
