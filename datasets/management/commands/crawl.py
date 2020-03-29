@@ -1,8 +1,10 @@
 import os
 
+
 from datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
+    CityCouncilMinute,
     Gazette,
     GazetteEvent,
 )
@@ -10,10 +12,11 @@ from django.core.management.base import BaseCommand
 from scraper.items import (
     CityCouncilAgendaItem,
     CityCouncilAttendanceListItem,
+    CityCouncilMinuteItem,
     GazetteItem,
     LegacyGazetteItem,
 )
-from scraper.spiders.citycouncil import AgendaSpider, AttendanceListSpider
+from scraper.spiders.citycouncil import AgendaSpider, AttendanceListSpider, MinuteSpider
 from scraper.spiders.gazette import (
     ExecutiveAndLegislativeGazetteSpider,
     LegacyGazetteSpider,
@@ -23,7 +26,7 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.signalmanager import dispatcher
 from scrapy.utils.project import get_project_settings
 
-from ._citycouncil import save_agenda, save_attendance_list
+from ._citycouncil import save_agenda, save_attendance_list, save_minute
 from ._gazette import save_gazette, save_legacy_gazette
 
 
@@ -48,6 +51,8 @@ class Command(BaseCommand):
             save_agenda(item)
         if isinstance(item, CityCouncilAttendanceListItem):
             save_attendance_list(item)
+        if isinstance(item, CityCouncilMinuteItem):
+            save_minute(item)
         if isinstance(item, LegacyGazetteItem):
             save_legacy_gazette(item)
         if isinstance(item, GazetteItem):
@@ -58,6 +63,7 @@ class Command(BaseCommand):
             self.warn("Dropping existing records...")
             CityCouncilAgenda.objects.all().delete()
             CityCouncilAttendanceList.objects.all().delete()
+            CityCouncilMinute.objects.all().delete()
 
             if os.getenv("FEATURE_FLAG__SAVE_GAZETTE", False):
                 Gazette.objects.all().delete()
@@ -70,6 +76,9 @@ class Command(BaseCommand):
             AgendaSpider, start_from_date=CityCouncilAgenda.last_collected_item_date(),
         )
         process.crawl(AttendanceListSpider)
+        process.crawl(
+            MinuteSpider, start_from_date=CityCouncilMinute.last_collected_item_date()
+        )
 
         if os.getenv("FEATURE_FLAG__SAVE_GAZETTE", False):
             last_collected_gazette = Gazette.last_collected_item_date()

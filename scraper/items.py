@@ -45,6 +45,14 @@ class CityCouncilAttendanceListItem(BaseItem):
     status = scrapy.Field()
 
 
+class CityCouncilMinuteItem(BaseItem):
+    date = scrapy.Field()
+    title = scrapy.Field()
+    event_type = scrapy.Field()
+    file_urls = scrapy.Field()
+    file_content = scrapy.Field()
+
+
 class CityHallContractItem(BaseItem):
     contract_id = scrapy.Field()
     starts_at = scrapy.Field()
