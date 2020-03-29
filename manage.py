@@ -10,7 +10,10 @@ def main():
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
     os.environ.setdefault("DJANGO_CONFIGURATION", "Dev")
 
-    env_file.load()
+    try:
+        env_file.load()
+    except OSError:
+        pass
 
     from configurations.management import execute_from_command_line
 
