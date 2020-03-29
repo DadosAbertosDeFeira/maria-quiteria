@@ -42,6 +42,52 @@ banco de dados com o nome `mariaquiteria`. Depois basta aplicar as `migrations`:
 python manage.py migrate
 ```
 
+* Docker (alpha)
+
+Se você não quiser instalar todas as dependencias, você pode [instalar](https://docs.docker.com/install/) e usar o Docker. 
+Para isso, você precisa criar um `.env` como abaixo:
+
+```
+KEEP_FILES=True
+SPIDERMON_TELEGRAM_FAKE=True
+SPIDERMON_SENTRY_FAKE=True
+DJANGO_SETTINGS_MODULE=core.settings
+DJANGO_CONFIGURATION=Prod
+DJANGO_SECRET_KEY=dont-tell-anybody
+POSTGRES_PASSWORD=maria1792
+```
+
+Depois (somente na primeira vez):
+
+`docker-compose build` para construir a imagem
+
+`docker-compose up` para executar a imagem
+
+`docker-compose exec web ./manage.py migrate` para criar as tabelas no banco
+
+`docker-compose exec web ./manage.py createsuperuser` para criar um usuario `admin`
+
+E por fim `docker-compose exec web ./manage.py collectstatic` para processar e mover os arquivos estáticos. 
+
+Reinicie os containers: `docker-compose restart` 
+
+Nas próximas vezes, basta executar os containers: `docker-compose up` e acesse [localhost:8000/admin](http://localhost:8000/admin)
+
+
+Para a acessar o banco depois com seu cliente preferido, basta usar os seguintes dados:
+
+```
+User: postgres
+Password: a senha que você definiu
+Database: postgres
+Host: localhost
+```
+
+Para 
+
+**IMPORTANTE**: o uso do docker (ainda) não faz a instalação do Apache Tika
+
+
 * Java
 
 Nesse projeto utilizamos o [Apache Tika](https://tika.apache.org/download.html)
