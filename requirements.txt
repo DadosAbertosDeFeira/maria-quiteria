@@ -3,7 +3,7 @@ django==3.0.3
 django-configurations==2.2
 gunicorn==20.0.4
 jinja2==2.11.1
-psycopg2==2.8.4
+psycopg2-binary==2.8.4
 schematics==2.1.0
 scrapy==1.8.0
 sentry-sdk==0.14.2
