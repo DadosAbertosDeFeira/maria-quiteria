@@ -35,7 +35,8 @@ pip install -r dev_requirements.txt
 
 * Carregue as variáveis de ambiente.
 
-Um exemplo das configurações pode ser encontrado no arquivo `.env.example` (que pode ser copiado para um arquivo `.env` na raiz do projeto)
+Um exemplo das configurações pode ser encontrado no arquivo `.env.example` 
+(que pode ser copiado para um arquivo `.env` na raiz do projeto).
 
 
 * Postgres
@@ -43,7 +44,8 @@ Um exemplo das configurações pode ser encontrado no arquivo `.env.example` (qu
 Esse projeto usa o Postgres. Para rodar o banco de dados local, crie um
 banco de dados com o nome `mariaquiteria`. 
 
-Adicione a variável de ambiente `DATABASE_URL` com a url de conexão ao seu postgres. Ex: `DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/NAME`
+Adicione a variável de ambiente `DATABASE_URL` com a url de conexão ao seu postgres. 
+Ex: `DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/NAME`
 
 Depois basta aplicar as `migrations`:
 
@@ -51,10 +53,21 @@ Depois basta aplicar as `migrations`:
 python manage.py migrate
 ```
 
-Para navegar na admin, crie um super usuário:
+* Admin
+
+Para navegar na admin, primeiro crie um super adminstrador:
 ```
-python manage createsuperuser
+python manage.py createsuperuser
 ```
+
+Depois, rode o servidor do django com:
+```
+python manage.py runserver
+```
+
+Com as configurações padrão a admin será acessível pela url: (http://127.0.0.1:8000)
+
+
 
 * Java
 
