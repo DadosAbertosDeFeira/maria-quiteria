@@ -3,17 +3,14 @@
 import os
 import sys
 
-import env_file
+from dotenv import find_dotenv, load_dotenv
 
 
 def main():
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
     os.environ.setdefault("DJANGO_CONFIGURATION", "Dev")
 
-    try:
-        env_file.load()
-    except OSError:
-        pass
+    load_dotenv(find_dotenv())
 
     from configurations.management import execute_from_command_line
 
