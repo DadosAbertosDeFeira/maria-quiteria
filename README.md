@@ -84,10 +84,33 @@ de nem todos os _spiders_ estarem disponíveis no comando novo.
 
 #### Serviço de fila e processamento assíncrono
 
-Você pode utiliar ou não um serviço de fila para processamento assíncrono. Isso ocorre quando extraímos o conteúdo de PDFs para texto, com o Tika. Caso precise utilizar isso localmente, a forma mais prática de ter uma instância do RabbitMQ rodando para esse serviço é:
+Você pode utiliar ou não um serviço de fila para processamento assíncrono. Isso
+é **totalmente** opcional. Essa funcionalidade pode ser utilizada para
+extraírmos o conteúdo de PDFs para texto, com o Tika, de maneira assíncrona à
+raspagem de dados.
+
+Caso queira ativar essa funcionalidade, você vai precisar configurar a variável
+de ambiente `ASYNC_FILE_PROCESSING` para `True` e installar o RabbitMQ. Para
+essa última parte,  temos duas formas de te ajudar.
+
+##### Utilizando o Docker para subir o RabbitMQ
+
+Se você não quiser instalar o RabbitMQ, a forma mais prática de ter uma
+instância dele rodando é com o [Docker](https://docs.docker.com/install/):
 
 ```
 docker run -p 5672:5672 rabbitmq
 ```
 
-Com isso, você pode configurar a variável de ambiente `ASYNC_FILE_PROCESSING` para `True` e pronto!
+Deixe esse processo rodando em uma janela do terminal e pronto!
+
+##### Instalando o RabbitMQ localmente
+
+Caso prefira, você pode
+[baixar e installar](https://www.rabbitmq.com/download.html) o RabbitMQ do site
+oficial. Feito isso, inicie o serviço em uma janela do temrinal e mantenha essa
+janela aberta:
+
+```
+rabbitmq-server
+```
