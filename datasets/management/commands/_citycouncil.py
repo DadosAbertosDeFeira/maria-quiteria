@@ -1,4 +1,8 @@
-from datasets.models import CityCouncilAgenda, CityCouncilAttendanceList
+from datasets.models import (
+    CityCouncilAgenda,
+    CityCouncilAttendanceList,
+    CityCouncilMinute,
+)
 from django.utils.timezone import make_aware
 
 
@@ -28,3 +32,18 @@ def save_attendance_list(item):
         },
     )
     return attendance
+
+
+def save_minute(item):
+    minute, _ = CityCouncilMinute.objects.get_or_create(
+        date=item["date"],
+        file_url=item["file_urls"][0],
+        file_content=item["file_content"],
+        crawled_from=item["crawled_from"],
+        defaults={
+            "title": item["title"],
+            "event_type": item["event_type"],
+            "crawled_at": make_aware(item["crawled_at"]),
+        },
+    )
+    return minute
