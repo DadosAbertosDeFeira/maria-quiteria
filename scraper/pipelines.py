@@ -39,7 +39,7 @@ class ExtractFileContentPipeline(FilesPipeline):
                 "item_name": item.__name__,
                 "url": file_info["url"],
                 "path": f"{FILES_STORE}{file_info['path']}",
-                "checkusm": file_info["checksum"],
+                "checksum": file_info["checksum"],
                 "save_to_db": ASYNC_FILE_PROCESSING,
                 "keep_file": KEEP_FILES,
             }
