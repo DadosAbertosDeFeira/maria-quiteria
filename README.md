@@ -85,7 +85,7 @@ Host: localhost
 
 Para 
 
-**IMPORTANTE**: o uso do docker (ainda) não faz a instalação do Apache Tika
+**IMPORTANTE**: o uso do Docker (ainda) não faz a instalação do Apache Tika
 
 
 * Java
