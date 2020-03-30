@@ -85,6 +85,10 @@ Host: localhost
 
 **IMPORTANTE**: o uso do Docker (ainda) não faz a instalação do Apache Tika
 
+#### Rodando os testes
+
+`make runtests` 
+
 
 * Java
 
