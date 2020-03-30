@@ -83,8 +83,6 @@ Database: postgres
 Host: localhost
 ```
 
-Para 
-
 **IMPORTANTE**: o uso do Docker (ainda) não faz a instalação do Apache Tika
 
 
