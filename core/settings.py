@@ -54,6 +54,11 @@ class Common(Configuration):
     ]
 
     WSGI_APPLICATION = "core.wsgi.application"
+    os.environ.setdefault(
+        'DATABASE_URL',
+        "sqlite:///" + os.path.join(BASE_DIR, "db.sqlite3")
+    )
+    DATABASES = {"default": dj_database_url.config(conn_max_age=600)}
 
     AUTH_PASSWORD_VALIDATORS = [
         {
@@ -81,21 +86,9 @@ class Common(Configuration):
 
 
 class Dev(Common):
-    default_db = "sqlite:///" + os.path.join(Common.BASE_DIR, "db.sqlite3")
-    DATABASES = {"default": dj_database_url.config(default=default_db)}
     DEBUG = True
 
 
 class Prod(Common):
     SECRET_KEY = values.SecretValue()
     ALLOWED_HOSTS = values.ListValue(["localhost", "127.0.0.1", "[::1]", "0.0.0.0"])
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.setdefault("POSTGRES_NAME", "postgres"),
-            'USER': os.environ.setdefault("POSTGRES_USER", "postgres"),
-            'HOST': os.environ.setdefault("POSTGRES_HOST", "db"),
-            'PORT': os.environ.setdefault("POSTGRES_PORT", '5432'),
-            'PASSWORD': os.environ.setdefault("POSTGRES_PASSWORD", ''),
-        }
-    }
