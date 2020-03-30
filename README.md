@@ -63,11 +63,11 @@ Depois (somente na primeira vez):
 
 `docker-compose up` para executar a imagem
 
-`docker-compose exec web ./manage.py migrate` para criar as tabelas no banco
+`make migrate` para criar as tabelas no banco
 
-`docker-compose exec web ./manage.py createsuperuser` para criar um usuario `admin`
+`make createsuperuser` para criar um usuario `admin`
 
-E por fim `docker-compose exec web ./manage.py collectstatic` para processar e mover os arquivos estáticos. 
+E por fim `make collectstatic` para processar e mover os arquivos estáticos. 
 
 Reinicie os containers: `docker-compose restart` 
 
