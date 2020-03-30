@@ -65,7 +65,7 @@ Depois, rode o servidor do django com:
 python manage.py runserver
 ```
 
-Com as configurações padrão a admin será acessível pela url: (http://127.0.0.1:8000)
+Com as configurações padrão o painel de controle será acessível pela URL: [`127.0.0.1`](http://127.0.0.1:8000)
 
 
 
