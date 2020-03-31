@@ -60,7 +60,7 @@ Para navegar na admin, primeiro crie um super administrador:
 python manage.py createsuperuser
 ```
 
-Depois, rode o servidor do django com:
+Depois, rode o servidor com:
 ```
 python manage.py runserver
 ```
