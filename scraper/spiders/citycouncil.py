@@ -6,6 +6,7 @@ from scraper.items import (
     CityCouncilAttendanceListItem,
     CityCouncilMinuteItem,
 )
+from scrapy_splash import SplashFormRequest
 
 from . import BaseSpider
 from .utils import extract_date, from_str_to_date, months_and_years
@@ -173,3 +174,95 @@ class MinuteSpider(BaseSpider):
                 event_type=self.get_type(title),
                 file_urls=[response.urljoin(file_url)],
             )
+
+
+class ExpensesSpider(BaseSpider):
+    name = "citycouncil_expenses"
+    url = "https://www.transparencia.feiradesantana.ba.leg.br/controller/despesa.php"
+    data = {
+        "POST_PARAMETRO": "PesquisaDespesas",
+        "POST_FASE": "",
+        "POST_UNIDADE": "101",
+        "POST_DATA": "",
+        "POST_NMCREDOR": "",
+        "POST_CPFCNPJ": "",
+    }
+
+    def start_requests(self):
+        yield SplashFormRequest(
+            self.url, formdata=self.data,
+        )
+
+    def parse(self, response):
+        pages = response.css("div.pagination li a ::text").extract()
+        if pages:
+            last_page = int(pages[-2])
+            # TODO filtro por data
+
+            for page in range(1, last_page + 1):
+                data = self.data.copy()
+                data["POST_PAGINA"] = str(page)
+                data["POST_PAGINAS"] = str(last_page)
+                yield SplashFormRequest(
+                    self.url,
+                    formdata=data,
+                    callback=self.parse_page,
+                    args={"wait": 0.5},
+                )
+
+    def parse_page(self, response):
+        """Extrai informações sobre as despesas.
+
+        Exemplo:
+        N°: 01346/00
+        CPF/CNPJ: 119.121.205-00
+        Data: 21/10/2010
+        N° do processo:
+        Bem / Serviço Prestado: REF. A 2 E 1/2 DIARIAS P/ VEREADORA PARTICIPAR
+            DO SEMINÁRIO CAPACITANDO VEREADORES DO BRASIL PARA UM NOVO MILÊNIO,
+            EM SALVADOR-BA, DE 27 A 29/08/2010.
+        Natureza: 339014000000 - Diarias-Civil 2001 -
+            Administracao de pessoal e encargos
+        Função: 01 - LEGISLATIVA
+        Subfunção: 031 - ACAO
+        Processo Licitatório: ISENTO
+        Fonte de Recurso: 0000 - TESOURO
+        """
+        headlines = response.css("#editable-sample tr.accordion-toggle")
+        details = response.css("#editable-sample div.accordion-inner")
+
+        for headline, raw_details in zip(headlines, details):
+            headline = [text.strip() for text in headline.css("td ::text").extract()]
+            item = {
+                "published_at": headline[0],
+                "phase": headline[1],
+                "company_or_person": headline[2],
+                "value": headline[3],
+                "crawled_at": datetime.now(),
+                "crawled_from": response.url,
+            }
+            details = [
+                detail.strip() for detail in raw_details.css("td ::text").extract()
+            ]
+            mapping = {
+                "N°:": "number",
+                "CPF/CNPJ:": "document",
+                "Data:": "date",
+                "N° do processo:": "process_number",
+                "Bem / Serviço Prestado:": "summary",
+                "Natureza:": "group",
+                "Ação:": "action",
+                "Função:": "function",
+                "Subfunção:": "subfunction",
+                "Processo Licitatório:": "type_of_process",
+                "Fonte de Recurso:": "resource",
+            }
+            details_copy = details.copy()
+            while details_copy:
+                key = details_copy.pop(0)
+                if key == "imprimir":
+                    break
+                value = details_copy.pop(0)
+                item[mapping[key]] = value
+
+            yield item
