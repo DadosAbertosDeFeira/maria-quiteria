@@ -55,7 +55,7 @@ python manage.py migrate
 
 * Admin
 
-Para navegar na admin, primeiro crie um super adminstrador:
+Para navegar na admin, primeiro crie um super administrador:
 ```
 python manage.py createsuperuser
 ```
