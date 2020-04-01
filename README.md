@@ -34,7 +34,7 @@ Para rodar esse projeto localmente, instale as dependências:
 pip install -r dev_requirements.txt
 ```
 
-* Carregue as variáveis de ambiente.
+* Carregue as variáveis de ambiente
 
 Um exemplo das configurações pode ser encontrado no arquivo `.env.example` 
 (que pode ser copiado para um arquivo `.env` na raiz do projeto).
