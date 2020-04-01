@@ -109,7 +109,7 @@ Deixe esse processo rodando em uma janela do terminal e pronto!
 
 Caso prefira, você pode
 [baixar e installar](https://www.rabbitmq.com/download.html) o RabbitMQ do site
-oficial. Feito isso, inicie o serviço em uma janela do temrinal e mantenha essa
+oficial. Feito isso, inicie o serviço em uma janela do terminal e mantenha essa
 janela aberta:
 
 ```
