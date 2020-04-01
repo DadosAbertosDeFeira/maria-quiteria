@@ -91,7 +91,7 @@ extraírmos o conteúdo de PDFs para texto, com o Tika, de maneira assíncrona �
 raspagem de dados.
 
 Caso queira ativar essa funcionalidade, você vai precisar configurar a variável
-de ambiente `ASYNC_FILE_PROCESSING` para `True` e installar o RabbitMQ. Para
+de ambiente `ASYNC_FILE_PROCESSING` para `True` e instalar o RabbitMQ. Para
 essa última parte, temos duas formas de te ajudar.
 
 ##### Utilizando o Docker para subir o RabbitMQ
