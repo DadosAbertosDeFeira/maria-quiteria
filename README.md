@@ -85,7 +85,7 @@ de nem todos os _spiders_ estarem disponíveis no comando novo.
 
 #### Serviço de fila e processamento assíncrono
 
-Você pode utiliar ou não um serviço de fila para processamento assíncrono. Isso
+Você pode utilizar ou não um serviço de fila para processamento assíncrono. Isso
 é **totalmente** opcional. Essa funcionalidade pode ser utilizada para
 extraírmos o conteúdo de PDFs para texto, com o Tika, de maneira assíncrona à
 raspagem de dados.
