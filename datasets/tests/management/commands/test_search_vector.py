@@ -11,7 +11,7 @@ from datasets.models import Gazette
 
 class TestCommandHandler(TestCase):
     @patch.object(Gazette.objects, "update")
-    @patch("jarbas.core.management.commands.searchvector.print")
+    @patch("datasets.management.commands.searchvector.print")
     def test_handler(self, print_, update):
         command = Command()
         command.handle()
@@ -64,4 +64,4 @@ class TestCommandHandler(TestCase):
         command = Command()
         command.handle()
 
-        assert len(saved) == 5
+        assert len(saved) == 2
