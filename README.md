@@ -92,7 +92,7 @@ raspagem de dados.
 
 Caso queira ativar essa funcionalidade, você vai precisar configurar a variável
 de ambiente `ASYNC_FILE_PROCESSING` para `True` e installar o RabbitMQ. Para
-essa última parte,  temos duas formas de te ajudar.
+essa última parte, temos duas formas de te ajudar.
 
 ##### Utilizando o Docker para subir o RabbitMQ
 
