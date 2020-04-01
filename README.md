@@ -38,7 +38,6 @@ pip install -r dev_requirements.txt
 Um exemplo das configurações pode ser encontrado no arquivo `.env.example` 
 (que pode ser copiado para um arquivo `.env` na raiz do projeto).
 
-
 * Postgres
 
 Esse projeto usa o Postgres. Para rodar o banco de dados local, crie um
@@ -66,8 +65,6 @@ python manage.py runserver
 ```
 
 Com as configurações padrão o painel de controle estará acessível pela URL: [`127.0.0.1`](http://127.0.0.1:8000)
-
-
 
 * Java
 
