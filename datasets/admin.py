@@ -61,6 +61,8 @@ class GazetteAdmin(ReadOnlyMixin, admin.ModelAdmin):
             .order_by("-rank")
         )
 
+        return queryset, False
+
 
 @admin.register(CityCouncilAgenda)
 class CityCouncilAgendaAdmin(ReadOnlyMixin, admin.ModelAdmin):
