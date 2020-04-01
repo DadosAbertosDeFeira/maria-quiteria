@@ -44,7 +44,7 @@ Um exemplo das configurações pode ser encontrado no arquivo `.env.example`
 Esse projeto usa o Postgres. Para rodar o banco de dados local, crie um
 banco de dados com o nome `mariaquiteria`. 
 
-Adicione a variável de ambiente `DATABASE_URL` com a url de conexão ao seu postgres. 
+Adicione a variável de ambiente `DATABASE_URL` com a url de conexão ao seu Postgres. 
 Ex: `DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/NAME`
 
 Depois basta aplicar as `migrations`:
