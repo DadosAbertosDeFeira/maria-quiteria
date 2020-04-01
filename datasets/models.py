@@ -1,3 +1,5 @@
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 
 
@@ -12,10 +14,10 @@ class DatasetMixin(models.Model):
         abstract = True
 
     @classmethod
-    def last_collected_item_date(self):
+    def last_collected_item_date(cls):
         try:
-            return self.objects.latest("crawled_at").crawled_at.date()
-        except self.DoesNotExist:
+            return cls.objects.latest("crawled_at").crawled_at.date()
+        except cls.DoesNotExist:
             return
 
 
@@ -51,9 +53,13 @@ class Gazette(DatasetMixin):
     file_url = models.URLField(null=True, blank=True)
     file_content = models.TextField(null=True, blank=True)
 
+    search_vector = SearchVectorField(null=True, editable=False)
+
     class Meta:
         verbose_name = "Diário Oficial"
         verbose_name_plural = "Diários Oficiais"
+
+        indexes = [GinIndex(fields=["search_vector"])]
 
     def __repr__(self):
         return f"{self.date} {self.power} {self.year_and_edition}"
