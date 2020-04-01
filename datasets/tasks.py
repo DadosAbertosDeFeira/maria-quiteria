@@ -3,7 +3,7 @@ from pathlib import Path
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from dramatiq import actor
+from dramatiq import actor, set_broker
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from tika import parser
 
