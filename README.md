@@ -65,7 +65,7 @@ Depois, rode o servidor com:
 python manage.py runserver
 ```
 
-Com as configurações padrão o painel de controle estará acessível pela URL: [`127.0.0.1`](http://127.0.0.1:8000)
+Com as configurações padrão o painel de controle estará acessível pela URL: [`127.0.0.1`](http://127.0.0.1:8000).
 
 * Java
 
