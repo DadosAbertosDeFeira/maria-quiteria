@@ -20,7 +20,8 @@ except ImproperlyConfigured:
     from datasets.models import Gazette
 
 
-RabbitmqBroker(url=settings.CLOUDAMQP_URL)
+rabbitmq_broker = RabbitmqBroker(url=settings.CLOUDAMQP_URL)
+set_broker(rabbitmq_broker)
 ITEM_TO_MODEL = {"GazetteItem": Gazette, "LegacyGazetteItem": Gazette}
 
 
