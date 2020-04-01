@@ -2,6 +2,7 @@ import os
 
 import dj_database_url
 from configurations import Configuration, values
+from django.conf import global_settings
 
 
 class Common(Configuration):
@@ -13,6 +14,8 @@ class Common(Configuration):
     DEBUG = False
 
     ALLOWED_HOSTS = []
+
+    INTERNAL_IPS = global_settings.INTERNAL_IPS
 
     INSTALLED_APPS = [
         "django.contrib.admin",
@@ -86,6 +89,12 @@ class Common(Configuration):
 class Dev(Common):
     DEBUG = True
     ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "0.0.0.0"]
+
+    INSTALLED_APPS = Common.INSTALLED_APPS + ["debug_toolbar"]
+
+    MIDDLEWARE = Common.MIDDLEWARE + ["debug_toolbar.middleware.DebugToolbarMiddleware"]
+
+    INTERNAL_IPS = Common.INTERNAL_IPS + ["127.0.0.1"]
 
 
 class Prod(Common):
