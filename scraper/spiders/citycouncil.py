@@ -1,7 +1,11 @@
 from datetime import date, datetime
 
 import scrapy
-from scraper.items import CityCouncilAgendaItem, CityCouncilAttendanceListItem
+from scraper.items import (
+    CityCouncilAgendaItem,
+    CityCouncilAttendanceListItem,
+    CityCouncilMinuteItem,
+)
 
 from . import BaseSpider
 from .utils import extract_date, from_str_to_date, months_and_years
@@ -119,4 +123,53 @@ class AttendanceListSpider(BaseSpider):
                 description=description.strip() if description else "",
                 council_member=council_member,
                 status=self.get_status(status),
+            )
+
+
+class MinuteSpider(BaseSpider):
+    name = "citycouncil_minutes"
+    start_urls = ["https://www.feiradesantana.ba.leg.br/atas"]
+    initial_date = date(2015, 1, 1)
+
+    @staticmethod
+    def get_type(event_title):
+        if "sessão ordinária" in event_title.lower():
+            return "sessao_ordinaria"
+        if "sessões ordinárias" in event_title.lower():
+            return "sessao_ordinaria"
+        if "ordem do dia" in event_title.lower():
+            return "ordem_do_dia"
+        if "sessão solene" in event_title.lower():
+            return "sessao_solene"
+        if "sessão especial" in event_title.lower():
+            return "sessao_especial"
+        if "audiência pública" in event_title.lower():
+            return "audiencia_publica"
+        return
+
+    def start_requests(self):
+        self.logger.info(f"Data inicial: {self.start_date}")
+        today = datetime.now().date()
+
+        for month, year in months_and_years(self.start_date, today):
+            url = (
+                "https://www.feiradesantana.ba.leg.br/atas"
+                f"?mes={month}&ano={year}&Acessar=OK"
+            )
+            yield scrapy.Request(url=url, callback=self.parse)
+
+    def parse(self, response):
+        dates = response.xpath("//table/tbody/tr/td[1]/strong/text()").getall()
+        event_titles = response.xpath("//table/tbody/tr/td[2]/p/strong/text()").getall()
+        file_urls = response.xpath("//p/a/@href").extract()
+
+        for event_date, title, file_url in zip(dates, event_titles, file_urls):
+            event_date = from_str_to_date(event_date)
+            yield CityCouncilMinuteItem(
+                crawled_at=datetime.now(),
+                crawled_from=response.url,
+                date=event_date,
+                title=title.strip(),
+                event_type=self.get_type(title),
+                file_urls=[response.urljoin(file_url)],
             )
