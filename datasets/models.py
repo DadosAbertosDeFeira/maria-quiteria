@@ -12,10 +12,10 @@ class DatasetMixin(models.Model):
         abstract = True
 
     @classmethod
-    def last_collected_item_date(self):
+    def last_collected_item_date(cls):
         try:
-            return self.objects.latest("crawled_at").crawled_at.date()
-        except self.DoesNotExist:
+            return cls.objects.latest("crawled_at").crawled_at.date()
+        except cls.DoesNotExist:
             return
 
 
