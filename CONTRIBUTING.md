@@ -29,70 +29,63 @@ Os detalhes de como instalar e executar este projeto podem ser encontrados no
 
 Você encontrou um bug?
 
-Esta seção irá te guiar sobre como você deve agir para reportar um Bug no Maria Quitéria.
-Seguir estas etapas ajuda os mantenedores do projeto e a comunidade a entender o que
-aconteceu, como reproduzir o erro e encontrar a solução.
-
-- Bugs são rastreados através de [_issues_ no GitHub](https://guides.github.com/features/issues/), verifique que nenhuma _issue_ foi criada por outro usuário reportando o mesmo erro.
-- Crie uma issue explicando o problema e adicionando novas informações detalhadas que ajudem os mantenedores do projeto a reproduzir o problema
+* Sugestões de melhoria são rastreados através de [_issue_](https://guides.github.com/features/issues/)
+e [_pull requests_](https://guides.github.com/activities/hello-world/#pr) no GitHub.
+Verifique se nenhuma _issue_ ou _pull request_ foi criada por outra pessoa com o mesmo bug.
+* Se não, [crie uma _issue_](https://github.com/DadosAbertosDeFeira/maria-quiteria/issues/new)
+explicando o problema e adicionando novas informações detalhadas que ajudem
+a reproduzir o problema.
 
 ## Sugerindo melhorias
 
-Esta seção irá te guiar sobre como sugerir melhorias ao Maria Quiteria, incluindo novas funcionalidades. Quando está criando uma sugestão de melhoria, por favor inclua o máximo de detalhes possíveis.
+Você é mais que bem-vindo a sugerir melhorias ao MQ. Pedimos apenas que tente incluir o
+máximo de detalhes possíveis.
 
-- Discuta sobre a sua sugestão em nosso [grupo no Telegram](https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg) com outros participantes e mantenedores do projeto
-- Sugestões de melhoria são rastreados através de [_issue_](https://guides.github.com/features/issues/) e [_pull requests_](https://guides.github.com/activities/hello-world/#pr) no GitHub, verifique que nenhuma _issue_ ou _pull request_ foi criada por outro usuário com a mesma sugestão.
-- Crie sua issue, com linguagem clara, e com o máximo de detalhes explicando todas as suas sugestões de melhoria para o repositório.
+- Verifique se nenhuma _issue_ ou _pull request_ foi criada por outro usuário com a mesma sugestão.
 
-## Criando pull requests
+Caso seja algo novo, você tem duas alternativas:
 
-Os processos aqui descritos possuem diversos objetivos:
+- Criar uma nova _issue_
+- Compartilhar a sua sugestão com outros participantes e mantenedores do projeto em nosso
+[grupo no Telegram](https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg)
 
-1. Manter a qualidade do Maria Quitéria
-2. Consertar problemas que são importantes para os usuários
-3. Engajar a comunidade a trabalhar pelo Maria Quitéria
-4. Permitir a sustentabilidade do sistema de revisão de contribuições pelos mantenedores
+Em ambos, tente usar uma linguagem clara, e com o máximo de detalhes. Qual a motivação,
+qual problema resolveria e possíveis desafios, por exemplo, são importantes para entender
+o que você precisa. Esse é um projeto de código aberto, mantido por voluntários.
+Frequentemente precisamos escolher bem o que vamos fazer com os recursos que temos. :)
 
-Siga as seguintes etapas para ter a sua contribuição neste repositório consideradas:
+## Criando _pull requests_
 
-- Use o tempo presente ("Adiciona funcionalidade" e não "Adicionada a funcionalidade")
-- Atualize o `README.md` com os detalhes da mudança caso esta inclua uma nova base de dados ou um novo comando na CLI
-- Quando necessários, adicione comentários e testes para as novas funcionalidades implementadas
+Você decidiu contribuir para o projeto! Yay!
 
-### O básico do GitHub
+Faça um _fork_ do projeto e crie uma nova _branch.
+Mais detalhes [aqui](https://help.github.com/pt/enterprise/2.17/user/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork).
 
-1. Dê um fork neste repositório
+Aqui algumas dicas:
 
-Ao lado direito da página inicial do repositório há um botão escrito Fork.
+* Caso decida trabalhar em alguma _issue_, comente na _issue_ escolhida. Dessa forma,
+outras pessoas saberão que tem alguém trabalhando nela. Caso tenha ficado perdido ou com
+dúvidas, peça ajuda.
 
-2. Clone o fork do seu repositório
+* Caso tenha visto algo pontual, como um _typo_ ou algo que pode ser corrigido e testado
+rapidamente e não envolva mudanças estruturais, você é bem vindo a abrir um novo PR também.
 
-```console
-$ git clone http://github.com/<SEU-USERNAME-NO-GITHUB>/maria-quiteria.git
-```
+* Antes de qualquer coisa, tente rodar o projeto localmente.
 
-3. Crie um branch com a funcionalidade
+* Instale o `pre-commit` localmente. Dessa forma, o código que você _commitar_ já estará
+formatado, com os _imports_ ordenados e mais arrumado.
 
-```console
-$ git checkout -b <NOVA-FUNCIONALIDADE>
-```
+* Rode os testes localmente. Além de ser uma boa prática, previne idas e vindas nas
+revisões.
 
-4. Faça o que você faz de melhor
+* Adicione novos testes para novas funcionalidades ou bugs.
 
-Agora é a sua hora de brilhar e escrever um bom código que irá fazer este projeto ficar em outro nível
+* Use o tempo presente nas mensagens do _commit_. Exemplo: _"Adiciona funcionalidade"_
+e não _"Adicionada a funcionalidade"_.
 
-5. Dê um commit de suas mudanças
+* Atualize o [README.md](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/master/README.md)
+com os detalhes da mudança caso esta inclua uma nova base de dados ou um novo comando na CLI.
 
-```console
-$ git commit -m 'Minha excelente contribuição'
-```
-
-6. Dê um push da sua branch no seu fork
-
-```console
-$ git push origin <NOVA-FUNCIONALIDADE>
-```
-
-7. Crie um novo Pull Request
-
-A partir da página do seu fork clique no botão para abrir uma nova pull request.
+* Embora o código esteja escrito em inglês, por convenção, as mensagens de _commit_,
+comentários, _pull requests_, _issues_, e demais comunicações do projeto deverão ser
+escritas em português.
