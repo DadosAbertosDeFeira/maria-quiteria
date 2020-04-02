@@ -1,8 +1,9 @@
 import re
 from datetime import date
 
-from datasets.models import Gazette, GazetteEvent
 from django.utils.timezone import make_aware
+
+from datasets.models import Gazette, GazetteEvent
 
 
 def save_gazette(item):

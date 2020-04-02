@@ -15,8 +15,6 @@ class Common(Configuration):
 
     ALLOWED_HOSTS = []
 
-    INTERNAL_IPS = global_settings.INTERNAL_IPS
-
     INSTALLED_APPS = [
         "django.contrib.admin",
         "django.contrib.auth",
@@ -94,7 +92,7 @@ class Dev(Common):
 
     MIDDLEWARE = Common.MIDDLEWARE + ["debug_toolbar.middleware.DebugToolbarMiddleware"]
 
-    INTERNAL_IPS = Common.INTERNAL_IPS + ["127.0.0.1"]
+    INTERNAL_IPS = ["127.0.0.1"]
 
 
 class Prod(Common):

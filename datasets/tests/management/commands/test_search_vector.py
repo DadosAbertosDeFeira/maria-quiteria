@@ -10,16 +10,24 @@ from datasets.models import Gazette
 
 
 class TestCommandHandler(TestCase):
+    @pytest.fixture(autouse=True)
+    def capsys(self, capsys):
+        self.capsys = capsys
+
     @patch.object(Gazette.objects, "update")
-    @patch("datasets.management.commands.searchvector.print")
-    def test_handler(self, print_, update):
+    def test_handler(self, update):
         command = Command()
         command.handle()
-        self.assertEqual(3, print_.call_count)
+
+        captured = self.capsys.readouterr()
+        self.assertRegex(captured.out, r"Creating search vector.*Total items: 0")
+        self.assertRegex(captured.out, r"Done")
+
         self.assertEqual(1, update.call_count)
 
     @pytest.mark.django_db
     def test_create_vector(self):
+
         items = [
             {
                 "date": datetime(2019, 11, 5),
@@ -65,3 +73,13 @@ class TestCommandHandler(TestCase):
         command.handle()
 
         assert len(saved) == 2
+
+        results = [
+            "'feir':5 'municipal':3 'prefeit':2 'santan':7",
+            "'municipal':3 'prefeit':2 'salvador':5",
+        ]
+
+        for index, result in enumerate(results):
+            self.assertEqual(
+                result, Gazette.objects.get(id=saved[index].id).search_vector
+            )
