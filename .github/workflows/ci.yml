@@ -20,14 +20,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r dev_requirements.txt
       - name: Lint
-        run: make lint
+        run: |
+          black --check .
+          flake8 .
 
       - name: Run Tests
         env:
           DJANGO_SETTINGS_MODULE: "core.settings"
           DJANGO_CONFIGURATION: "Dev"
           DATABASE_URL: "postgres://postgres:postgres@localhost:5432/postgres"
-        run: make test
+        run: pytest
     services:
       postgres:
         image: postgres:10.8
