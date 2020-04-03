@@ -1,10 +1,10 @@
-from datetime import datetime
 from unittest.mock import patch
 
 import pytest
 from django.test import TestCase
+from django.utils import lorem_ipsum
+from model_bakery import baker
 
-from datasets.management.commands._gazette import save_gazette
 from datasets.management.commands.searchvector import Command
 from datasets.models import Gazette
 
@@ -27,59 +27,22 @@ class TestCommandHandler(TestCase):
 
     @pytest.mark.django_db
     def test_create_vector(self):
+        gazettes = baker.make(Gazette, _quantity=3, file_content=lorem_ipsum.paragraph)
 
-        items = [
-            {
-                "date": datetime(2019, 11, 5),
-                "power": "executivo",
-                "year_and_edition": "Ano V - Edi\u00e7\u00e3o N\u00ba 1131",
-                "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
-                "crawled_from": "http://www.diariooficial.br/st=1&publ=1&edicao=1131",
-                "events": [
-                    {
-                        "title": "DECRETO INDIVIDUAL N\u00ba 1.294/2019",
-                        "secretariat": "Gabinete do Prefeito",
-                        "summary": "ÍCARO IVVIN DE ALMEIDA COSTA LIMA - NOMEIA",
-                    }
-                ],
-                "file_urls": [
-                    "http://www.diariooficial.feiradesantana.ba.gov.br/1VFJCB4112019.pdf"
-                ],
-                "file_content": "O Prefeito Municipal de Feira de Santana",
-            },
-            {
-                "date": datetime(2019, 11, 6),
-                "power": "executivo",
-                "year_and_edition": "Ano V - Edi\u00e7\u00e3o N\u00ba 1131",
-                "crawled_at": datetime(2019, 10, 10, 10, 11, 19),
-                "crawled_from": "http://www.diariooficial.br/st=1&publ=1&edicao=1131",
-                "events": [
-                    {
-                        "title": "DECRETO INDIVIDUAL N\u00ba 1.294/2019",
-                        "secretariat": "Gabinete do Prefeito",
-                        "summary": "ÍCARO IVVIN DE ALMEIDA COSTA LIMA - NOMEIA",
-                    }
-                ],
-                "file_urls": [
-                    "http://www.diariooficial.feiradesantana.ba.gov.br/1VFJCB4112019.pdf"
-                ],
-                "file_content": "O Prefeito Municipal de Salvador",
-            },
-        ]
-
-        saved = [save_gazette(item) for item in items]
+        ids_to_check = []
+        for gazette in gazettes:
+            gazette.save()
+            self.assertTrue(gazette.id)
+            self.assertFalse(gazette.search_vector)
+            ids_to_check.append(gazette.id)
 
         command = Command()
         command.handle()
 
-        assert len(saved) == 2
+        captured = self.capsys.readouterr()
+        self.assertRegex(captured.out, r"Creating.*Gazette.*Total items:.*3")
+        self.assertRegex(captured.out, r"Done")
 
-        results = [
-            "'feir':5 'municipal':3 'prefeit':2 'santan':7",
-            "'municipal':3 'prefeit':2 'salvador':5",
-        ]
-
-        for index, result in enumerate(results):
-            self.assertEqual(
-                result, Gazette.objects.get(id=saved[index].id).search_vector
-            )
+        items = Gazette.objects.filter(pk__in=ids_to_check)
+        for item in items:
+            self.assertTrue(item.search_vector)
