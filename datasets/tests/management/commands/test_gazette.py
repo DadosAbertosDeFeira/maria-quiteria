@@ -39,12 +39,15 @@ class TestSaveGazette:
         assert gazette.crawled_from == item["crawled_from"]
         assert gazette.file_content == item["file_content"]
         assert gazette.file_url == item["file_urls"][0]
-        assert gazette.search_vector
 
         event = gazette.gazetteevent_set.first()
         assert event.title == item["events"][0]["title"]
         assert event.secretariat == item["events"][0]["secretariat"]
         assert event.summary == item["events"][0]["summary"]
+
+        # To guarantee full text vector has been automatically created.
+        gazette.refresh_from_db()
+        assert gazette.search_vector == "'feir':5 'municipal':3 'prefeit':2"
 
     def test_handle_with_changed_gazettes(self):
         item = {
