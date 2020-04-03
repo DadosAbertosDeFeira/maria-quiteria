@@ -6,9 +6,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('datasets', '0005_auto_20200327_1348'),
-        ('datasets', '0006_auto_20200331_2136'),
+        ("datasets", "0005_auto_20200327_1348"),
+        ("datasets", "0006_auto_20200331_2136"),
     ]
 
-    operations = [
-    ]
+    operations = []

@@ -8,25 +8,25 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('datasets', '0005_auto_20200331_2111'),
+        ("datasets", "0005_auto_20200331_2111"),
     ]
 
     operations = [
         migrations.RemoveIndex(
-            model_name='gazette',
-            name='datasets_ga_search_5ac09b_gin',
+            model_name="gazette", name="datasets_ga_search_5ac09b_gin",
         ),
-        migrations.RemoveField(
-            model_name='gazette',
-            name='search',
-        ),
+        migrations.RemoveField(model_name="gazette", name="search",),
         migrations.AddField(
-            model_name='gazette',
-            name='search_vector',
-            field=django.contrib.postgres.search.SearchVectorField(editable=False, null=True),
+            model_name="gazette",
+            name="search_vector",
+            field=django.contrib.postgres.search.SearchVectorField(
+                editable=False, null=True
+            ),
         ),
         migrations.AddIndex(
-            model_name='gazette',
-            index=django.contrib.postgres.indexes.GinIndex(fields=['search_vector'], name='datasets_ga_search__1d3d09_gin'),
+            model_name="gazette",
+            index=django.contrib.postgres.indexes.GinIndex(
+                fields=["search_vector"], name="datasets_ga_search__1d3d09_gin"
+            ),
         ),
     ]
