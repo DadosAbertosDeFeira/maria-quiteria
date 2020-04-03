@@ -2,7 +2,6 @@ import os
 
 import dj_database_url
 from configurations import Configuration, values
-from django.conf import global_settings
 
 
 class Common(Configuration):
