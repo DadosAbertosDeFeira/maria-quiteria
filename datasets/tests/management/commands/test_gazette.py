@@ -1,6 +1,7 @@
 from datetime import date, datetime
 
 import pytest
+
 from datasets.management.commands._gazette import (
     _extract_date,
     save_gazette,
@@ -38,6 +39,7 @@ class TestSaveGazette:
         assert gazette.crawled_from == item["crawled_from"]
         assert gazette.file_content == item["file_content"]
         assert gazette.file_url == item["file_urls"][0]
+        assert gazette.search_vector
 
         event = gazette.gazetteevent_set.first()
         assert event.title == item["events"][0]["title"]
