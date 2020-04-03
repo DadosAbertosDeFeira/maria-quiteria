@@ -45,7 +45,7 @@ class TestSaveGazette:
         assert event.secretariat == item["events"][0]["secretariat"]
         assert event.summary == item["events"][0]["summary"]
 
-        # To guarantee full text vector has been automatically created.
+        # Necessário para pegar a operação pós trigger.
         gazette.refresh_from_db()
         assert gazette.search_vector == "'feir':5 'municipal':3 'prefeit':2"
 
