@@ -19,6 +19,11 @@ Não sabe quem foi [Maria Quitéria](https://pt.wikipedia.org/wiki/Maria_Quit%C3
 | Licitações (`cityhall.py`) | Prefeitura | Licitações realizadas pela prefeitura desde 2015. | :heavy_check_mark: | 🔜 | [Kaggle](https://www.kaggle.com/anapaulagomes/licitaes-da-prefeitura-de-feira-de-santana) |
 | Pagamentos (`cityhall.py`) | Prefeitura | Pagamentos realizados pela prefeitura desde 2010. | :heavy_check_mark: | 🔜 | [Kaggle](https://www.kaggle.com/anapaulagomes/pagamentos-da-prefeitura-de-feira-de-santana) |
 
+## Contribuindo para o projeto
+
+Contribuições são muito bem-vindas. Toda a comunicação e demais interações do
+Dados Abertos de Feira estão sujeitas ao nosso [código de conduta](CODE_OF_CONDUCT.md).
+
 ## Coleta
 
 Esse projeto usa [Scrapy](https://docs.scrapy.org/en/latest/) para a coleta de dados
