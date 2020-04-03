@@ -5,6 +5,9 @@ from datasets.models import Gazette
 
 
 class Command(BaseCommand):
+    help = """Remonta os indices de busca e diários em caso de problemas
+            com a geração de índice via trigger"""
+
     def echo(self, text, style=None):
         self.stdout.write(style(text) if style else text)
 
