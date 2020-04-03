@@ -2,6 +2,14 @@ from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 
+CITY_COUNCIL_EVENT_TYPE = (
+    ("sessao_ordinaria", "Sessão Ordinária"),
+    ("ordem_do_dia", "Ordem do Dia"),
+    ("sessao_solene", "Sessão Solene"),
+    ("sessao_especial", "Sessão Especial"),
+    ("audiencia_publica", "Audiência Pública"),
+)
+
 
 class DatasetMixin(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -22,15 +30,9 @@ class DatasetMixin(models.Model):
 
 
 class CityCouncilAgenda(DatasetMixin):
-    EVENT_TYPE = (
-        ("ordem_do_dia", "Ordem do Dia"),
-        ("sessao_solene", "Sessão Solene"),
-        ("sessao_especial", "Sessão Especial"),
-        ("audiencia_publica", "Audiência Pública"),
-    )
     date = models.DateField()
     details = models.TextField(null=True, blank=True)
-    event_type = models.CharField(max_length=20, choices=EVENT_TYPE)
+    event_type = models.CharField(max_length=20, choices=CITY_COUNCIL_EVENT_TYPE)
     title = models.CharField(max_length=100, null=True, blank=True)
 
     class Meta:
@@ -39,6 +41,21 @@ class CityCouncilAgenda(DatasetMixin):
 
     def __repr__(self):
         return f"{self.date} {self.event_type} {self.title}"
+
+
+class CityCouncilMinute(DatasetMixin):
+    date = models.DateField()
+    title = models.CharField(max_length=300, null=True, blank=True)
+    event_type = models.CharField(max_length=20, choices=CITY_COUNCIL_EVENT_TYPE)
+    file_url = models.URLField(null=True, blank=True)
+    file_content = models.TextField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Câmara de Vereadores - Atas"
+        verbose_name_plural = "Câmara de Vereadores - Atas"
+
+    def __repr__(self):
+        return f"{self.date} {self.title} {self.file_url}"
 
 
 class Gazette(DatasetMixin):

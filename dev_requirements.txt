@@ -3,5 +3,5 @@ black==19.10b0
 flake8==3.7.9
 model-bakery==1.1.0
 pre-commit
-pytest==5.3.5
-pytest-django==3.8.0
+pytest==5.4.1
+pytest-django==3.9.0

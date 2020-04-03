@@ -3,7 +3,12 @@ from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.db.models import F
 from django.utils.safestring import mark_safe
 
-from .models import CityCouncilAgenda, CityCouncilAttendanceList, Gazette
+from .models import (
+    CityCouncilAgenda,
+    CityCouncilAttendanceList,
+    CityCouncilMinute,
+    Gazette,
+)
 
 
 class ReadOnlyMixin:
@@ -91,3 +96,22 @@ class CityCouncilAttendanceListAdmin(ReadOnlyMixin, admin.ModelAdmin):
         "crawled_at",
         "crawled_from",
     )
+
+
+@admin.register(CityCouncilMinute)
+class CityCouncilMinuteAdmin(ReadOnlyMixin, admin.ModelAdmin):
+    ordering = ["-date"]
+    search_fields = ["title", "file_content"]
+    list_filter = ["date", "event_type"]
+    list_display = (
+        "date",
+        "title",
+        "event_type",
+        "url",
+        "crawled_at",
+        "crawled_from",
+    )
+
+    @mark_safe
+    def url(self, obj):
+        return f"<a href={obj.file_url}>{obj.file_url}</a>"
