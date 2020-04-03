@@ -14,7 +14,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         gazette_count = Gazette.objects.count()
         self.echo(
-            f"Creating search vector for Gazette. Total items: {gazette_count}",
+            f"Creating search vector for Gazette. Total items: {gazette_count:,}",
             self.style.SUCCESS,
         )
         self.echo("Please wait...", self.style.SUCCESS)
