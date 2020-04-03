@@ -19,6 +19,11 @@ Não sabe quem foi [Maria Quitéria](https://pt.wikipedia.org/wiki/Maria_Quit%C3
 | Licitações (`cityhall.py`) | Prefeitura | Licitações realizadas pela prefeitura desde 2015. | :heavy_check_mark: | 🔜 | [Kaggle](https://www.kaggle.com/anapaulagomes/licitaes-da-prefeitura-de-feira-de-santana) |
 | Pagamentos (`cityhall.py`) | Prefeitura | Pagamentos realizados pela prefeitura desde 2010. | :heavy_check_mark: | 🔜 | [Kaggle](https://www.kaggle.com/anapaulagomes/pagamentos-da-prefeitura-de-feira-de-santana) |
 
+## Contribuindo para o projeto
+
+Contribuições são muito bem-vindas. Toda a comunicação e demais interações do
+Dados Abertos de Feira estão sujeitas ao nosso [código de conduta](CODE_OF_CONDUCT.md).
+
 ## Coleta
 
 Esse projeto usa [Scrapy](https://docs.scrapy.org/en/latest/) para a coleta de dados
@@ -34,7 +39,7 @@ Para rodar esse projeto localmente, instale as dependências:
 pip install -r dev_requirements.txt
 ```
 
-* Carregue as variáveis de ambiente.
+* Carregue as variáveis de ambiente
 
 Um exemplo das configurações pode ser encontrado no arquivo `.env.example` 
 (que pode ser copiado para um arquivo `.env` na raiz do projeto).
@@ -44,7 +49,7 @@ Um exemplo das configurações pode ser encontrado no arquivo `.env.example`
 Esse projeto usa o Postgres. Para rodar o banco de dados local, crie um
 banco de dados com o nome `mariaquiteria`. 
 
-Adicione a variável de ambiente `DATABASE_URL` com a url de conexão ao seu postgres. 
+Adicione a variável de ambiente `DATABASE_URL` com a url de conexão ao seu Postgres. 
 Ex: `DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/NAME`
 
 Depois basta aplicar as `migrations`:
@@ -65,7 +70,7 @@ Depois, rode o servidor com:
 python manage.py runserver
 ```
 
-Com as configurações padrão o painel de controle estará acessível pela URL: [`127.0.0.1`](http://127.0.0.1:8000)
+Com as configurações padrão o painel de controle estará acessível pela URL: [`127.0.0.1`](http://127.0.0.1:8000).
 
 * Java
 

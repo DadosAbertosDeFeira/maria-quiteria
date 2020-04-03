@@ -76,7 +76,9 @@ class BidsSpider(BaseSpider):
         descriptions = []
         for raw_description in raw_descriptions:
             description = raw_description.xpath(".//text()").extract()
-            document_url = raw_description.xpath(".//@href").extract_first()
+            document_url = raw_description.xpath(
+                ".//a[contains(@href, 'pdf')]/@href"
+            ).extract_first()
             description = self._parse_description(description)
 
             if description != "Objeto":
