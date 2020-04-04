@@ -58,7 +58,7 @@ Frequentemente precisamos escolher bem o que vamos fazer com os recursos que tem
 
 Você decidiu contribuir para o projeto! Yay!
 
-Faça um _fork_ do projeto e crie uma nova _branch.
+Faça um _fork_ do projeto e crie uma nova _branch_.
 Mais detalhes [aqui](https://help.github.com/pt/enterprise/2.17/user/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork).
 
 Aqui algumas dicas:
