@@ -220,6 +220,7 @@ class TestSaveLegacyGazette:
         gazettes = [save_legacy_gazette(legacy_item) for legacy_item in legacy_items]
 
         assert len(set([g.pk for g in gazettes])) == 3
+        assert gazettes[0].date == date(2014, 11, 1)
         assert gazettes[0].notes == "Data extraída do título."
 
 

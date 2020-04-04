@@ -74,7 +74,7 @@ def save_legacy_gazette(item):
 def _extract_date(str_date):
     if str_date is None:
         return
-    pattern = r"(\d{2}) DE (\w+) DE (\d{4})"
+    pattern = r"(\d+) DE (\w+) DE (\d{4})"
     result = re.search(pattern, str_date, re.IGNORECASE)
     if result:
         months = {
