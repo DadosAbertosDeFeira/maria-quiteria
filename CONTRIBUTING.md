@@ -29,7 +29,7 @@ Os detalhes de como instalar e executar este projeto podem ser encontrados no
 
 Você encontrou um bug?
 
-* Sugestões de melhoria são rastreados através de [_issue_](https://guides.github.com/features/issues/)
+* Sugestões de melhoria são rastreados através de [_issues_](https://guides.github.com/features/issues/)
 e [_pull requests_](https://guides.github.com/activities/hello-world/#pr) no GitHub.
 Verifique se nenhuma _issue_ ou _pull request_ foi criada por outra pessoa com o mesmo bug.
 * Se não, [crie uma _issue_](https://github.com/DadosAbertosDeFeira/maria-quiteria/issues/new)
@@ -39,9 +39,8 @@ a reproduzir o problema.
 ## Sugerindo melhorias
 
 Você é mais que bem-vindo a sugerir melhorias ao MQ. Pedimos apenas que tente incluir o
-máximo de detalhes possíveis.
-
-- Verifique se nenhuma _issue_ ou _pull request_ foi criada por outro usuário com a mesma sugestão.
+máximo de detalhes possíveis. Pedimos apenas que verifique se nenhuma _issue_ ou
+_pull request_ já foi criada por outra pessoa com a mesma sugestão.
 
 Caso seja algo novo, você tem duas alternativas:
 
@@ -89,3 +88,7 @@ com os detalhes da mudança caso esta inclua uma nova base de dados ou um novo c
 * Embora o código esteja escrito em inglês, por convenção, as mensagens de _commit_,
 comentários, _pull requests_, _issues_, e demais comunicações do projeto deverão ser
 escritas em português.
+
+Sentiu falta de algo nesse guia? Conta pra gente!
+
+Bem vinda(o) ao Dados Abertos de Feira!
