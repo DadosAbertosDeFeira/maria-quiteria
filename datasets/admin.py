@@ -8,6 +8,7 @@ from .models import (
     CityCouncilAttendanceList,
     CityCouncilExpense,
     CityCouncilMinute,
+    CityHallBid,
     Gazette,
 )
 
@@ -134,6 +135,26 @@ class CityCouncilMinuteAdmin(ReadOnlyMixin, admin.ModelAdmin):
         "date",
         "title",
         "event_type",
+        "url",
+        "crawled_at",
+        "crawled_from",
+    )
+
+    @mark_safe
+    def url(self, obj):
+        return f"<a href={obj.file_url}>{obj.file_url}</a>"
+
+
+@admin.register(CityHallBid)
+class CityHallBidAdmin(ReadOnlyMixin, admin.ModelAdmin):
+    ordering = ["-date"]
+    search_fields = ["description", "modality", "file_content"]
+    list_filter = ["date", "category"]
+    list_display = (
+        "date",
+        "category",
+        "modality",
+        "description",
         "url",
         "crawled_at",
         "crawled_from",

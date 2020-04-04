@@ -160,3 +160,22 @@ class CityCouncilAttendanceList(DatasetMixin):
 
     def __repr__(self):
         return f"{self.date} {self.council_member} {self.status}"
+
+
+class CityHallBid(DatasetMixin):
+    date = models.DateField(null=True)
+    category = models.CharField(max_length=200)
+    description = models.TextField(null=True, blank=True)
+    modality = models.CharField(max_length=300)
+    file_url = models.URLField(null=True, blank=True)
+    file_content = models.TextField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Prefeitura - Licitação"
+        verbose_name_plural = "Prefeitura - Licitações"
+
+    def __repr__(self):
+        return f"{self.date} {self.modality} {self.category}"
+
+    def __str__(self):
+        return f"{self.date} {self.modality} {self.category}"

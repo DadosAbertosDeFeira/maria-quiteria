@@ -5,6 +5,7 @@ from datasets.models import (
     CityCouncilAttendanceList,
     CityCouncilExpense,
     CityCouncilMinute,
+    CityHallBid,
     Gazette,
     GazetteEvent,
 )
@@ -14,6 +15,7 @@ from scraper.items import (
     CityCouncilAttendanceListItem,
     CityCouncilExpenseItem,
     CityCouncilMinuteItem,
+    CityHallBidItem,
     GazetteItem,
     LegacyGazetteItem,
 )
@@ -22,6 +24,8 @@ from scraper.spiders.citycouncil import (  # ExpenseSpider,
     AttendanceListSpider,
     MinuteSpider,
 )
+from scraper.spiders.cityhall import BidsSpider
+
 from scraper.spiders.gazette import (
     ExecutiveAndLegislativeGazetteSpider,
     LegacyGazetteSpider,
@@ -32,6 +36,7 @@ from scrapy.signalmanager import dispatcher
 from scrapy.utils.project import get_project_settings
 
 from ._citycouncil import save_agenda, save_attendance_list, save_expense, save_minute
+from ._cityhall import save_bid
 from ._gazette import save_gazette, save_legacy_gazette
 
 
@@ -60,6 +65,8 @@ class Command(BaseCommand):
             save_expense(item)
         if isinstance(item, CityCouncilMinuteItem):
             save_minute(item)
+        if isinstance(item, CityHallBidItem):
+            save_bid(item)
         if isinstance(item, LegacyGazetteItem):
             save_legacy_gazette(item)
         if isinstance(item, GazetteItem):
@@ -90,6 +97,9 @@ class Command(BaseCommand):
         # )
         process.crawl(
             MinuteSpider, start_from_date=CityCouncilMinute.last_collected_item_date()
+        )
+        process.crawl(
+            BidsSpider, start_from_date=CityHallBid.last_collected_item_date()
         )
 
         if os.getenv("FEATURE_FLAG__SAVE_GAZETTE", False):

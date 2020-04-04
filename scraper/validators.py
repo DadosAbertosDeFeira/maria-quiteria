@@ -95,7 +95,7 @@ class CityHallBidItem(BaseModel):
     description = StringType()
     history = ListType(DictType(StringType))
     modality = StringType()
-    date = DateTimeType(formats=("%d/%m/%Y %Hh%M"))
+    date = DateTimeType()
     file_urls = ListType(StringType)
     file_content = StringType()
 

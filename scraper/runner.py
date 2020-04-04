@@ -10,7 +10,6 @@ def run_crawlers(start_from_date):
 
     process.crawl("cityhall_payments", start_from_date=start_from_date)
     process.crawl("cityhall_contracts", start_from_date=start_from_date)
-    process.crawl("cityhall_bids", start_from_date=start_from_date)
 
     process.start()
 

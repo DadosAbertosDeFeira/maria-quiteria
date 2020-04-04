@@ -5,7 +5,7 @@ import scrapy
 from scraper.items import CityHallBidItem, CityHallContractItem, CityHallPaymentsItem
 
 from . import BaseSpider
-from .utils import extract_param, identify_contract_id
+from .utils import extract_param, from_str_to_datetime, identify_contract_id
 
 
 class BidsSpider(BaseSpider):
@@ -57,6 +57,8 @@ class BidsSpider(BaseSpider):
             match = url_pattern.search(response.url)
             month, year = match.group(2).split("-")
 
+            supported_formats = ["%d/%m/%Y %Hh%M", "%d/%m/%Y", "%d/%m/%y"]
+
             item = CityHallBidItem(
                 crawled_at=datetime.now(),
                 crawled_from=response.url,
@@ -66,7 +68,7 @@ class BidsSpider(BaseSpider):
                 description=description,
                 history=history,
                 modality=modality,
-                date=date,
+                date=from_str_to_datetime(date, supported_formats),
             )
             if document_url:
                 item["file_urls"] = [response.urljoin(document_url)]
