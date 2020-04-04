@@ -30,20 +30,56 @@ class LegacyBidsSpider(scrapy.Spider):
             text = self.clean(anchor.css("::text").extract_first())
             if text != "":
                 url = anchor.css("::attr(href)").extract_first()
-                # para corrigir o caso de Fev 2002
+                # para corrigir link quebrado de Fev 2002
                 cityhall_website = "http://www.feiradesantana.ba.gov.br/"
                 if url.count(cityhall_website) == 2:
                     url = url.replace(
                         f"{cityhall_website}{cityhall_website}", f"{cityhall_website}"
                     )
+                # para corrigir link quebrado de Set 2002
+                if "pmfs2001/licitaset.htm" in url:
+                    url = "http://www.feiradesantana.ba.gov.br/licita/pmfs2001/licitaset.htm"
                 # TODO identificar o órgão
-                print(f"{text}\t{url}")
-                # TODO
-                # yield response.follow(url, self.parse_page)
+                print(url)
+                yield response.follow(url, self.parse_page)
+
+        # páginas inacessíveis:
+        # http://www.feiradesantana.ba.gov.br/licita/pmfs2002/licitadez2002.htm :(
+        # http://www.feiradesantana.ba.gov.br/licita/pmfs2008/licset2008.htm
+        # http://www.feiradesantana.ba.gov.br/licita/editais2003/editalnov2003.htm
+
+    def parse_page(self, response):
+        bids_table = response.xpath('//table[@width="771"]')
+        for row in bids_table.css("tr"):
+            text_from_columns = []
+            for column in row.css("td"):
+                column_texts = column.css("font::text").extract()
+                if column_texts:
+                    text = self.from_list_to_clean_string(column_texts)
+                    text_from_columns.append(text)
+            # FIXME existem dois tipos de tabelas, com números de colunas e ordens
+            # diferentes
+
+            if text_from_columns:
+                print(text_from_columns)
+                yield CityHallBidItem(
+                    crawled_at=datetime.now(),
+                    crawled_from=response.url,
+                    # category=match.group(1).upper(),
+                    # month=int(month),
+                    # year=int(year),
+                    description=text_from_columns[1],
+                    # history=history,
+                    modality=text_from_columns[0],
+                    date=text_from_columns[3],
+                )
 
     @staticmethod
     def clean(string):
         return " ".join(string.replace("\r\n", "").split())
+
+    def from_list_to_clean_string(self, column_texts):
+        return " ".join([self.clean(text) for text in column_texts])
 
 
 class BidsSpider(BaseSpider):
