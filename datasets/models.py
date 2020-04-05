@@ -163,7 +163,7 @@ class CityCouncilAttendanceList(DatasetMixin):
 
 
 class CityHallBid(DatasetMixin):
-    date = models.DateField(null=True)
+    date = models.DateTimeField(null=True)  # TODO checar nome
     category = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
     modality = models.CharField(max_length=300)
@@ -179,3 +179,21 @@ class CityHallBid(DatasetMixin):
 
     def __str__(self):
         return f"{self.date} {self.modality} {self.category}"
+
+
+class CityHallBidEvent(DatasetMixin):
+    bid = models.ForeignKey(
+        CityHallBid, on_delete=models.CASCADE, related_name="events"
+    )
+    date = models.DateTimeField(null=True)
+    summary = models.TextField(null=True, blank=True)
+    file_url = models.URLField(null=True, blank=True)
+    file_content = models.TextField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Prefeitura - Licitação - Histórico"
+        verbose_name_plural = "Prefeitura - Licitações - Históricos"
+
+    def __repr__(self):
+        bid_info = f"{self.bid.date} {self.bid.modality}"
+        return f"[{bid_info}] {self.date} {self.summary}"

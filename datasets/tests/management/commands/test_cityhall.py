@@ -12,7 +12,7 @@ class TestSaveBid:
             "crawled_from": "http://www.feiradesantana.ba.gov.br/servicos.asp",
             "date": datetime(2018, 4, 17, 8, 30, 0),
             "category": "PMFS",
-            "month": 4,
+            "month": 4,  # TODO checar se vai continuar salvando ou não
             "year": 2018,
             "description": (
                 "Aquisi\u00e7\u00e3o de arma de fogo longa para a "
@@ -28,7 +28,12 @@ class TestSaveBid:
         }
 
         bid = save_bid(item)
+        assert bid.date == item["date"]
         assert bid.description == item["description"]  # FIXME add todos os campos
+        assert bid.category == item["category"]
+        assert bid.modality == item["modality"]
+        assert bid.file_url == item["file_urls"][0]
+        assert bid.file_content == item["file_content"]
 
     def test_save_history(self):
         item = {
@@ -48,12 +53,18 @@ class TestSaveBid:
             ),  # FIXME checar se é obrigatório
             "history": [
                 {
-                    "date": "04/04/2019 16h20",
+                    "date": datetime(2019, 4, 4, 16, 20),  # FIXME
                     "event": "Resposta a pedido de esclarecimento",
-                    "url": "http://www.feiradesantana.ba.gov.br/SMS.pdf",
+                    "file_urls": ["http://www.feiradesantana.ba.gov.br/SMS.pdf"],
+                    "file_content": "Documento com resposta esclarecendo...",
                 }
             ],
         }
         bid = save_bid(item)
         assert bid.events.count() == 1
-        # FIXME modelar histórico para licitações
+        event = bid.events.first()
+
+        assert event.date == item["history"][0]["date"]
+        assert event.summary == item["history"][0]["event"]
+        assert event.file_url == item["history"][0]["file_urls"][0]
+        assert event.file_content == item["history"][0]["file_content"]

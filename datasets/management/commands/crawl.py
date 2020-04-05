@@ -79,6 +79,7 @@ class Command(BaseCommand):
             CityCouncilAttendanceList.objects.all().delete()
             CityCouncilExpense.objects.all().delete()
             CityCouncilMinute.objects.all().delete()
+            CityHallBid.objects.all().delete()
 
             if os.getenv("FEATURE_FLAG__SAVE_GAZETTE", False):
                 Gazette.objects.all().delete()
