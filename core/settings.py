@@ -22,7 +22,7 @@ class Common(Configuration):
         "django.contrib.messages",
         "django.contrib.staticfiles",
         "datasets",
-        "home"
+        "home",
     ]
 
     MIDDLEWARE = [
