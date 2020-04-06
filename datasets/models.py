@@ -1,3 +1,5 @@
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 
 CITY_COUNCIL_EVENT_TYPE = (
@@ -68,9 +70,13 @@ class Gazette(DatasetMixin):
     file_url = models.URLField(null=True, blank=True)
     file_content = models.TextField(null=True, blank=True)
 
+    search_vector = SearchVectorField(null=True, editable=False)
+
     class Meta:
         verbose_name = "Diário Oficial"
         verbose_name_plural = "Diários Oficiais"
+
+        indexes = [GinIndex(fields=["search_vector"])]
 
     def __repr__(self):
         return f"{self.date} {self.power} {self.year_and_edition}"

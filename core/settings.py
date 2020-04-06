@@ -87,6 +87,12 @@ class Dev(Common):
     DEBUG = True
     ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "0.0.0.0"]
 
+    INSTALLED_APPS = Common.INSTALLED_APPS + ["debug_toolbar"]
+
+    MIDDLEWARE = Common.MIDDLEWARE + ["debug_toolbar.middleware.DebugToolbarMiddleware"]
+
+    INTERNAL_IPS = ["127.0.0.1"]
+
 
 class Prod(Common):
     SECRET_KEY = values.SecretValue()

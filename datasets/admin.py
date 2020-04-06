@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.postgres.search import SearchQuery, SearchRank
+from django.db.models import F
 from django.utils.safestring import mark_safe
 
 from .models import (
@@ -23,7 +25,7 @@ class ReadOnlyMixin:
 @admin.register(Gazette)
 class GazetteAdmin(ReadOnlyMixin, admin.ModelAdmin):
     ordering = ["-date"]
-    search_fields = ["year_and_edition", "file_content"]
+    search_fields = ["year_and_edition", "search_vector"]
     list_filter = ["power", "date"]
     list_display = (
         "date",
@@ -51,6 +53,20 @@ class GazetteAdmin(ReadOnlyMixin, admin.ModelAdmin):
     @mark_safe
     def page(self, obj):
         return f"<a href={obj.crawled_from}>{obj.crawled_from}</a>"
+
+    def get_search_results(self, request, queryset, search_term):
+        if not search_term:
+            return super().get_search_results(request, queryset, search_term)
+
+        query = SearchQuery(search_term, config="portuguese")
+        rank = SearchRank(F("search_vector"), query)
+        queryset = (
+            Gazette.objects.annotate(rank=rank)
+            .filter(search_vector=query)
+            .order_by("-rank")
+        )
+
+        return queryset, False
 
 
 @admin.register(CityCouncilAgenda)

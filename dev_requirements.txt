@@ -5,3 +5,5 @@ model-bakery==1.1.0
 pre-commit
 pytest==5.4.1
 pytest-django==3.9.0
+django-debug-toolbar==2.2
+pytest-dotenv==0.4.0

@@ -1,6 +1,7 @@
 from datetime import date, datetime
 
 import pytest
+
 from datasets.management.commands._gazette import (
     _extract_date,
     save_gazette,
@@ -43,6 +44,10 @@ class TestSaveGazette:
         assert event.title == item["events"][0]["title"]
         assert event.secretariat == item["events"][0]["secretariat"]
         assert event.summary == item["events"][0]["summary"]
+
+        # Necessário para pegar a operação pós trigger.
+        gazette.refresh_from_db()
+        assert gazette.search_vector == "'feir':5 'municipal':3 'prefeit':2"
 
     def test_handle_with_changed_gazettes(self):
         item = {
