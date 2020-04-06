@@ -42,11 +42,12 @@ def save_legacy_gazette(item):
     tentativa de extrair a data do título.
     """
 
+    notes = ""
     if item["date"] is None:
-        item["date"] = _extract_date(item["title"])
-        notes = "Data extraída do título."
-    else:
-        notes = ""
+        extracted_date = _extract_date(item["title"])
+        if extracted_date:
+            item["date"] = extracted_date
+            notes = "Data extraída do título."
 
     gazette, _ = Gazette.objects.get_or_create(
         date=item["date"],
@@ -74,7 +75,7 @@ def save_legacy_gazette(item):
 def _extract_date(str_date):
     if str_date is None:
         return
-    pattern = r"(\d{2}) DE (\w+) DE (\d{4})"
+    pattern = r"(\d+) DE (\w+) DE (\d{4})"
     result = re.search(pattern, str_date, re.IGNORECASE)
     if result:
         months = {
