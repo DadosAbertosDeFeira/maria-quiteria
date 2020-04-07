@@ -20,7 +20,7 @@ Caso não tenha nada que seja a sua praia, você pode dar uma olhada nos
 
 - No [nosso Trello](https://trello.com/b/E8v20MFs/dados-abertos-de-feira) você pode
 acompanhar o que a comunidade em geral vem trabalhando. Lá você encontrá coisas desde
-fotografia até pedidos de acesso a informação.
+fotografia até pedidos de acesso à informação.
 
 Os detalhes de como instalar e executar este projeto podem ser encontrados no
 [`README.md`](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/master/README.md).
@@ -29,7 +29,7 @@ Os detalhes de como instalar e executar este projeto podem ser encontrados no
 
 Você encontrou um bug?
 
-* Sugestões de melhoria são rastreados através de [_issues_](https://guides.github.com/features/issues/)
+* Sugestões de melhoria são rastreadas através de [_issues_](https://guides.github.com/features/issues/)
 e [_pull requests_](https://guides.github.com/activities/hello-world/#pr) no GitHub.
 Verifique se nenhuma _issue_ ou _pull request_ foi criada por outra pessoa com o mesmo bug.
 * Se não, [crie uma _issue_](https://github.com/DadosAbertosDeFeira/maria-quiteria/issues/new)
@@ -38,9 +38,9 @@ a reproduzir o problema.
 
 ## Sugerindo melhorias
 
-Você é mais que bem-vindo a sugerir melhorias ao MQ. Pedimos apenas que tente incluir o
-máximo de detalhes possíveis. Pedimos apenas que verifique se nenhuma _issue_ ou
-_pull request_ já foi criada por outra pessoa com a mesma sugestão.
+Você é mais que bem-vinda(o) a sugerir melhorias a MQ. Pedimos apenas que tente incluir o
+máximo de detalhes possíveis e que verifique se nenhuma _issue_ ou _pull request_ já foi
+criado por outra pessoa com a mesma sugestão.
 
 Caso seja algo novo, você tem duas alternativas:
 
