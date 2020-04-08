@@ -6,7 +6,7 @@ from scraper.items import (
     CityCouncilAttendanceListItem,
     CityCouncilMinuteItem,
 )
-from scrapy_splash import SplashFormRequest
+import re
 
 from . import BaseSpider
 from .utils import extract_date, from_str_to_date, months_and_years
@@ -250,7 +250,7 @@ class ExpensesSpider(BaseSpider):
                 "Data:": "date",
                 "N° do processo:": "process_number",
                 "Bem / Serviço Prestado:": "summary",
-                "Natureza:": "group",
+                "Natureza:": "legal_status",
                 "Ação:": "action",
                 "Função:": "function",
                 "Subfunção:": "subfunction",
