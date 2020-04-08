@@ -1,3 +1,4 @@
+import re
 from datetime import date, datetime
 
 import scrapy
@@ -6,7 +7,6 @@ from scraper.items import (
     CityCouncilAttendanceListItem,
     CityCouncilMinuteItem,
 )
-import re
 
 from . import BaseSpider
 from .utils import extract_date, from_str_to_date, months_and_years
@@ -182,32 +182,36 @@ class ExpensesSpider(BaseSpider):
     data = {
         "POST_PARAMETRO": "PesquisaDespesas",
         "POST_FASE": "",
-        "POST_UNIDADE": "101",
+        "POST_UNIDADE": "",
         "POST_DATA": "",
         "POST_NMCREDOR": "",
         "POST_CPFCNPJ": "",
     }
+    initial_date = date(2010, 1, 1)
 
     def start_requests(self):
-        yield SplashFormRequest(
-            self.url, formdata=self.data,
+        data = self.data.copy()
+        meta = {"dont_redirect": True, "handle_httpstatus_list": [302], "data": data}
+        yield scrapy.FormRequest(
+            self.url, formdata=data, callback=self.parse, meta=meta
         )
 
     def parse(self, response):
+        # ['��� Anterior', '1', '2', '1705', 'Pr��ximo ���']
         pages = response.css("div.pagination li a ::text").extract()
         if pages:
             last_page = int(pages[-2])
             # TODO filtro por data
 
             for page in range(1, last_page + 1):
-                data = self.data.copy()
+                data = response.meta["data"]
                 data["POST_PAGINA"] = str(page)
                 data["POST_PAGINAS"] = str(last_page)
-                yield SplashFormRequest(
+                yield scrapy.FormRequest(
                     self.url,
                     formdata=data,
                     callback=self.parse_page,
-                    args={"wait": 0.5},
+                    meta=response.meta,
                 )
 
     def parse_page(self, response):
@@ -263,6 +267,18 @@ class ExpensesSpider(BaseSpider):
                 if key == "imprimir":
                     break
                 value = details_copy.pop(0)
+                if key == "Natureza:":
+                    subgroup_and_group = self.extract_subgroup_and_group(value)
+                    if subgroup_and_group:
+                        subgroup, group = subgroup_and_group
+                        item["subgroup"] = subgroup
+                        item["group"] = group
                 item[mapping[key]] = value
 
             yield item
+
+    @staticmethod
+    def extract_subgroup_and_group(legal_status):
+        result = re.match(r"\d+ - (.*) \d+ - (.*)", legal_status)
+        if result:
+            return result.group(1).strip(), result.group(2).strip()
