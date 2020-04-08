@@ -64,7 +64,3 @@ SPIDERMON_SENTRY_ENVIRONMENT_TYPE = os.getenv(
     "SPIDERMON_SENTRY_ENVIRONMENT_TYPE", "Prod"
 )
 SPIDERMON_SENTRY_FAKE = os.getenv("SPIDERMON_SENTRY_FAKE", False)
-
-DOWNLOADER_MIDDLEWARES = {
-    "scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware": 810,
-}
