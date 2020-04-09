@@ -1,6 +1,7 @@
 from datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
+    CityCouncilExpense,
     CityCouncilMinute,
 )
 from django.utils.timezone import make_aware
@@ -31,6 +32,13 @@ def save_attendance_list(item):
             "status": item.get("status"),
         },
     )
+    return attendance
+
+
+def save_expense(item):
+    # FIXME make_aware
+    # FIXME add tests
+    attendance, _ = CityCouncilExpense.objects.get_or_create(**item)
     return attendance
 
 

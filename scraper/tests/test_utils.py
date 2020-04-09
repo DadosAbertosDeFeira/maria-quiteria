@@ -154,3 +154,6 @@ def test_months_and_years(start_date, end_date, expected_month_and_year):
 )
 def test_extract_date(str_with_date, expected_obj):
     assert extract_date(str_with_date) == expected_obj
+
+
+# TODO adicionar testes normalize_currency

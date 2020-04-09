@@ -66,3 +66,12 @@ def extract_date(str_with_date):
         supported_formats = ["%d/%m/%Y", "%d/%m/%y"]
         return from_str_to_date(result.group(0), supported_formats)
     return
+
+
+def normalize_currency(value):
+    """Converte de R$ 69.848,70 (str) para 69848.70 (float)."""
+    try:
+        return float(value.replace("R$", "").replace(".", "").replace(",", "."))
+    except ValueError as e:
+        print(f"Falha ao converter valor: {value}", e)
+    return

@@ -5,11 +5,12 @@ import scrapy
 from scraper.items import (
     CityCouncilAgendaItem,
     CityCouncilAttendanceListItem,
+    CityCouncilExpenseItem,
     CityCouncilMinuteItem,
 )
 
 from . import BaseSpider
-from .utils import extract_date, from_str_to_date, months_and_years
+from .utils import extract_date, from_str_to_date, months_and_years, normalize_currency
 
 
 class AgendaSpider(BaseSpider):
@@ -176,7 +177,7 @@ class MinuteSpider(BaseSpider):
             )
 
 
-class ExpensesSpider(BaseSpider):
+class ExpenseSpider(BaseSpider):
     name = "citycouncil_expenses"
     url = "https://www.transparencia.feiradesantana.ba.leg.br/controller/despesa.php"
     data = {
@@ -201,6 +202,22 @@ class ExpensesSpider(BaseSpider):
         "Processo Licitatório:": "type_of_process",
         "Fonte de Recurso:": "resource",
     }
+
+    @staticmethod
+    def get_phase(phase):
+        labels = {
+            "EMPENHO": "empenho",
+            "LIQUIDAÇÃO": "liquidacao",
+            "PAGAMENTO": "pagamento",
+        }
+
+        return labels.get(phase.upper().strip())
+
+    @staticmethod
+    def extract_subgroup_and_group(legal_status):
+        result = re.match(r"\d+ - (.*) \d+ - (.*)", legal_status)
+        if result:
+            return result.group(1).strip(), result.group(2).strip()
 
     def start_requests(self):
         data = self.data.copy()
@@ -251,10 +268,10 @@ class ExpensesSpider(BaseSpider):
         for headline, raw_details in zip(headlines, details):
             headline = [text.strip() for text in headline.css("td ::text").extract()]
             item = {
-                "published_at": headline[0],
-                "phase": headline[1],
+                "published_at": from_str_to_date(headline[0]),
+                "phase": self.get_phase(headline[1]),
                 "company_or_person": headline[2],
-                "value": headline[3],
+                "value": normalize_currency(headline[3]),
                 "crawled_at": datetime.now(),
                 "crawled_from": response.url,
             }
@@ -267,19 +284,15 @@ class ExpensesSpider(BaseSpider):
                         value = column.xpath("text()[not(ancestor::b)]").extract_first()
                         if value:
                             value = value.strip()
-                        if key == "imprimir":
-                            break
-                        if key == "Natureza:" and value:
-                            subgroup_and_group = self.extract_subgroup_and_group(value)
-                            if subgroup_and_group:
-                                subgroup, group = subgroup_and_group
-                                item["subgroup"] = subgroup
-                                item["group"] = group
+                            if key == "Data:":
+                                value = from_str_to_date(value)
+                            if key == "Natureza:":
+                                subgroup_and_group = self.extract_subgroup_and_group(
+                                    value
+                                )
+                                if subgroup_and_group:
+                                    subgroup, group = subgroup_and_group
+                                    item["subgroup"] = subgroup
+                                    item["group"] = group
                         item[self.mapping[key]] = value
-            yield item
-
-    @staticmethod
-    def extract_subgroup_and_group(legal_status):
-        result = re.match(r"\d+ - (.*) \d+ - (.*)", legal_status)
-        if result:
-            return result.group(1).strip(), result.group(2).strip()
+            yield CityCouncilExpenseItem(**item)
