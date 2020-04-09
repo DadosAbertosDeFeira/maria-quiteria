@@ -188,6 +188,19 @@ class ExpensesSpider(BaseSpider):
         "POST_CPFCNPJ": "",
     }
     initial_date = date(2010, 1, 1)
+    mapping = {
+        "N°:": "number",
+        "CPF/CNPJ:": "document",
+        "Data:": "date",
+        "N° do processo:": "process_number",
+        "Bem / Serviço Prestado:": "summary",
+        "Natureza:": "legal_status",
+        "Ação:": "action",
+        "Função:": "function",
+        "Subfunção:": "subfunction",
+        "Processo Licitatório:": "type_of_process",
+        "Fonte de Recurso:": "resource",
+    }
 
     def start_requests(self):
         data = self.data.copy()
@@ -245,36 +258,24 @@ class ExpensesSpider(BaseSpider):
                 "crawled_at": datetime.now(),
                 "crawled_from": response.url,
             }
-            details = [
-                detail.strip() for detail in raw_details.css("td ::text").extract()
-            ]
-            mapping = {
-                "N°:": "number",
-                "CPF/CNPJ:": "document",
-                "Data:": "date",
-                "N° do processo:": "process_number",
-                "Bem / Serviço Prestado:": "summary",
-                "Natureza:": "legal_status",
-                "Ação:": "action",
-                "Função:": "function",
-                "Subfunção:": "subfunction",
-                "Processo Licitatório:": "type_of_process",
-                "Fonte de Recurso:": "resource",
-            }
-            details_copy = details.copy()
-            while details_copy:
-                key = details_copy.pop(0)
-                if key == "imprimir":
-                    break
-                value = details_copy.pop(0)
-                if key == "Natureza:":
-                    subgroup_and_group = self.extract_subgroup_and_group(value)
-                    if subgroup_and_group:
-                        subgroup, group = subgroup_and_group
-                        item["subgroup"] = subgroup
-                        item["group"] = group
-                item[mapping[key]] = value
 
+            for row in raw_details.css("tr"):
+                for column in row.css("td"):
+                    key = column.css("b ::text").extract_first()
+                    if key:
+                        key = key.strip()
+                        value = column.xpath("text()[not(ancestor::b)]").extract_first()
+                        if value:
+                            value = value.strip()
+                        if key == "imprimir":
+                            break
+                        if key == "Natureza:" and value:
+                            subgroup_and_group = self.extract_subgroup_and_group(value)
+                            if subgroup_and_group:
+                                subgroup, group = subgroup_and_group
+                                item["subgroup"] = subgroup
+                                item["group"] = group
+                        item[self.mapping[key]] = value
             yield item
 
     @staticmethod
