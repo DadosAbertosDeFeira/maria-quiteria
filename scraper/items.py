@@ -56,7 +56,6 @@ class CityCouncilExpenseItem(BaseItem):
     process_number = scrapy.Field()
     summary = scrapy.Field()
     legal_status = scrapy.Field()
-    action = scrapy.Field()
     function = scrapy.Field()
     subfunction = scrapy.Field()
     type_of_process = scrapy.Field()

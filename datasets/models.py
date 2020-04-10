@@ -59,7 +59,6 @@ class CityCouncilExpense(DatasetMixin):
     process_number = models.CharField(max_length=50, null=True, blank=True)
     summary = models.TextField(null=True, blank=True)
     legal_status = models.CharField(max_length=200, null=True, blank=True)
-    action = models.CharField(max_length=50, null=True, blank=True)
     function = models.CharField(max_length=50, null=True, blank=True)
     subfunction = models.CharField(max_length=50, null=True, blank=True)
     type_of_process = models.CharField(max_length=50, null=True, blank=True)
@@ -72,6 +71,9 @@ class CityCouncilExpense(DatasetMixin):
         verbose_name_plural = "Câmara de Vereadores - Despesas"
 
     def __repr__(self):
+        return f"{self.date} {self.phase} {self.company_or_person} {self.value}"
+
+    def __str__(self):
         return f"{self.date} {self.phase} {self.company_or_person} {self.value}"
 
 

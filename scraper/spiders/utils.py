@@ -74,7 +74,9 @@ def extract_date(str_with_date):
 def normalize_currency(value):
     """Converte de R$ 69.848,70 (str) para 69848.70 (float)."""
     try:
-        return float(value.replace("R$", "").replace(".", "").replace(",", "."))
+        cleaned_value = value.replace("R$", "").replace(".", "").replace(",", ".")
+        # import ipdb; ipdb.set_trace()
+        return float(cleaned_value)
     except ValueError:
         logging.error("Falha ao converter valor", exc_info=True)
     return

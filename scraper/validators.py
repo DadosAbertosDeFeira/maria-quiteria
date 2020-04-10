@@ -60,7 +60,6 @@ class CityCouncilExpenseItem(BaseModel):
     process_number = StringType()
     summary = StringType()
     legal_status = StringType()
-    action = StringType()
     function = StringType()
     subfunction = StringType()
     type_of_process = StringType()

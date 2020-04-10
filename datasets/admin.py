@@ -120,6 +120,8 @@ class CityCouncilExpenseAdmin(ReadOnlyMixin, admin.ModelAdmin):
         "subgroup",
         "group",
         "type_of_process",
+        "number",
+        "process_number",
     )
 
 

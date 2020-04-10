@@ -196,7 +196,6 @@ class ExpenseSpider(BaseSpider):
         "N° do processo:": "process_number",
         "Bem / Serviço Prestado:": "summary",
         "Natureza:": "legal_status",
-        "Ação:": "action",
         "Função:": "function",
         "Subfunção:": "subfunction",
         "Processo Licitatório:": "type_of_process",

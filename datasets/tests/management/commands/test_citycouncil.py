@@ -1,7 +1,11 @@
 from datetime import date, datetime
 
 import pytest
-from datasets.management.commands._citycouncil import save_agenda, save_attendance_list
+from datasets.management.commands._citycouncil import (
+    save_agenda,
+    save_attendance_list,
+    save_expense,
+)
 
 
 @pytest.mark.django_db
@@ -103,3 +107,51 @@ class TestSaveAttendanceList:
         assert attendance.crawled_from == updated_attendance.crawled_from
         assert attendance.status != updated_attendance.status
         assert attendance.crawled_at != updated_attendance.crawled_at
+
+
+@pytest.mark.django_db
+class TestSaveExpense:
+    def test_save_expense(self):
+        item = {
+            "company_or_person": "G5 OPERADORA TURÍSTICA LTDA",
+            "crawled_at": datetime(2020, 4, 10, 14, 0, 51, 43077),
+            "crawled_from": "https://www.transparencia.feiradesantana.ba.leg.br/",
+            "date": date(2019, 12, 23),
+            "document": "12.627.959/0001-30",
+            "function": "01 - LEGISLATIVA",
+            "group": "Manutencao dos servicos tecnico administrativos",
+            "legal_status": "339033010000 - Despesas com passagem Aérea         2002 - "
+            "Manutencao dos servicos tecnico administrativos",
+            "number": "01772-19",
+            "phase": "pagamento",
+            "process_number": "003/2017",
+            "published_at": date(2019, 12, 23),
+            "resource": "0000 - TESOURO",
+            "subfunction": "031 - ACAO",
+            "subgroup": "Despesas com passagem Aérea",
+            "summary": "REF. A PASSAGENS AÉREAS SSA-FOR-THE/FORT-SSA PARA O VEREADOR "
+            "ISAÍAS DOS SANTOS, EM VIAGEM A TERESINA/PI, NOS DIAS 08, 09 E "
+            "10/2019, PARA VISITA AO PROJETO SASC INTEGRAÇÃO.",
+            "type_of_process": "PREGAO",
+            "value": 3414.03,
+        }
+        expense = save_expense(item)
+
+        assert expense.company_or_person == item["company_or_person"]
+        assert expense.crawled_at.replace(tzinfo=None) == item["crawled_at"]
+        assert expense.crawled_from == item["crawled_from"]
+        assert expense.date == item["date"]
+        assert expense.document == item["document"]
+        assert expense.function == item["function"]
+        assert expense.group == item["group"]
+        assert expense.legal_status == item["legal_status"]
+        assert expense.number == item["number"]
+        assert expense.phase == item["phase"]
+        assert expense.process_number == item["process_number"]
+        assert expense.published_at == item["published_at"]
+        assert expense.resource == item["resource"]
+        assert expense.subfunction == item["subfunction"]
+        assert expense.subgroup == item["subgroup"]
+        assert expense.summary == item["summary"]
+        assert expense.type_of_process == item["type_of_process"]
+        assert expense.value == item["value"]

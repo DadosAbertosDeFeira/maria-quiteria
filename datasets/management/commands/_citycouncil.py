@@ -36,9 +36,28 @@ def save_attendance_list(item):
 
 
 def save_expense(item):
-    # FIXME make_aware
-    # FIXME add tests
-    attendance, _ = CityCouncilExpense.objects.get_or_create(**item)
+    attendance, _ = CityCouncilExpense.objects.get_or_create(
+        date=item["date"],
+        number=item["number"],
+        process_number=item["process_number"],
+        company_or_person=item["company_or_person"],
+        document=item["document"],
+        function=item["function"],
+        group=item["group"],
+        legal_status=item["legal_status"],
+        phase=item["phase"],
+        published_at=item["published_at"],
+        resource=item["resource"],
+        subfunction=item["subfunction"],
+        subgroup=item["subgroup"],
+        summary=item["summary"],
+        type_of_process=item["type_of_process"],
+        value=item["value"],
+        defaults={
+            "crawled_at": make_aware(item["crawled_at"]),
+            "crawled_from": item["crawled_from"],
+        },
+    )
     return attendance
 
 
