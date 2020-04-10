@@ -1,6 +1,9 @@
+import logging
 import re
 from datetime import datetime
 from urllib.parse import parse_qs, urlparse
+
+logger = logging.getLogger(__name__)
 
 
 def replace_query_param(url, field, value):
@@ -72,6 +75,6 @@ def normalize_currency(value):
     """Converte de R$ 69.848,70 (str) para 69848.70 (float)."""
     try:
         return float(value.replace("R$", "").replace(".", "").replace(",", "."))
-    except ValueError as e:
-        print(f"Falha ao converter valor: {value}", e)
+    except ValueError:
+        logging.error("Falha ao converter valor", exc_info=True)
     return

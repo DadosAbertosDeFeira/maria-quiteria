@@ -210,7 +210,6 @@ class ExpenseSpider(BaseSpider):
             "LIQUIDAÇÃO": "liquidacao",
             "PAGAMENTO": "pagamento",
         }
-
         return labels.get(phase.upper().strip())
 
     @staticmethod
@@ -218,6 +217,12 @@ class ExpenseSpider(BaseSpider):
         result = re.match(r"\d+ - (.*) \d+ - (.*)", legal_status)
         if result:
             return result.group(1).strip(), result.group(2).strip()
+
+    @staticmethod
+    def extract_text_from_column(column):
+        text = column.css("::text").extract_first()
+        if text:
+            return text.strip()
 
     def start_requests(self):
         data = self.data.copy()
@@ -266,12 +271,16 @@ class ExpenseSpider(BaseSpider):
         details = response.css("#editable-sample div.accordion-inner")
 
         for headline, raw_details in zip(headlines, details):
-            headline = [text.strip() for text in headline.css("td ::text").extract()]
+            columns = [column for column in headline.css("td")]
+            published_at = self.extract_text_from_column(columns[0])
+            phase = self.extract_text_from_column(columns[1])
+            company_or_person = self.extract_text_from_column(columns[2])
+            value = self.extract_text_from_column(columns[3])
             item = {
-                "published_at": from_str_to_date(headline[0]),
-                "phase": self.get_phase(headline[1]),
-                "company_or_person": headline[2],
-                "value": normalize_currency(headline[3]),
+                "published_at": from_str_to_date(published_at),
+                "phase": self.get_phase(phase),
+                "company_or_person": company_or_person,
+                "value": normalize_currency(value),
                 "crawled_at": datetime.now(),
                 "crawled_from": response.url,
             }
