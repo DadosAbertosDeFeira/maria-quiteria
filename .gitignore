@@ -16,4 +16,4 @@ __pycache__
 *.sqlite*
 
 # django
-static/
+/static/
