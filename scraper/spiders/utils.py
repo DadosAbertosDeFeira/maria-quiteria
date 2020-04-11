@@ -75,7 +75,6 @@ def normalize_currency(value):
     """Converte de R$ 69.848,70 (str) para 69848.70 (float)."""
     try:
         cleaned_value = value.replace("R$", "").replace(".", "").replace(",", ".")
-        # import ipdb; ipdb.set_trace()
         return float(cleaned_value)
     except ValueError:
         logging.error("Falha ao converter valor", exc_info=True)
