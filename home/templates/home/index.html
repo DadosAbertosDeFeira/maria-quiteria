@@ -7,12 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dados Abertos de Feira</title>
-    <link rel="shortcut icon" href="../images/fav_icon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="{% static "home/favicon.png" %}" type="image/x-icon">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <!-- Bulma Version 0.8.x-->
     <link rel="stylesheet" href="https://unpkg.com/bulma@0.8.0/css/bulma.min.css" />
-    <link rel="stylesheet" type="text/css" href="{% static "hero.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "home/hero.css" %}">
     <link rel="stylesheet" href="https://unpkg.com/bulma-modal-fx/dist/css/modal-fx.min.css" />
 </head>
 
@@ -23,8 +23,7 @@
                 <div class="container">
                     <div class="navbar-brand">
                         <a class="navbar-item" href="../">
-                            <!-- <img src="http://bulma.io/images/bulma-type-white.png" alt="Logo"> -->
-                            <img src="{% static "maria-quiteria-brand.png" %}" alt="Logo">
+                            <img src="{% static "home/torre-do-tomba-sem-fundo.png" %}" alt="Logo">
                         </a>
                         <span class="navbar-burger burger" data-target="navbarMenu">
                             <span></span>
@@ -34,18 +33,6 @@
                     </div>
                     <div id="navbarMenu" class="navbar-menu">
                         <div class="navbar-end">
-                            <a href="https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg" class="navbar-item" target="_blank"
-                                title="Telegram">
-                                <span class="icon">
-                                    <i class="fa fa-telegram"></i>
-                                </span>
-                            </a>
-                            <a href="https://chat.whatsapp.com/GH5ZWluVZxhDRDcJLAuF2w" class="navbar-item"
-                                target="_blank" title="Whatsapp">
-                                <span class="icon">
-                                    <i class="fa fa-whatsapp"></i>
-                                </span>
-                            </a>
                             <a href="https://www.instagram.com/dadosabertosdefeira/" class="navbar-item"
                                 target="_blank">
                                 <span class="icon" title="Instagram">
@@ -64,10 +51,16 @@
                                     <i class="fa fa-twitter"></i>
                                 </span>
                             </a>
-                            <a href="https://medium.com/@dadosabertosdefeira" class="navbar-item" target="_blank"
-                                title="Medium">
+                            <a href="https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg" class="navbar-item" target="_blank"
+                                title="Telegram">
                                 <span class="icon">
-                                    <i class="fa fa-medium"></i>
+                                    <i class="fa fa-telegram"></i>
+                                </span>
+                            </a>
+                            <a href="https://chat.whatsapp.com/GH5ZWluVZxhDRDcJLAuF2w" class="navbar-item"
+                                target="_blank" title="Whatsapp">
+                                <span class="icon">
+                                    <i class="fa fa-whatsapp"></i>
                                 </span>
                             </a>
                             <span class="navbar-item">
@@ -91,18 +84,21 @@
                     Dados Abertos de Feira de Santana
                 </h1>
                 <h2 class="subtitle">
-                    <a href="https://pt.wikipedia.org/wiki/Maria_Quit%C3%A9ria" target="_blank"
-                        rel="noopener noreferrer">Maria Quitéria</a>
+                    Um projeto para libertar dados do município de
+                    <a href="https://pt.wikipedia.org/wiki/Feira_de_Santana" target="_blank" rel="noopener noreferrer">
+                        Feira de Santana.
+                    </a>
                 </h2>
             </div>
         </div>
     </section>
     <div class="box cta">
         <p class="has-text-centered">
-            Um projeto para libertar dados do município de
-            <a href="https://pt.wikipedia.org/wiki/Feira_de_Santana" target="_blank" rel="noopener noreferrer">
-                Feira de Santana
-            </a>.
+            <span class="tag is-primary">Novo</span> Acompanhe nosso relatório sobre COVID-19 em de Feira de Santana
+            <a href="https://datastudio.google.com/u/0/reporting/cd9d3ac4-299b-46b4-bdab-8e9c081f5071?s=s8-Q-jNGhZg"
+                target="_blank" rel="noopener noreferrer">
+                aqui.
+            </a>
         </p>
     </div>
     <section class="container">
@@ -114,7 +110,7 @@
                     </div>
                     <div class="card-content">
                         <div class="content">
-                            <h4>Dashboard </h4>
+                            <h4>Dashboard</h4>
                             <p>
                                 Eu dou dinheiro pra minha filha. Eu dou dinheiro pra ela viajar, então é... é...
                                 Já vivi muito sem dinheiro, já vivi muito com dinheiro.<br>
@@ -130,18 +126,13 @@
             <div class="column is-4">
                 <div class="card is-shady">
                     <div class="card-image has-text-centered">
-                        <i class="fa fa-trello"></i>
+                        <i class="fa fa-medium"></i>
                     </div>
                     <div class="card-content">
                         <div class="content">
-                            <h4>Tarefas e Projetos.</h4>
-                            <p>Ut venenatis tellus in metus vulputate. Amet consectetur adipiscing elit pellentesque.
-                                Sed arcu non odio euismod lacinia at quis risus. Faucibus turpis in eu mi bibendum neque
-                                egestas cmonsu songue. Phasellus vestibulum lorem
-                                sed risus.</p>
-                            <p><a href="https://trello.com/invite/b/E8v20MFs/8de69037af117526b45a49877686943a/dados-abertos-de-feira"
-                                    target="_blank">Ir para o Trello
-                                </a></p>
+                            <h4>Blog</h4>
+                            <p>ransparência e Dados abertos do município de Feira de Santana.</p>
+                            <p><a href="https://medium.com/@dadosabertosdefeira" target="_blank">Ir para o blog.</a></p>
                         </div>
                     </div>
                 </div>
@@ -153,7 +144,7 @@
                     </div>
                     <div class="card-content">
                         <div class="content">
-                            <h4> Contribua. </h4>
+                            <h4> Contribua</h4>
                             <p>Tarefas e discussões do projeto no Github.</p>
                             <p><a href="https://github.com/DadosAbertosDeFeira/maria-quiteria/issues" target="_blank">
                                     Ir para as Issues
@@ -164,13 +155,6 @@
             </div>
         </div>
     </section>
-    <div class="intro column is-8 is-offset-2">
-        <h2 class="title">COVID-19</h2><br>
-        <p class="subtitle">Acompanhe nosso relatório de Feira de Santana
-            <a href="https://datastudio.google.com/u/0/reporting/cd9d3ac4-299b-46b4-bdab-8e9c081f5071?s=s8-Q-jNGhZg"
-                target="_blank" rel="noopener noreferrer">
-                aqui</a>.</p>
-    </div>
     <footer class="footer">
         <div class="container">
             <div class="content has-text-centered">
@@ -184,7 +168,7 @@
                 </div>
             </div>
         </div>
-        <script src="{% static "bulma.js" %}"></script>
+        <script src="{% static "home/bulma.js" %}"></script>
     </footer>
 </body>
 
