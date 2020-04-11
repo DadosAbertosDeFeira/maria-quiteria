@@ -247,8 +247,6 @@ class ExpenseSpider(BaseSpider):
         pages = response.css("div.pagination li a ::text").extract()
         if pages:
             last_page = int(pages[-2])
-            # TODO filtro por data
-
             for page in range(1, last_page + 1):
                 data = response.meta["data"]
                 data["POST_PAGINA"] = str(page)
