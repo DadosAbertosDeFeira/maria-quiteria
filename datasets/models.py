@@ -76,6 +76,13 @@ class CityCouncilExpense(DatasetMixin):
     def __str__(self):
         return f"{self.date} {self.phase} {self.company_or_person} {self.value}"
 
+    @classmethod
+    def last_collected_item_date(cls):
+        try:
+            return cls.objects.latest("date").date
+        except cls.DoesNotExist:
+            return
+
 
 class CityCouncilMinute(DatasetMixin):
     date = models.DateField()
