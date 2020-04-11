@@ -1,5 +1,5 @@
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 import scrapy
 from scraper.items import (
@@ -224,11 +224,23 @@ class ExpenseSpider(BaseSpider):
             return text.strip()
 
     def start_requests(self):
-        data = self.data.copy()
-        meta = {"dont_redirect": True, "handle_httpstatus_list": [302], "data": data}
-        yield scrapy.FormRequest(
-            self.url, formdata=data, callback=self.parse, meta=meta
-        )
+        start_date = self.start_date
+        self.logger.info(f"Data inicial: {start_date}")
+        today = datetime.now().date()
+
+        while start_date < today:
+            formatted_date = start_date.strftime("%d/%m/%Y")
+            data = self.data.copy()
+            data["POST_DATA"] = f"{formatted_date} - {formatted_date}"
+            meta = {
+                "dont_redirect": True,
+                "handle_httpstatus_list": [302],
+                "data": data,
+            }
+            yield scrapy.FormRequest(
+                self.url, formdata=data, callback=self.parse, meta=meta
+            )
+            start_date = start_date + timedelta(days=1)
 
     def parse(self, response):
         # ['��� Anterior', '1', '2', '1705', 'Pr��ximo ���']
@@ -282,6 +294,18 @@ class ExpenseSpider(BaseSpider):
                 "value": normalize_currency(value),
                 "crawled_at": datetime.now(),
                 "crawled_from": response.url,
+                "subgroup": None,
+                "group": None,
+                "date": None,
+                "document": None,
+                "function": None,
+                "legal_status": None,
+                "number": None,
+                "process_number": None,
+                "resource": None,
+                "subfunction": None,
+                "summary": None,
+                "type_of_process": None,
             }
 
             for row in raw_details.css("tr"):

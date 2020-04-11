@@ -155,3 +155,48 @@ class TestSaveExpense:
         assert expense.summary == item["summary"]
         assert expense.type_of_process == item["type_of_process"]
         assert expense.value == item["value"]
+
+    def test_save_expense_with_only_few_fields_filled(self):
+        item = {
+            "company_or_person": None,
+            "crawled_at": datetime(2020, 4, 10, 14, 2, 26, 502801),
+            "crawled_from": "https://www.transparencia.feiradesantana.ba.leg.br/",
+            "date": date(2017, 3, 20),
+            "document": None,
+            "function": None,
+            "legal_status": None,
+            "number": "00228-17",
+            "phase": "pagamento",
+            "process_number": "",
+            "published_at": date(2017, 3, 20),
+            "resource": None,
+            "subfunction": None,
+            "summary": "REF. A OBRIGAÇÕES PATRONAIS SOBRE A FOLHA DE PAGAMENTO DOS "
+            "FUNCIONÁRIOS CARGOS EM COMISSÃO DESTA CASA, COMPLEMENTO DO MÊS DE "
+            "FEVEREIRO/2017.",
+            "type_of_process": None,
+            "value": 0.0,
+            "subgroup": None,
+            "group": None,
+        }
+
+        expense = save_expense(item)
+
+        assert expense.crawled_at.replace(tzinfo=None) == item["crawled_at"]
+        assert expense.crawled_from == item["crawled_from"]
+        assert expense.company_or_person == item["company_or_person"]
+        assert expense.date == item["date"]
+        assert expense.document == item["document"]
+        assert expense.function == item["function"]
+        assert expense.group == item["group"]
+        assert expense.legal_status == item["legal_status"]
+        assert expense.number == item["number"]
+        assert expense.phase == item["phase"]
+        assert expense.process_number == item["process_number"]
+        assert expense.published_at == item["published_at"]
+        assert expense.resource == item["resource"]
+        assert expense.subfunction == item["subfunction"]
+        assert expense.subgroup == item["subgroup"]
+        assert expense.summary == item["summary"]
+        assert expense.type_of_process == item["type_of_process"]
+        assert expense.value == item["value"]
