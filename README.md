@@ -21,8 +21,10 @@ Não sabe quem foi [Maria Quitéria](https://pt.wikipedia.org/wiki/Maria_Quit%C3
 
 ## Contribuindo para o projeto
 
-Contribuições são muito bem-vindas. Toda a comunicação e demais interações do
-Dados Abertos de Feira estão sujeitas ao nosso [código de conduta](CODE_OF_CONDUCT.md).
+Contribuições são muito bem-vindas. Veja como contribuir no nosso [Guia de Contribuição](CONTRIBUTING.md).
+
+Toda a comunicação e demais interações do Dados Abertos de Feira estão sujeitas
+ao nosso [Código de Conduta](CODE_OF_CONDUCT.md).
 
 ## Coleta
 
@@ -41,15 +43,15 @@ pip install -r dev_requirements.txt
 
 * Carregue as variáveis de ambiente
 
-Um exemplo das configurações pode ser encontrado no arquivo `.env.example` 
+Um exemplo das configurações pode ser encontrado no arquivo `.env.example`
 (que pode ser copiado para um arquivo `.env` na raiz do projeto).
 
 * Postgres
 
 Esse projeto usa o Postgres. Para rodar o banco de dados local, crie um
-banco de dados com o nome `mariaquiteria`. 
+banco de dados com o nome `mariaquiteria`.
 
-Adicione a variável de ambiente `DATABASE_URL` com a url de conexão ao seu Postgres. 
+Adicione a variável de ambiente `DATABASE_URL` com a url de conexão ao seu Postgres.
 Ex: `DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/NAME`
 
 Depois basta aplicar as `migrations`:
