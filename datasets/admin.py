@@ -6,6 +6,7 @@ from django.utils.safestring import mark_safe
 from .models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
+    CityCouncilExpense,
     CityCouncilMinute,
     Gazette,
 )
@@ -95,6 +96,32 @@ class CityCouncilAttendanceListAdmin(ReadOnlyMixin, admin.ModelAdmin):
         "status",
         "crawled_at",
         "crawled_from",
+    )
+
+
+@admin.register(CityCouncilExpense)
+class CityCouncilExpenseAdmin(ReadOnlyMixin, admin.ModelAdmin):
+    ordering = ["-date"]
+    search_fields = ["summary", "document", "number", "process_number"]
+    list_filter = [
+        "date",
+        "subgroup",
+        "group",
+        "type_of_process",
+        "phase",
+        "company_or_person",
+    ]
+    list_display = (
+        "date",
+        "phase",
+        "company_or_person",
+        "summary",
+        "value",
+        "subgroup",
+        "group",
+        "type_of_process",
+        "number",
+        "process_number",
     )
 
 

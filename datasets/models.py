@@ -43,6 +43,47 @@ class CityCouncilAgenda(DatasetMixin):
         return f"{self.date} {self.event_type} {self.title}"
 
 
+class CityCouncilExpense(DatasetMixin):
+    PHASE = (
+        ("empenho", "Empenho"),
+        ("liquidacao", "Liquidação"),
+        ("pagamento", "Pagamento"),
+    )
+    published_at = models.DateField()
+    phase = models.CharField(max_length=20, choices=PHASE)
+    company_or_person = models.TextField(null=True, blank=True)
+    value = models.DecimalField("Valor", max_digits=10, decimal_places=2)
+    number = models.CharField(max_length=50, null=True, blank=True)
+    document = models.CharField(max_length=50, null=True, blank=True)
+    date = models.DateField()
+    process_number = models.CharField(max_length=50, null=True, blank=True)
+    summary = models.TextField(null=True, blank=True)
+    legal_status = models.CharField(max_length=200, null=True, blank=True)
+    function = models.CharField(max_length=50, null=True, blank=True)
+    subfunction = models.CharField(max_length=50, null=True, blank=True)
+    type_of_process = models.CharField(max_length=50, null=True, blank=True)
+    resource = models.CharField(max_length=200, null=True, blank=True)
+    subgroup = models.CharField(max_length=100, null=True, blank=True)
+    group = models.CharField(max_length=100, null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Câmara de Vereadores - Despesa"
+        verbose_name_plural = "Câmara de Vereadores - Despesas"
+
+    def __repr__(self):
+        return f"{self.date} {self.phase} {self.company_or_person} {self.value}"
+
+    def __str__(self):
+        return f"{self.date} {self.phase} {self.company_or_person} {self.value}"
+
+    @classmethod
+    def last_collected_item_date(cls):
+        try:
+            return cls.objects.latest("date").date
+        except cls.DoesNotExist:
+            return
+
+
 class CityCouncilMinute(DatasetMixin):
     date = models.DateField()
     title = models.CharField(max_length=300, null=True, blank=True)

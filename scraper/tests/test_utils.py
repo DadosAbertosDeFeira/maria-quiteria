@@ -8,6 +8,7 @@ from ..spiders.utils import (
     from_str_to_datetime,
     identify_contract_id,
     months_and_years,
+    normalize_currency,
     replace_query_param,
 )
 
@@ -154,3 +155,18 @@ def test_months_and_years(start_date, end_date, expected_month_and_year):
 )
 def test_extract_date(str_with_date, expected_obj):
     assert extract_date(str_with_date) == expected_obj
+
+
+@pytest.mark.parametrize(
+    "original_value,expected_value",
+    [
+        ("R$ 69.848,70", 69848.70),
+        ("69.848,70", 69848.70),
+        ("R$ -69.848,70", -69848.70),
+        ("1,70", 1.70),
+        ("00,00", 0),
+        ("Random", None),
+    ],
+)
+def test_normalize_currency(original_value, expected_value):
+    assert normalize_currency(original_value) == expected_value

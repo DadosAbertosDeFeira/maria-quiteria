@@ -3,6 +3,7 @@ from schematics.types import (
     DateTimeType,
     DateType,
     DictType,
+    FloatType,
     IntType,
     ListType,
     StringType,
@@ -46,6 +47,25 @@ class CityCouncilAttendanceListItem(BaseModel):
     description = StringType()
     council_member = StringType(required=True)
     status = StringType(required=True)
+
+
+class CityCouncilExpenseItem(BaseModel):
+    published_date = DateType()
+    phase = StringType()
+    company_or_person = StringType()
+    value = FloatType()
+    number = StringType()
+    document = StringType()
+    date = DateType()
+    process_number = StringType()
+    summary = StringType()
+    legal_status = StringType()
+    function = StringType()
+    subfunction = StringType()
+    type_of_process = StringType()
+    resource = StringType()
+    subgroup = StringType()
+    group = StringType()
 
 
 class CityCouncilMinuteItem(BaseModel):
