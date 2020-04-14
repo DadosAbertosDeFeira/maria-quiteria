@@ -17,10 +17,9 @@ from scraper.items import (
     GazetteItem,
     LegacyGazetteItem,
 )
-from scraper.spiders.citycouncil import (
+from scraper.spiders.citycouncil import (  # ExpenseSpider,
     AgendaSpider,
     AttendanceListSpider,
-    ExpenseSpider,
     MinuteSpider,
 )
 from scraper.spiders.gazette import (
@@ -86,7 +85,8 @@ class Command(BaseCommand):
         )
         process.crawl(AttendanceListSpider)
         # process.crawl(
-        #     ExpenseSpider, start_from_date=CityCouncilExpense.last_collected_item_date()
+        #     ExpenseSpider,
+        #       start_from_date=CityCouncilExpense.last_collected_item_date()
         # )
         process.crawl(
             MinuteSpider, start_from_date=CityCouncilMinute.last_collected_item_date()
