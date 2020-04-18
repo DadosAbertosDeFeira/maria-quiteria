@@ -3,7 +3,6 @@ import os
 from datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
-    CityCouncilExpense,
     CityCouncilMinute,
     Gazette,
     GazetteEvent,
@@ -12,16 +11,11 @@ from django.core.management.base import BaseCommand
 from scraper.items import (
     CityCouncilAgendaItem,
     CityCouncilAttendanceListItem,
-    CityCouncilExpenseItem,
     CityCouncilMinuteItem,
     GazetteItem,
     LegacyGazetteItem,
 )
-from scraper.spiders.citycouncil import (  # ExpenseSpider,
-    AgendaSpider,
-    AttendanceListSpider,
-    MinuteSpider,
-)
+from scraper.spiders.citycouncil import AgendaSpider, AttendanceListSpider, MinuteSpider
 from scraper.spiders.gazette import (
     ExecutiveAndLegislativeGazetteSpider,
     LegacyGazetteSpider,
@@ -31,7 +25,7 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.signalmanager import dispatcher
 from scrapy.utils.project import get_project_settings
 
-from ._citycouncil import save_agenda, save_attendance_list, save_expense, save_minute
+from ._citycouncil import save_agenda, save_attendance_list, save_minute
 from ._gazette import save_gazette, save_legacy_gazette
 
 
@@ -56,8 +50,6 @@ class Command(BaseCommand):
             save_agenda(item)
         if isinstance(item, CityCouncilAttendanceListItem):
             save_attendance_list(item)
-        if isinstance(item, CityCouncilExpenseItem):
-            save_expense(item)
         if isinstance(item, CityCouncilMinuteItem):
             save_minute(item)
         if isinstance(item, LegacyGazetteItem):
@@ -70,7 +62,6 @@ class Command(BaseCommand):
             self.warn("Dropping existing records...")
             CityCouncilAgenda.objects.all().delete()
             CityCouncilAttendanceList.objects.all().delete()
-            CityCouncilExpense.objects.all().delete()
             CityCouncilMinute.objects.all().delete()
 
             if os.getenv("FEATURE_FLAG__SAVE_GAZETTE", False):
@@ -84,22 +75,17 @@ class Command(BaseCommand):
             AgendaSpider, start_from_date=CityCouncilAgenda.last_collected_item_date(),
         )
         process.crawl(AttendanceListSpider)
-        # process.crawl(
-        #     ExpenseSpider,
-        #       start_from_date=CityCouncilExpense.last_collected_item_date()
-        # )
         process.crawl(
             MinuteSpider, start_from_date=CityCouncilMinute.last_collected_item_date()
         )
 
-        if os.getenv("FEATURE_FLAG__SAVE_GAZETTE", False):
-            last_collected_gazette = Gazette.last_collected_item_date()
-            if last_collected_gazette is None:
-                process.crawl(LegacyGazetteSpider)
-            process.crawl(
-                ExecutiveAndLegislativeGazetteSpider,
-                start_from_date=last_collected_gazette,
-            )
+        last_collected_gazette = Gazette.last_collected_item_date()
+        if last_collected_gazette is None:
+            process.crawl(LegacyGazetteSpider)
+        process.crawl(
+            ExecutiveAndLegislativeGazetteSpider,
+            start_from_date=last_collected_gazette,
+        )
 
         process.start()
         self.success("Done!")
