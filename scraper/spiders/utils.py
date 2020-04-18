@@ -79,3 +79,28 @@ def normalize_currency(value):
     except ValueError:
         logging.error("Falha ao converter valor", exc_info=True)
     return
+
+
+def extract_modality_and_code(raw_modality):
+    """Extrai o código da licitação e a sua modalidade."""
+    MODALITY_AND_CODE_PATTERN = r".* (\d+-\d+) ((.*) (\d+[-]\d+))?"
+    ONLY_MODALITY_PATTERN = r"(.*) (\d+-\d+)"
+    codes_and_modality = {
+        "bid_code": None,
+        "modality": None,
+        "modality_code": None,
+    }
+    result = re.search(MODALITY_AND_CODE_PATTERN, raw_modality, re.IGNORECASE)
+    if result and len(result.groups()) == 4:
+        # formato: ('353-2019', 'PREGÃO ELETRÔNICO Nº. 219-2019', 'PREGÃO ELETRÔNICO',
+        # '219-2019')
+        codes_and_modality["bid_code"] = result.group(1)
+        codes_and_modality["modality"] = result.group(3)
+        codes_and_modality["modality_code"] = result.group(4)
+    else:
+        result = re.search(ONLY_MODALITY_PATTERN, raw_modality, re.IGNORECASE)
+        if result:
+            # formato: ('CHAMADA PÚBLICA', '004-2019')
+            codes_and_modality["modality"] = result.group(1)
+            codes_and_modality["modality_code"] = result.group(2)
+    return codes_and_modality

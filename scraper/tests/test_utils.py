@@ -4,6 +4,7 @@ import pytest
 
 from ..spiders.utils import (
     extract_date,
+    extract_modality_and_code,
     extract_param,
     from_str_to_datetime,
     identify_contract_id,
@@ -170,3 +171,60 @@ def test_extract_date(str_with_date, expected_obj):
 )
 def test_normalize_currency(original_value, expected_value):
     assert normalize_currency(original_value) == expected_value
+
+
+@pytest.mark.parametrize(
+    "original_value,expected_value",
+    [
+        (
+            "LICITAÇÃO 322-2019 CONCORRÊNCIA PÚBLICA 064-2019",
+            {
+                "bid_code": "322-2019",
+                "modality": "CONCORRÊNCIA PÚBLICA",
+                "modality_code": "064-2019",
+            },
+        ),
+        (
+            "Licitação 316-2019 Pregão Presencial 206-2019",
+            {
+                "bid_code": "316-2019",
+                "modality": "Pregão Presencial",
+                "modality_code": "206-2019",
+            },
+        ),
+        (
+            "LICITAÇÃO Nº. 353-2019 PREGÃO ELETRÔNICO Nº. 219-2019",
+            {
+                "bid_code": "353-2019",
+                "modality": "PREGÃO ELETRÔNICO",
+                "modality_code": "219-2019",
+            },
+        ),
+        (
+            "CHAMADA PÚBLICA 004-2019",
+            {
+                "bid_code": None,
+                "modality": "CHAMADA PÚBLICA",
+                "modality_code": "004-2019",
+            },
+        ),
+        (
+            "CHAMADA PÚBLICA Nº. 004-2019",
+            {
+                "bid_code": None,
+                "modality": "CHAMADA PÚBLICA",
+                "modality_code": "004-2019",
+            },
+        ),
+        (
+            "CHAMADA PÚBLICA Nº 004-2019",
+            {
+                "bid_code": None,
+                "modality": "CHAMADA PÚBLICA",
+                "modality_code": "004-2019",
+            },
+        ),
+    ],
+)
+def test_extract_modality_and_code(original_value, expected_value):
+    assert extract_modality_and_code(original_value) == expected_value

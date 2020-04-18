@@ -14,6 +14,27 @@ class BidsSpider(BaseSpider):
     initial_date = date(2001, 1, 1)
     supported_formats = ["%d/%m/%Y %Hh%M", "%d/%m/%Y", "%d/%m/%y"]
 
+    @staticmethod
+    def get_modality(modality_text):
+        if "tomada de preço" in modality_text.lower():
+            return "tomada_de_precos"
+        if "pregão presencial" in modality_text.lower():
+            return "pregao_presencial"
+        if "pregão eletrônico" in modality_text.lower():
+            return "pregao_eletronico"
+        if "leilão" in modality_text.lower():
+            return "leilao"
+        if "inexigibilidade" in modality_text.lower():
+            return "inexigibilidade"
+        if "dispensada" in modality_text.lower():
+            return "dispensada"
+        if "convite" in modality_text.lower():
+            return "convite"
+        if "concurso" in modality_text.lower():
+            return "concurso"
+        if "concorrência" in modality_text.lower():
+            return "concorrencia"
+
     def follow_this_date(self, url):
         month_year = extract_param(url, "dt")
         month_year = datetime.strptime(month_year, "%m-%Y")
