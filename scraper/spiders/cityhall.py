@@ -12,6 +12,7 @@ class BidsSpider(BaseSpider):
     name = "cityhall_bids"
     start_urls = ["http://www.feiradesantana.ba.gov.br/seadm/licitacoes.asp"]
     initial_date = date(2001, 1, 1)
+    supported_formats = ["%d/%m/%Y %Hh%M", "%d/%m/%Y", "%d/%m/%y"]
 
     def follow_this_date(self, url):
         month_year = extract_param(url, "dt")
@@ -56,8 +57,7 @@ class BidsSpider(BaseSpider):
         for modality, (description, document_url), history, date in bid_data:
             match = url_pattern.search(response.url)
             month, year = match.group(2).split("-")
-
-            supported_formats = ["%d/%m/%Y %Hh%M", "%d/%m/%Y", "%d/%m/%y"]
+            # TODO extrair modalidade
 
             item = CityHallBidItem(
                 crawled_at=datetime.now(),
@@ -68,7 +68,7 @@ class BidsSpider(BaseSpider):
                 description=description,
                 history=history,
                 modality=modality,
-                date=from_str_to_datetime(date, supported_formats),
+                date=from_str_to_datetime(date, self.supported_formats),
             )
             if document_url:
                 item["file_urls"] = [response.urljoin(document_url)]
@@ -94,6 +94,7 @@ class BidsSpider(BaseSpider):
             bids_history = []
             for row in raw_bid_history.xpath(".//tr"):
                 date = row.xpath(".//td[2]/text()").get().strip()
+                date = from_str_to_datetime(date, self.supported_formats)
                 event = row.xpath(".//td[3]/div/text()").get()
                 url = row.xpath(".//td[4]/div/a//@href").get()
 

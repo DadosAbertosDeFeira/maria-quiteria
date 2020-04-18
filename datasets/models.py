@@ -163,12 +163,12 @@ class CityCouncilAttendanceList(DatasetMixin):
 
 
 class CityHallBid(DatasetMixin):
-    date = models.DateTimeField(null=True)  # TODO checar nome
-    category = models.CharField(max_length=200)
-    description = models.TextField(null=True, blank=True)
-    modality = models.CharField(max_length=300)
-    file_url = models.URLField(null=True, blank=True)
-    file_content = models.TextField(null=True, blank=True)
+    date = models.DateTimeField("Sessão Data / Horário", null=True)  # TODO checar nome
+    category = models.CharField("Órgão", max_length=200)  # FIXME public agency
+    description = models.TextField("Descrição", null=True, blank=True)
+    modality = models.CharField("Modalidade", max_length=300)
+    file_url = models.URLField("Arquivo", null=True, blank=True)
+    file_content = models.TextField("Conteúdo", null=True, blank=True)
 
     class Meta:
         verbose_name = "Prefeitura - Licitação"
@@ -183,12 +183,12 @@ class CityHallBid(DatasetMixin):
 
 class CityHallBidEvent(DatasetMixin):
     bid = models.ForeignKey(
-        CityHallBid, on_delete=models.CASCADE, related_name="events"
+        CityHallBid, on_delete=models.CASCADE, related_name="events",
     )
-    date = models.DateTimeField(null=True)
-    summary = models.TextField(null=True, blank=True)
-    file_url = models.URLField(null=True, blank=True)
-    file_content = models.TextField(null=True, blank=True)
+    date = models.DateTimeField("Data e horário", null=True)
+    summary = models.TextField("Descrição", null=True, blank=True)
+    file_url = models.URLField("Arquivo", null=True, blank=True)
+    file_content = models.TextField("Conteúdo", null=True, blank=True)
 
     class Meta:
         verbose_name = "Prefeitura - Licitação - Histórico"
