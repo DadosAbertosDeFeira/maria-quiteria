@@ -36,4 +36,4 @@ CityCouncilMinute = Recipe(CityCouncilMinute)
 
 Gazette = Recipe(Gazette,)
 
-GazetteEvent = Recipe(GazetteEvent, customer=foreign_key(Gazette))
+GazetteEvent = Recipe(GazetteEvent, gazette=foreign_key(Gazette))
