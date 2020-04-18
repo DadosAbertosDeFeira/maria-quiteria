@@ -33,7 +33,7 @@ class Command(BaseCommand):
     help = "Executa todos os coletores e salva os itens recentes no banco."
 
     def add_arguments(self, parser):
-        drop_all_help = "Limpa o banco antes de inicir a coleta."
+        drop_all_help = "Limpa o banco antes de iniciar a coleta."
         parser.add_argument("--drop-all", action="store_true", help=drop_all_help)
 
     def echo(self, text, style=None):
@@ -63,10 +63,8 @@ class Command(BaseCommand):
             CityCouncilAgenda.objects.all().delete()
             CityCouncilAttendanceList.objects.all().delete()
             CityCouncilMinute.objects.all().delete()
-
-            if os.getenv("FEATURE_FLAG__SAVE_GAZETTE", False):
-                Gazette.objects.all().delete()
-                GazetteEvent.objects.all().delete()
+            Gazette.objects.all().delete()
+            GazetteEvent.objects.all().delete()
 
         dispatcher.connect(self.save, signal=signals.item_passed)
         os.environ["SCRAPY_SETTINGS_MODULE"] = "scraper.settings"
