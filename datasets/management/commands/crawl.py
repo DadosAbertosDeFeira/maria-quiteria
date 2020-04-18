@@ -72,7 +72,10 @@ class Command(BaseCommand):
         process.crawl(
             AgendaSpider, start_from_date=CityCouncilAgenda.last_collected_item_date(),
         )
-        process.crawl(AttendanceListSpider)
+        process.crawl(
+            AttendanceListSpider,
+            start_from_date=CityCouncilAttendanceList.last_collected_item_date(),
+        )
         process.crawl(
             MinuteSpider, start_from_date=CityCouncilMinute.last_collected_item_date()
         )

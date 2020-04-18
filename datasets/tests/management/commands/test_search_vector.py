@@ -1,11 +1,9 @@
 import re
 
 import pytest
+from datasets.management.commands.searchvector import Command
 from django.db import connection
 from model_bakery import baker
-
-from datasets.management.commands.searchvector import Command
-from datasets.models import Gazette
 
 
 @pytest.mark.django_db
@@ -27,7 +25,9 @@ class TestCommandHandler:
                 'ALTER TABLE "datasets_gazette" DISABLE TRIGGER search_vector_update;'
             )
 
-            gazette = baker.make(Gazette, file_content=text, _refresh_after_create=True)
+            gazette = baker.make_recipe(
+                "datasets.Gazette", file_content=text, _refresh_after_create=True
+            )
             assert not gazette.search_vector
 
             command = Command()

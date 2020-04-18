@@ -1,6 +1,9 @@
+from datetime import date, datetime
+
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models
+from django.db.models import F
 
 CITY_COUNCIL_EVENT_TYPE = (
     ("sessao_ordinaria", "Sessão Ordinária"),
@@ -24,9 +27,22 @@ class DatasetMixin(models.Model):
     @classmethod
     def last_collected_item_date(cls):
         try:
-            return cls.objects.latest("crawled_at").crawled_at.date()
+            field = cls._meta.get_latest_by
+            kwargs = {
+                f"{field}__isnull": False,
+            }
+            found = cls.objects.filter(**kwargs).latest()
+            if found:
+                value = getattr(found, field)
+                if isinstance(value, datetime):
+                    return value.date()
+                return value
         except cls.DoesNotExist:
             return
+        except TypeError:
+            raise NotImplementedError(
+                "Especifique um `get_latest_by` no Meta deste model"
+            )
 
 
 class CityCouncilAgenda(DatasetMixin):
@@ -38,9 +54,51 @@ class CityCouncilAgenda(DatasetMixin):
     class Meta:
         verbose_name = "Câmara de Vereadores - Agenda"
         verbose_name_plural = "Câmara de Vereadores - Agendas"
+        get_latest_by = "date"
 
     def __repr__(self):
         return f"{self.date} {self.event_type} {self.title}"
+
+    @classmethod
+    def last_collected_item_date(cls):
+        """Retorna primeiro dia do ano do mais recente item coletado."""
+        try:
+            latest = cls.objects.latest()
+            if latest.date:
+                return date(latest.date.year, 1, 1)
+        except cls.DoesNotExist:
+            return
+
+
+class CityCouncilAttendanceList(DatasetMixin):
+    STATUS = (
+        ("presente", "Presente"),
+        ("falta_justificada", "Falta Justificada"),
+        ("licenca_justificada", "Licença Justificada"),
+        ("ausente", "Ausente"),
+    )
+    date = models.DateField()
+    description = models.CharField(max_length=200, null=True, blank=True)
+    council_member = models.CharField(max_length=200)
+    status = models.CharField(max_length=20, choices=STATUS)
+
+    class Meta:
+        verbose_name = "Câmara de Vereadores - Lista de Presença"
+        verbose_name_plural = "Câmara de Vereadores - Listas de Presença"
+        get_latest_by = "date"
+
+    def __repr__(self):
+        return f"{self.date} {self.council_member} {self.status}"
+
+    @classmethod
+    def last_collected_item_date(cls):
+        """Retorna primeiro dia do ano do mais recente item coletado."""
+        try:
+            latest = cls.objects.latest()
+            if latest.date:
+                return date(latest.date.year, 1, 1)
+        except cls.DoesNotExist:
+            return
 
 
 class CityCouncilExpense(DatasetMixin):
@@ -69,19 +127,13 @@ class CityCouncilExpense(DatasetMixin):
     class Meta:
         verbose_name = "Câmara de Vereadores - Despesa"
         verbose_name_plural = "Câmara de Vereadores - Despesas"
+        get_latest_by = "date"
 
     def __repr__(self):
         return f"{self.date} {self.phase} {self.company_or_person} {self.value}"
 
     def __str__(self):
         return f"{self.date} {self.phase} {self.company_or_person} {self.value}"
-
-    @classmethod
-    def last_collected_item_date(cls):
-        try:
-            return cls.objects.latest("date").date
-        except cls.DoesNotExist:
-            return
 
 
 class CityCouncilMinute(DatasetMixin):
@@ -94,6 +146,7 @@ class CityCouncilMinute(DatasetMixin):
     class Meta:
         verbose_name = "Câmara de Vereadores - Atas"
         verbose_name_plural = "Câmara de Vereadores - Atas"
+        get_latest_by = "date"
 
     def __repr__(self):
         return f"{self.date} {self.title} {self.file_url}"
@@ -116,6 +169,8 @@ class Gazette(DatasetMixin):
     class Meta:
         verbose_name = "Diário Oficial"
         verbose_name_plural = "Diários Oficiais"
+        get_latest_by = "date"
+        ordering = [F("date").desc(nulls_last=True)]
 
         indexes = [GinIndex(fields=["search_vector"])]
 
@@ -140,23 +195,3 @@ class GazetteEvent(DatasetMixin):
     def __repr__(self):
         gazette_info = f"{self.gazette.power} {self.gazette.year_and_edition}"
         return f"[{gazette_info}] {self.title} {self.secretariat}"
-
-
-class CityCouncilAttendanceList(DatasetMixin):
-    STATUS = (
-        ("presente", "Presente"),
-        ("falta_justificada", "Falta Justificada"),
-        ("licenca_justificada", "Licença Justificada"),
-        ("ausente", "Ausente"),
-    )
-    date = models.DateField()
-    description = models.CharField(max_length=200, null=True, blank=True)
-    council_member = models.CharField(max_length=200)
-    status = models.CharField(max_length=20, choices=STATUS)
-
-    class Meta:
-        verbose_name = "Câmara de Vereadores - Lista de Presença"
-        verbose_name_plural = "Câmara de Vereadores - Listas de Presença"
-
-    def __repr__(self):
-        return f"{self.date} {self.council_member} {self.status}"
