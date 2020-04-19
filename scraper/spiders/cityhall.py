@@ -16,17 +16,25 @@ class BidsSpider(BaseSpider):
 
     @staticmethod
     def get_modality(modality_text):
-        if "tomada de preço" in modality_text.lower():
+        if modality_text is None:
+            return
+        if "tomada" in modality_text.lower():
             return "tomada_de_precos"
         if "pregão presencial" in modality_text.lower():
             return "pregao_presencial"
+        if "pregao presencial" in modality_text.lower():
+            return "pregao_presencial"
         if "pregão eletrônico" in modality_text.lower():
+            return "pregao_eletronico"
+        if "pregao eletronico" in modality_text.lower():
             return "pregao_eletronico"
         if "leilão" in modality_text.lower():
             return "leilao"
+        if "leilao" in modality_text.lower():
+            return "leilao"
         if "inexigibilidade" in modality_text.lower():
             return "inexigibilidade"
-        if "dispensada" in modality_text.lower():
+        if "dispensa" in modality_text.lower():
             return "dispensada"
         if "convite" in modality_text.lower():
             return "convite"
@@ -34,6 +42,10 @@ class BidsSpider(BaseSpider):
             return "concurso"
         if "concorrência" in modality_text.lower():
             return "concorrencia"
+        if "chamada" in modality_text.lower():
+            return "chamada_publica"
+        if "chamamento" in modality_text.lower():
+            return "chamada_publica"
 
     def follow_this_date(self, url):
         month_year = extract_param(url, "dt")
@@ -75,21 +87,21 @@ class BidsSpider(BaseSpider):
         bid_data = zip(modalities, descriptions, bids_history, date)
 
         url_pattern = re.compile(r"licitacoes_pm\.asp[\?|&]cat=(\w+)\&dt=(\d+-\d+)")
-        for modality, (description, document_url), history, date in bid_data:
+        for modality_and_code, (description, document_url), history, date in bid_data:
             match = url_pattern.search(response.url)
             month, year = match.group(2).split("-")
-            # TODO extrair modalidade
 
             item = CityHallBidItem(
                 crawled_at=datetime.now(),
                 crawled_from=response.url,
-                category=match.group(1).upper(),
+                public_agency=match.group(1).upper(),
                 month=int(month),
                 year=int(year),
                 description=description,
                 history=history,
-                modality=modality,
-                date=from_str_to_datetime(date, self.supported_formats),
+                codes=modality_and_code["codes"],
+                modality=modality_and_code["modality"],
+                session_at=from_str_to_datetime(date, self.supported_formats),
             )
             if document_url:
                 item["file_urls"] = [response.urljoin(document_url)]
@@ -122,7 +134,7 @@ class BidsSpider(BaseSpider):
                 if event and date:
                     url = url if url else ""
                     bids_history.append(
-                        {"date": date, "event": event.capitalize(), "url": url}
+                        {"published_at": date, "event": event.capitalize(), "url": url}
                     )
             all_bids_history.append(bids_history)
 
@@ -142,7 +154,9 @@ class BidsSpider(BaseSpider):
             modality = raw_modality.strip()
             if modality != "":
                 modality = modality.replace("\r\n", " / ")
-                modalities.append(modality)
+                modalities.append(
+                    {"codes": modality, "modality": self.get_modality(modality)}
+                )
         return modalities
 
     def _parse_date(self, raw_date):

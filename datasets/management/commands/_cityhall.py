@@ -5,13 +5,14 @@ from django.utils.timezone import make_aware
 def save_bid(item):
     file_url = item["file_urls"][0] if item.get("file_urls") else None
     bid, _ = CityHallBid.objects.update_or_create(
-        date=item["date"],
-        category=item["category"],
-        modality=item["modality"],
+        session_at=item["session_at"],
+        public_agency=item["public_agency"],
+        codes=item["codes"],
         defaults={
             "crawled_from": item["crawled_from"],
             "crawled_at": make_aware(item["crawled_at"]),
             "description": item["description"],
+            "modality": item["modality"],
             "file_url": file_url,
             "file_content": item.get("file_content"),
         },
@@ -20,7 +21,7 @@ def save_bid(item):
         CityHallBidEvent.objects.get_or_create(
             crawled_from=item["crawled_from"],
             bid=bid,
-            date=event["date"],
+            published_at=event["published_at"],
             summary=event["event"],
             file_url=event.get("url"),
             defaults={"crawled_at": make_aware(item["crawled_at"])},

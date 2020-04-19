@@ -10,6 +10,19 @@ CITY_COUNCIL_EVENT_TYPE = (
     ("audiencia_publica", "Audiência Pública"),
 )
 
+BID_MODALITIES = (
+    ("tomada_de_precos", "Tomada de Preço"),
+    ("pregao_presencial", "Pregão Presencial"),
+    ("pregao_eletronico", "Pregão Eletrônico"),
+    ("leilao", "Leilão"),
+    ("inexigibilidade", "Inexigibilidade"),
+    ("dispensada", "Dispensada"),
+    ("convite", "Convite"),
+    ("concurso", "Concurso"),
+    ("concorrencia", "Concorrência"),
+    ("chamada_publica", "Chamada Pública"),
+)
+
 
 class DatasetMixin(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -163,10 +176,13 @@ class CityCouncilAttendanceList(DatasetMixin):
 
 
 class CityHallBid(DatasetMixin):
-    date = models.DateTimeField("Sessão Data / Horário", null=True)  # TODO checar nome
-    category = models.CharField("Órgão", max_length=200)  # FIXME public agency
+    session_at = models.DateTimeField("Sessão Data / Horário", null=True)
+    public_agency = models.CharField("Órgão", max_length=200)
     description = models.TextField("Descrição", null=True, blank=True)
-    modality = models.CharField("Modalidade", max_length=300)
+    modality = models.CharField(
+        "Modalidade", max_length=60, choices=BID_MODALITIES, null=True, blank=True
+    )
+    codes = models.CharField("Códigos", max_length=300)
     file_url = models.URLField("Arquivo", null=True, blank=True)
     file_content = models.TextField("Conteúdo", null=True, blank=True)
 
@@ -175,17 +191,17 @@ class CityHallBid(DatasetMixin):
         verbose_name_plural = "Prefeitura - Licitações"
 
     def __repr__(self):
-        return f"{self.date} {self.modality} {self.category}"
+        return f"{self.session_at} {self.modality} {self.public_agency}"
 
     def __str__(self):
-        return f"{self.date} {self.modality} {self.category}"
+        return f"{self.session_at} {self.modality} {self.public_agency}"
 
 
 class CityHallBidEvent(DatasetMixin):
     bid = models.ForeignKey(
         CityHallBid, on_delete=models.CASCADE, related_name="events",
     )
-    date = models.DateTimeField("Data e horário", null=True)
+    published_at = models.DateTimeField("Publicado em", null=True)
     summary = models.TextField("Descrição", null=True, blank=True)
     file_url = models.URLField("Arquivo", null=True, blank=True)
     file_content = models.TextField("Conteúdo", null=True, blank=True)
@@ -195,5 +211,5 @@ class CityHallBidEvent(DatasetMixin):
         verbose_name_plural = "Prefeitura - Licitações - Históricos"
 
     def __repr__(self):
-        bid_info = f"{self.bid.date} {self.bid.modality}"
-        return f"[{bid_info}] {self.date} {self.summary}"
+        bid_info = f"{self.bid.session_at} {self.bid.modality}"
+        return f"[{bid_info}] {self.published_at} {self.summary}"

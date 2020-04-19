@@ -147,19 +147,33 @@ class CityCouncilMinuteAdmin(ReadOnlyMixin, admin.ModelAdmin):
 
 @admin.register(CityHallBid)
 class CityHallBidAdmin(ReadOnlyMixin, admin.ModelAdmin):
-    ordering = ["-date"]
-    search_fields = ["description", "modality", "file_content"]
-    list_filter = ["date", "category"]
+    ordering = ["-session_at"]
+    search_fields = ["description", "codes", "file_content"]
+    list_filter = ["session_at", "public_agency", "modality"]
     list_display = (
-        "date",
-        "category",
+        "session_at",
+        "public_agency",
+        "codes",
         "modality",
         "description",
+        "events",
         "url",
-        "crawled_at",
-        "crawled_from",
     )
 
     @mark_safe
     def url(self, obj):
         return f"<a href={obj.file_url}>{obj.file_url}</a>"
+
+    url.short_description = "Arquivo"
+
+    @mark_safe
+    def events(self, obj):
+        return "<br><br>".join(
+            [
+                f"{event.published_at}: {event.summary} "
+                f"{event.file_url if event.file_url else ''}"
+                for event in obj.events.all()
+            ]
+        )
+
+    events.short_description = "Histórico"
