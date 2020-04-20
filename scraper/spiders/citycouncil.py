@@ -91,9 +91,6 @@ class AttendanceListSpider(BaseSpider):
 
     def start_requests(self):
         today = datetime.now().date()
-        if self.start_date != self.initial_date:
-            # pega do início do ano corrente
-            self.start_date = date(today.year, 1, 1)
         self.logger.info(f"Data inicial: {self.start_date}")
 
         for month, year in months_and_years(self.start_date, today):
