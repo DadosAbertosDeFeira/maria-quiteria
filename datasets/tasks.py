@@ -9,7 +9,7 @@ from tika import parser
 
 # Esse bloco (feio) faz com que esse módulo funcione dentro ou fora do Django
 try:
-    from datasets.models import Gazette
+    from datasets.models import Gazette, CityCouncilMinute
 except ImproperlyConfigured:
     import os
     import configurations
@@ -17,12 +17,16 @@ except ImproperlyConfigured:
     os.environ.setdefault("DJANGO_CONFIGURATION", "Dev")
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
     configurations.setup()
-    from datasets.models import Gazette
+    from datasets.models import Gazette, CityCouncilMinute
 
 
 rabbitmq_broker = RabbitmqBroker(url=settings.CLOUDAMQP_URL)
 set_broker(rabbitmq_broker)
-ITEM_TO_MODEL = {"GazetteItem": Gazette, "LegacyGazetteItem": Gazette}
+ITEM_TO_MODEL = {
+    "GazetteItem": Gazette,
+    "LegacyGazetteItem": Gazette,
+    "CityCouncilMinuteItem": CityCouncilMinute,
+}
 
 
 @actor
