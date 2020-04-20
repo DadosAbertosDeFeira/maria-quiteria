@@ -49,9 +49,9 @@ class Common(Configuration):
                     "django.template.context_processors.request",
                     "django.contrib.auth.context_processors.auth",
                     "django.contrib.messages.context_processors.messages",
-                ],
+                ]
             },
-        },
+        }
     ]
 
     WSGI_APPLICATION = "core.wsgi.application"
@@ -87,6 +87,7 @@ class Common(Configuration):
 class Dev(Common):
     DEBUG = True
     ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "0.0.0.0"]
+    CLOUDAMQP_URL = "amqp://localhost:5672"
 
     INSTALLED_APPS = Common.INSTALLED_APPS + ["debug_toolbar"]
 
@@ -98,3 +99,4 @@ class Dev(Common):
 class Prod(Common):
     SECRET_KEY = values.SecretValue()
     ALLOWED_HOSTS = values.ListValue()
+    CLOUDAMQP_URL = values.Value(environ_prefix=None)
