@@ -1,7 +1,7 @@
 import hashlib
 import os
 
-from scraper.settings import FILES_STORE, KEEP_FILES
+from scraper.settings import ASYNC_FILE_PROCESSING, FILES_STORE, KEEP_FILES
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.utils.python import to_bytes
 from six.moves.urllib.parse import urlparse
@@ -31,8 +31,13 @@ class ExtractFileContentPipeline(FilesPipeline):
         if results and results[0][0]:
             file_info = results[0][1]
             file_path = f"{FILES_STORE}{file_info['path']}"
-            raw = parser.from_file(file_path)
-            item["file_content"] = raw["content"]
+            if ASYNC_FILE_PROCESSING:
+                # FIXME implementação em outro PR
+                # https://github.com/DadosAbertosDeFeira/maria-quiteria/pull/60
+                item["file_content"] = None
+            else:
+                raw = parser.from_file(file_path)
+                item["file_content"] = raw["content"]
             if KEEP_FILES is False:
                 os.remove(file_path)
         return item
