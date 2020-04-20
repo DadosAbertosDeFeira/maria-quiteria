@@ -27,15 +27,16 @@ class ExtractFileContentPipeline(FilesPipeline):
 
     def item_completed(self, results, item, info):
         if not results:
-            return
+            return item
 
+        content_from_file_urls = []
         for result in results:
             ok, file_info = result
             if not ok:
                 continue
 
             kwargs = {
-                "item_name": item.__name__,
+                "item_name": item.__class__.__name__,
                 "url": file_info["url"],
                 "path": f"{FILES_STORE}{file_info['path']}",
                 "checksum": file_info["checksum"],
@@ -45,6 +46,6 @@ class ExtractFileContentPipeline(FilesPipeline):
             if ASYNC_FILE_PROCESSING:
                 content_from_file.send(**kwargs)
             else:
-                item["file_content"] = content_from_file(**kwargs)
-
-            yield item
+                content_from_file_urls.append(content_from_file(**kwargs))
+        item["file_content"] = content_from_file_urls
+        return item
