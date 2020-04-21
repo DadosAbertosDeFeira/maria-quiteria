@@ -1,7 +1,6 @@
 from datetime import date, datetime
 
 import pytest
-
 from datasets.management.commands._gazette import (
     _extract_date,
     save_gazette,
@@ -37,17 +36,12 @@ class TestSaveGazette:
         assert gazette.year_and_edition == item["year_and_edition"]
         assert gazette.crawled_at.replace(tzinfo=None) == item["crawled_at"]
         assert gazette.crawled_from == item["crawled_from"]
-        assert gazette.file_content == item["file_content"]
         assert gazette.file_url == item["file_urls"][0]
 
         event = gazette.gazetteevent_set.first()
         assert event.title == item["events"][0]["title"]
         assert event.secretariat == item["events"][0]["secretariat"]
         assert event.summary == item["events"][0]["summary"]
-
-        # Necessário para pegar a operação pós trigger.
-        gazette.refresh_from_db()
-        assert gazette.search_vector == "'feir':5 'municipal':3 'prefeit':2"
 
     def test_handle_with_changed_gazettes(self):
         item = {
@@ -114,7 +108,6 @@ class TestSaveLegacyGazette:
             "date": datetime(2014, 11, 27),
             "details": "ABRE CRÉDITO SUPLEMENTAR AO ORÇAMENTO DO MUNICÍPIO...",
             "file_urls": ["http://www.feiradesantana.ba.gov.br/leis/Deno20149416.pdf"],
-            "file_content": "O Prefeito Municipal de Feira...",
             "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
             "crawled_from": "http://www.diariooficial.br/st=1&publicacao=1&edicao=1131",
         }
@@ -126,7 +119,6 @@ class TestSaveLegacyGazette:
         assert gazette.year_and_edition == ""
         assert gazette.is_legacy is True
         assert gazette.file_url == legacy_item["file_urls"][0]
-        assert gazette.file_content == legacy_item["file_content"]
         assert gazette.crawled_at.replace(tzinfo=None) == legacy_item["crawled_at"]
         assert gazette.crawled_from == legacy_item["crawled_from"]
         assert gazette.gazetteevent_set.count() == 1
@@ -147,7 +139,6 @@ class TestSaveLegacyGazette:
                 "file_urls": [
                     "http://www.feiradesantana.ba.gov.br/leis/Deno20149416.pdf"
                 ],
-                "file_content": "O Prefeito Municipal de Feira...",
                 "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
                 "crawled_from": "http://www.diariooficial.br/st=1&&edicao=1131",
             },
@@ -159,7 +150,6 @@ class TestSaveLegacyGazette:
                 "file_urls": [
                     "http://www.feiradesantana.ba.gov.br/leis/Deno20149416.pdf"
                 ],
-                "file_content": "O Prefeito Municipal de Feira...",
                 "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
                 "crawled_from": "http://www.diariooficial.br/st=1&&edicao=1131",
             },
@@ -171,7 +161,6 @@ class TestSaveLegacyGazette:
                 "file_urls": [
                     "http://www.feiradesantana.ba.gov.br/leis/Deno20149416.pdf"
                 ],
-                "file_content": "O Prefeito Municipal de Feira...",
                 "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
                 "crawled_from": "http://www.diariooficial.br/st=1&&edicao=1131",
             },
@@ -192,7 +181,6 @@ class TestSaveLegacyGazette:
                 "file_urls": [
                     "http://www.feiradesantana.ba.gov.br/leis/Deno20149416.pdf"
                 ],
-                "file_content": "O Prefeito Municipal de Feira...",
                 "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
                 "crawled_from": "http://www.diariooficial.br/?st=1&edicao=1130",
             },
@@ -204,7 +192,6 @@ class TestSaveLegacyGazette:
                 "file_urls": [
                     "http://www.feiradesantana.ba.gov.br/leis/Deno20149415.pdf"
                 ],
-                "file_content": "O Prefeito Municipal de Feira...",
                 "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
                 "crawled_from": "http://www.diariooficial.br/?&edicao=1131",
             },
@@ -216,7 +203,6 @@ class TestSaveLegacyGazette:
                 "file_urls": [
                     "http://www.feiradesantana.ba.gov.br/leis/Deno20149414.pdf"
                 ],
-                "file_content": "O Prefeito Municipal de Feira...",
                 "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
                 "crawled_from": "http://www.diariooficial.br/?&edicao=1131",
             },
