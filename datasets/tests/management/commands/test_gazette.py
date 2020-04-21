@@ -21,13 +21,12 @@ class TestSaveGazette:
                 {
                     "title": "DECRETO INDIVIDUAL N\u00ba 1.294/2019",
                     "secretariat": "Gabinete do Prefeito",
-                    "summary": "ÍCARO IVVIN DE ALMEIDA COSTA LIMA - NOMEIA",
+                    "summary": "Joãozinho da Silva - NOMEIA",
                 }
             ],
             "file_urls": [
                 "http://www.diariooficial.feiradesantana.ba.gov.br/1VFJCB4112019.pdf"
             ],
-            "file_content": "O Prefeito Municipal de Feira...",
         }
 
         gazette = save_gazette(item)
@@ -54,17 +53,16 @@ class TestSaveGazette:
                 {
                     "title": "DECRETO INDIVIDUAL N\u00ba 1.294/2019",
                     "secretariat": "Gabinete do Prefeito",
-                    "summary": "ÍCARO IVVIN DE ALMEIDA COSTA LIMA - NOMEIA",
+                    "summary": "Joãozinho da Silva - NOMEIA",
                 }
             ],
             "file_urls": [
                 "http://www.diariooficial.feiradesantana.ba.gov.br/1VFJCB4112019.pdf"
             ],
-            "file_content": "O Prefeito Municipal de Feira...",
         }
 
         gazette = save_gazette(item)
-        item["file_content"] = "O Prefeito no uso de suas atribuições..."
+        item["file_url"] = ["http://naodeveriamudar.com"]
         item["crawled_at"] = datetime(2020, 3, 22, 7, 15, 17, 908831)
         updated_gazette = save_gazette(item)
 
@@ -81,18 +79,17 @@ class TestSaveGazette:
                 {
                     "title": "DECRETO INDIVIDUAL N\u00ba 1.294/2019",
                     "secretariat": "Gabinete do Prefeito",
-                    "summary": "ÍCARO IVVIN DE ALMEIDA COSTA LIMA - NOMEIA",
+                    "summary": "Joãozinho da Silva - NOMEIA",
                 },
                 {
                     "title": "Outro título aleatório",
                     "secretariat": "Gabinete do Prefeito",
-                    "summary": "ÍCARO IVVIN DE ALMEIDA COSTA LIMA - NOMEIA",
+                    "summary": "Joãozinho da Silva - NOMEIA",
                 },
             ],
             "file_urls": [
                 "http://www.diariooficial.feiradesantana.ba.gov.br/1VFJCB4112019.pdf"
             ],
-            "file_content": "O Prefeito Municipal de Feira...",
         }
 
         gazette = save_gazette(item)
