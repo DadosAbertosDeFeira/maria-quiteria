@@ -140,7 +140,7 @@ Deixe esse processo rodando em uma janela do terminal e pronto!
 ##### Instalando o RabbitMQ localmente
 
 Caso prefira, você pode
-[baixar e installar](https://www.rabbitmq.com/download.html) o RabbitMQ do site
+[baixar e instalar](https://www.rabbitmq.com/download.html) o RabbitMQ do site
 oficial. Feito isso, inicie o serviço em uma janela do terminal e mantenha essa
 janela aberta:
 
