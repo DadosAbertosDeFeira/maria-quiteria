@@ -1,3 +1,4 @@
+import json
 import os
 
 from datasets.models import (
@@ -35,6 +36,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         drop_all_help = "Limpa o banco antes de iniciar a coleta."
         parser.add_argument("--drop-all", action="store_true", help=drop_all_help)
+        parser.add_argument("--scrapy-args")
 
     def echo(self, text, style=None):
         self.stdout.write(style(text) if style else text)
@@ -68,7 +70,13 @@ class Command(BaseCommand):
 
         dispatcher.connect(self.save, signal=signals.item_passed)
         os.environ["SCRAPY_SETTINGS_MODULE"] = "scraper.settings"
-        process = CrawlerProcess(settings=get_project_settings())
+        settings = get_project_settings()
+
+        if options.get("scrapy_args"):
+            scrapy_args = json.loads(options.get("scrapy_args"))
+            settings.update(scrapy_args)
+
+        process = CrawlerProcess(settings=settings)
         process.crawl(
             AgendaSpider, start_from_date=CityCouncilAgenda.last_collected_item_date(),
         )
