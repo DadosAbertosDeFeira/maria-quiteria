@@ -224,6 +224,7 @@ class CityHallBid(DatasetMixin):
     class Meta:
         verbose_name = "Prefeitura - Licitação"
         verbose_name_plural = "Prefeitura - Licitações"
+        get_latest_by = "session_at"
 
     def __repr__(self):
         return f"{self.session_at} {self.modality} {self.public_agency}"

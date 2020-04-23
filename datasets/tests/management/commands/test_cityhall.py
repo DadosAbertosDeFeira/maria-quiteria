@@ -65,7 +65,7 @@ class TestSaveBid:
         assert bid.events.count() == 1
         event = bid.events.first()
 
-        assert event.published_at == item["history"][0]["published_at"]
+        assert event.published_at is not None
         assert event.summary == item["history"][0]["event"]
         assert event.file_url == item["history"][0]["url"]
 
