@@ -46,6 +46,9 @@ def from_str_to_date(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y"]):
 
 def months_and_years(start_date, end_date):
     pairs = []
+    if start_date.year == end_date.year:
+        if start_date.month == end_date.month:
+            return [(start_date.month, start_date.year)]
     for year in range(start_date.year, end_date.year + 1):
         for month in range(1, 13):
             if start_date.year == end_date.year:
