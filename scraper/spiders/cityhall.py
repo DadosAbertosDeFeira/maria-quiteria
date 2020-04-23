@@ -5,13 +5,48 @@ import scrapy
 from scraper.items import CityHallBidItem, CityHallContractItem, CityHallPaymentsItem
 
 from . import BaseSpider
-from .utils import extract_param, identify_contract_id
+from .utils import (
+    extract_param,
+    from_str_to_datetime,
+    identify_contract_id,
+    strip_accents,
+)
 
 
 class BidsSpider(BaseSpider):
     name = "cityhall_bids"
     start_urls = ["http://www.feiradesantana.ba.gov.br/seadm/licitacoes.asp"]
     initial_date = date(2001, 1, 1)
+    supported_formats = ["%d/%m/%Y %Hh%M", "%d/%m/%Y", "%d/%m/%y"]
+
+    @staticmethod
+    def get_modality(modality_text):
+        if modality_text is None:
+            return
+
+        modality_text = strip_accents(modality_text.lower())
+        if "tomada" in modality_text.lower():
+            return "tomada_de_precos"
+        if "pregao presencial" in modality_text.lower():
+            return "pregao_presencial"
+        if "pregao eletronico" in modality_text.lower():
+            return "pregao_eletronico"
+        if "leilao" in modality_text.lower():
+            return "leilao"
+        if "inexigibilidade" in modality_text.lower():
+            return "inexigibilidade"
+        if "dispensa" in modality_text.lower():
+            return "dispensada"
+        if "convite" in modality_text.lower():
+            return "convite"
+        if "concurso" in modality_text.lower():
+            return "concurso"
+        if "concorrencia" in modality_text.lower():
+            return "concorrencia"
+        if "chamada" in modality_text.lower():
+            return "chamada_publica"
+        if "chamamento" in modality_text.lower():
+            return "chamada_publica"
 
     def follow_this_date(self, url):
         month_year = extract_param(url, "dt")
@@ -53,20 +88,21 @@ class BidsSpider(BaseSpider):
         bid_data = zip(modalities, descriptions, bids_history, date)
 
         url_pattern = re.compile(r"licitacoes_pm\.asp[\?|&]cat=(\w+)\&dt=(\d+-\d+)")
-        for modality, (description, document_url), history, date in bid_data:
+        for modality_and_code, (description, document_url), history, date in bid_data:
             match = url_pattern.search(response.url)
             month, year = match.group(2).split("-")
 
             item = CityHallBidItem(
                 crawled_at=datetime.now(),
                 crawled_from=response.url,
-                category=match.group(1).upper(),
+                public_agency=match.group(1).upper(),
                 month=int(month),
                 year=int(year),
                 description=description,
                 history=history,
-                modality=modality,
-                date=date,
+                codes=modality_and_code["codes"],
+                modality=modality_and_code["modality"],
+                session_at=from_str_to_datetime(date, self.supported_formats),
             )
             if document_url:
                 item["file_urls"] = [response.urljoin(document_url)]
@@ -92,13 +128,14 @@ class BidsSpider(BaseSpider):
             bids_history = []
             for row in raw_bid_history.xpath(".//tr"):
                 date = row.xpath(".//td[2]/text()").get().strip()
+                date = from_str_to_datetime(date, self.supported_formats)
                 event = row.xpath(".//td[3]/div/text()").get()
                 url = row.xpath(".//td[4]/div/a//@href").get()
 
                 if event and date:
                     url = url if url else ""
                     bids_history.append(
-                        {"date": date, "event": event.capitalize(), "url": url}
+                        {"published_at": date, "event": event.capitalize(), "url": url}
                     )
             all_bids_history.append(bids_history)
 
@@ -118,7 +155,9 @@ class BidsSpider(BaseSpider):
             modality = raw_modality.strip()
             if modality != "":
                 modality = modality.replace("\r\n", " / ")
-                modalities.append(modality)
+                modalities.append(
+                    {"codes": modality, "modality": self.get_modality(modality)}
+                )
         return modalities
 
     def _parse_date(self, raw_date):

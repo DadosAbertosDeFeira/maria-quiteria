@@ -1,5 +1,6 @@
 import logging
 import re
+import unicodedata
 from datetime import datetime
 from urllib.parse import parse_qs, urlparse
 
@@ -82,3 +83,13 @@ def normalize_currency(value):
     except ValueError:
         logging.error("Falha ao converter valor", exc_info=True)
     return
+
+
+def strip_accents(string):
+    if string is None:
+        return
+    return "".join(
+        char
+        for char in unicodedata.normalize("NFD", string)
+        if unicodedata.category(char) != "Mn"
+    )

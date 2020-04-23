@@ -5,6 +5,7 @@ from datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
     CityCouncilMinute,
+    CityHallBid,
     Gazette,
     GazetteEvent,
 )
@@ -13,10 +14,12 @@ from scraper.items import (
     CityCouncilAgendaItem,
     CityCouncilAttendanceListItem,
     CityCouncilMinuteItem,
+    CityHallBidItem,
     GazetteItem,
     LegacyGazetteItem,
 )
 from scraper.spiders.citycouncil import AgendaSpider, AttendanceListSpider, MinuteSpider
+from scraper.spiders.cityhall import BidsSpider
 from scraper.spiders.gazette import (
     ExecutiveAndLegislativeGazetteSpider,
     LegacyGazetteSpider,
@@ -27,6 +30,7 @@ from scrapy.signalmanager import dispatcher
 from scrapy.utils.project import get_project_settings
 
 from ._citycouncil import save_agenda, save_attendance_list, save_minute
+from ._cityhall import save_bid
 from ._gazette import save_gazette, save_legacy_gazette
 
 
@@ -54,6 +58,8 @@ class Command(BaseCommand):
             save_attendance_list(item)
         if isinstance(item, CityCouncilMinuteItem):
             save_minute(item)
+        if isinstance(item, CityHallBidItem):
+            save_bid(item)
         if isinstance(item, LegacyGazetteItem):
             save_legacy_gazette(item)
         if isinstance(item, GazetteItem):
@@ -65,6 +71,7 @@ class Command(BaseCommand):
             CityCouncilAgenda.objects.all().delete()
             CityCouncilAttendanceList.objects.all().delete()
             CityCouncilMinute.objects.all().delete()
+            CityHallBid.objects.all().delete()
             Gazette.objects.all().delete()
             GazetteEvent.objects.all().delete()
 
@@ -86,6 +93,9 @@ class Command(BaseCommand):
         )
         process.crawl(
             MinuteSpider, start_from_date=CityCouncilMinute.last_collected_item_date()
+        )
+        process.crawl(
+            BidsSpider, start_from_date=CityHallBid.last_collected_item_date()
         )
 
         last_collected_gazette = Gazette.last_collected_item_date()

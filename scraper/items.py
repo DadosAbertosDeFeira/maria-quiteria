@@ -85,13 +85,14 @@ class CityHallContractItem(BaseItem):
 
 
 class CityHallBidItem(BaseItem):
-    category = scrapy.Field()
+    public_agency = scrapy.Field()
     month = scrapy.Field()
     year = scrapy.Field()
     description = scrapy.Field()
     history = scrapy.Field()
+    codes = scrapy.Field()
     modality = scrapy.Field()
-    date = scrapy.Field()
+    session_at = scrapy.Field()
     file_urls = scrapy.Field()
     file_content = scrapy.Field()
 

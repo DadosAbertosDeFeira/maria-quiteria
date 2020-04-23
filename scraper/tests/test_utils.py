@@ -10,6 +10,7 @@ from ..spiders.utils import (
     months_and_years,
     normalize_currency,
     replace_query_param,
+    strip_accents,
 )
 
 
@@ -170,3 +171,18 @@ def test_extract_date(str_with_date, expected_obj):
 )
 def test_normalize_currency(original_value, expected_value):
     assert normalize_currency(original_value) == expected_value
+
+
+@pytest.mark.parametrize(
+    "original_value,expected_value",
+    [
+        ("tomada", "tomada"),
+        ("pregão presencial", "pregao presencial"),
+        ("pregão eletrônico", "pregao eletronico"),
+        ("concorrência", "concorrencia"),
+        ("çãôéà", "caoea"),
+        (None, None),
+    ],
+)
+def test_strip_accents(original_value, expected_value):
+    assert strip_accents(original_value) == expected_value
