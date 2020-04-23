@@ -10,6 +10,7 @@ from ..spiders.utils import (
     months_and_years,
     normalize_currency,
     replace_query_param,
+    strip_accents,
 )
 
 
@@ -128,7 +129,6 @@ def test_possible_date_formats(datetime_str, expected_obj):
             [(11, 2019), (12, 2019), (1, 2020), (2, 2020), (3, 2020)],
         ),
         (datetime(2020, 2, 10), datetime(2020, 3, 1), [(3, 2020)]),
-        (datetime(2020, 3, 1), datetime(2020, 3, 1), []),
         (datetime(2020, 6, 1), datetime(2020, 3, 1), []),
         (
             datetime(2008, 10, 11),
@@ -137,6 +137,7 @@ def test_possible_date_formats(datetime_str, expected_obj):
             + [(m, y) for y in range(2009, 2012) for m in range(1, 13)]
             + [(1, 2012), (2, 2012), (3, 2012)],
         ),
+        (datetime(2020, 4, 14), datetime(2020, 4, 23), [(4, 2020)]),
     ],
 )
 def test_months_and_years(start_date, end_date, expected_month_and_year):
@@ -170,3 +171,18 @@ def test_extract_date(str_with_date, expected_obj):
 )
 def test_normalize_currency(original_value, expected_value):
     assert normalize_currency(original_value) == expected_value
+
+
+@pytest.mark.parametrize(
+    "original_value,expected_value",
+    [
+        ("tomada", "tomada"),
+        ("pregão presencial", "pregao presencial"),
+        ("pregão eletrônico", "pregao eletronico"),
+        ("concorrência", "concorrencia"),
+        ("çãôéà", "caoea"),
+        (None, None),
+    ],
+)
+def test_strip_accents(original_value, expected_value):
+    assert strip_accents(original_value) == expected_value

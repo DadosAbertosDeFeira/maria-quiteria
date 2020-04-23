@@ -1,5 +1,6 @@
 import logging
 import re
+import unicodedata
 from datetime import datetime
 from urllib.parse import parse_qs, urlparse
 
@@ -46,6 +47,9 @@ def from_str_to_date(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y"]):
 
 def months_and_years(start_date, end_date):
     pairs = []
+    if start_date.year == end_date.year:
+        if start_date.month == end_date.month:
+            return [(start_date.month, start_date.year)]
     for year in range(start_date.year, end_date.year + 1):
         for month in range(1, 13):
             if start_date.year == end_date.year:
@@ -79,3 +83,13 @@ def normalize_currency(value):
     except ValueError:
         logging.error("Falha ao converter valor", exc_info=True)
     return
+
+
+def strip_accents(string):
+    if string is None:
+        return
+    return "".join(
+        char
+        for char in unicodedata.normalize("NFD", string)
+        if unicodedata.category(char) != "Mn"
+    )

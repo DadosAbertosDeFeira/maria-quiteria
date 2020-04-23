@@ -89,13 +89,14 @@ class CityHallContractItem(BaseModel):
 
 
 class CityHallBidItem(BaseModel):
-    category = StringType()
+    public_agency = StringType()
     month = IntType(min_value=1, max_value=12)
     year = IntType(min_value=1873)  # quando Feira virou cidade :)
     description = StringType()
     history = ListType(DictType(StringType))
+    codes = StringType()
     modality = StringType()
-    date = DateTimeType(formats=("%d/%m/%Y %Hh%M"))
+    session_at = DateTimeType()
     file_urls = ListType(StringType)
     file_content = StringType()
 
