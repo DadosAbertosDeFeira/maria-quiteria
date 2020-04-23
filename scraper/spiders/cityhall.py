@@ -5,7 +5,12 @@ import scrapy
 from scraper.items import CityHallBidItem, CityHallContractItem, CityHallPaymentsItem
 
 from . import BaseSpider
-from .utils import extract_param, from_str_to_datetime, identify_contract_id
+from .utils import (
+    extract_param,
+    from_str_to_datetime,
+    identify_contract_id,
+    strip_accents,
+)
 
 
 class BidsSpider(BaseSpider):
@@ -18,18 +23,14 @@ class BidsSpider(BaseSpider):
     def get_modality(modality_text):
         if modality_text is None:
             return
+
+        modality_text = strip_accents(modality_text.lower())
         if "tomada" in modality_text.lower():
             return "tomada_de_precos"
-        if "pregão presencial" in modality_text.lower():
-            return "pregao_presencial"
         if "pregao presencial" in modality_text.lower():
             return "pregao_presencial"
-        if "pregão eletrônico" in modality_text.lower():
-            return "pregao_eletronico"
         if "pregao eletronico" in modality_text.lower():
             return "pregao_eletronico"
-        if "leilão" in modality_text.lower():
-            return "leilao"
         if "leilao" in modality_text.lower():
             return "leilao"
         if "inexigibilidade" in modality_text.lower():
@@ -40,7 +41,7 @@ class BidsSpider(BaseSpider):
             return "convite"
         if "concurso" in modality_text.lower():
             return "concurso"
-        if "concorrência" in modality_text.lower():
+        if "concorrencia" in modality_text.lower():
             return "concorrencia"
         if "chamada" in modality_text.lower():
             return "chamada_publica"
