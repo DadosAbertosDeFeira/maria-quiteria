@@ -7,6 +7,7 @@ from ..spiders.utils import (
     extract_param,
     from_str_to_datetime,
     identify_contract_id,
+    is_url,
     months_and_years,
     normalize_currency,
     replace_query_param,
@@ -186,3 +187,26 @@ def test_normalize_currency(original_value, expected_value):
 )
 def test_strip_accents(original_value, expected_value):
     assert strip_accents(original_value) == expected_value
+
+
+@pytest.mark.parametrize(
+    "original_value,expected_value",
+    [
+        ("google.com", True),
+        ("www.google", True),
+        ("feiraeh.top", True),
+        ("http://feiradesantana.com.br", True),
+        ("https://feiradesantana.com.br", True),
+        ("https://feiradesantana.com.br", True),
+        ("http://www.feiradesantana.com.br", True),
+        ("https://www.feiradesantana.com.br", True),
+        ("https://monitor.dadosabertosdefeira.com.br", True),
+        ("http://www.feiradesantana.ba.gov.br/Word - Port20130001.pdf", True),
+        ("tel:42384248", False),
+        ("bobagem", False),
+        ("#", False),
+        (None, False),
+    ],
+)
+def test_is_url(original_value, expected_value):
+    assert is_url(original_value) is expected_value

@@ -4,6 +4,17 @@ import unicodedata
 from datetime import datetime
 from urllib.parse import parse_qs, urlparse
 
+DOMAIN_FORMAT = re.compile(
+    r"(?:^(\w{1,255}):(.{1,255})@|^)"
+    r"(?:(?:(?=\S{0,253}(?:$|:))"
+    r"((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+"
+    r"(?:[a-z0-9]{1,63})))"
+    r"|localhost)"
+    r"(:\d{1,5})?",
+    re.IGNORECASE,
+)
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -81,7 +92,7 @@ def normalize_currency(value):
         cleaned_value = value.replace("R$", "").replace(".", "").replace(",", ".")
         return float(cleaned_value)
     except ValueError:
-        logging.error("Falha ao converter valor", exc_info=True)
+        logger.error("Falha ao converter valor", exc_info=True)
     return
 
 
@@ -93,3 +104,34 @@ def strip_accents(string):
         for char in unicodedata.normalize("NFD", string)
         if unicodedata.category(char) != "Mn"
     )
+
+
+def is_url(url):
+    if not url:
+        return False
+
+    url = url.strip()
+
+    if len(url) > 2048:
+        logger.warning(
+            f"URL ultrapassa limite de 2048 caracteres (tamanho = {len(url)})"
+        )
+        return False
+
+    result = urlparse(url)
+    scheme = result.scheme
+    domain = result.netloc
+
+    if not scheme:
+        logger.warning("Nenhum URL scheme especificado")
+        return is_url(f"http://{url}")
+
+    if not domain:
+        logger.warning("Nenhum domínio especificado")
+        return False
+
+    if not re.fullmatch(DOMAIN_FORMAT, domain):
+        logger.warning(f"Domínio inválido ({domain})")
+        return False
+
+    return True
