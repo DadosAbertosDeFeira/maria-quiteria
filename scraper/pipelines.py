@@ -44,6 +44,8 @@ class ExtractFileContentPipeline(FilesPipeline):
                 "keep_file": KEEP_FILES,
             }
             if ASYNC_FILE_PROCESSING:
+                # TODO file url
+                # TODO download e extração do conteúdo do arquivo
                 content_from_file.send(**kwargs)
             else:
                 content_from_file_urls.append(content_from_file(**kwargs))

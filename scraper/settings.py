@@ -29,7 +29,6 @@ ITEM_PIPELINES = {
     "scraper.pipelines.ExtractFileContentPipeline": 100,
     "spidermon.contrib.scrapy.pipelines.ItemValidationPipeline": 200,
 }
-FILES_STORE = f"{os.getcwd()}/data/"
 KEEP_FILES = os.getenv("KEEP_FILES", False)
 ASYNC_FILE_PROCESSING = os.getenv("ASYNC_FILE_PROCESSING")
 
@@ -73,3 +72,10 @@ AUTOTHROTTLE_ENABLED = True
 
 if os.getenv("ENABLE_AUTOTHROTTLE_DEBUG", False):
     AUTOTHROTTLE_DEBUG = True
+
+# storage
+# FILES_STORE = 's3://dadosabertosdefeira/maria-quiteria/'
+FILES_STORE = f"{os.getcwd()}/data/"  # FIXME  LOCAL_STORE
+# FILES_STORE_S3_ACL = 'public-read'
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
