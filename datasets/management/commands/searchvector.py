@@ -1,7 +1,6 @@
+from datasets.models import File
 from django.contrib.postgres.search import SearchVector
 from django.core.management.base import BaseCommand
-
-from datasets.models import Gazette
 
 
 class Command(BaseCommand):
@@ -12,15 +11,16 @@ class Command(BaseCommand):
         self.stdout.write(style(text) if style else text)
 
     def handle(self, *args, **options):
-        gazette_count = Gazette.objects.count()
+        file_count = File.objects.count()
         self.echo(
-            f"Creating search vector for Gazette. Total items: {gazette_count:,}",
+            f"Criando um vetor de busca para os arquivos. "
+            f"Total de itens: {file_count:,}",
             self.style.SUCCESS,
         )
-        self.echo("Please wait...", self.style.SUCCESS)
+        self.echo("Aguarde...", self.style.SUCCESS)
 
         search_vector = SearchVector("file_content", config="portuguese")
 
-        Gazette.objects.update(search_vector=search_vector)
+        File.objects.update(search_vector=search_vector)
 
-        self.echo("Done!", self.style.SUCCESS)
+        self.echo("Pronto!", self.style.SUCCESS)

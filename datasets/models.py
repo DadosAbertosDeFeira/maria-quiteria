@@ -1,5 +1,7 @@
 from datetime import date, datetime
 
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models
@@ -176,7 +178,6 @@ class Gazette(DatasetMixin):
     is_legacy = models.BooleanField(default=False)
     file_url = models.URLField(null=True, blank=True)
     file_content = models.TextField(null=True, blank=True)
-    checksum = models.CharField(max_length=128, null=True, blank=True)
 
     search_vector = SearchVectorField(null=True, editable=False)
 
@@ -250,3 +251,27 @@ class CityHallBidEvent(DatasetMixin):
     def __repr__(self):
         bid_info = f"{self.bid.session_at} {self.bid.modality}"
         return f"[{bid_info}] {self.published_at} {self.summary}"
+
+
+class File(models.Model):
+    created_at = models.DateTimeField("Criado em", auto_now_add=True)
+    updated_at = models.DateTimeField("Atualizado em", auto_now=True)
+    url = models.URLField("Arquivo")
+    content = models.TextField("Conteúdo", null=True, blank=True)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+    checksum = models.CharField(max_length=128, null=True, blank=True)
+    s3_url = models.URLField("Backup", null=True, blank=True)
+
+    search_vector = SearchVectorField(null=True, editable=False)
+    # FIXME atualizar índices
+
+    class Meta:
+        verbose_name = "Arquivo"
+        verbose_name_plural = "Arquivos"
+        indexes = [GinIndex(fields=["search_vector"])]
+        unique_together = ("url", "content_type", "object_id")
+
+    def __repr__(self):
+        return f"[{self.content_type}] {self.url}"
