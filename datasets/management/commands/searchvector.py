@@ -19,7 +19,7 @@ class Command(BaseCommand):
         )
         self.echo("Aguarde...", self.style.SUCCESS)
 
-        search_vector = SearchVector("file_content", config="portuguese")
+        search_vector = SearchVector("content", config="portuguese")
 
         File.objects.update(search_vector=search_vector)
 
