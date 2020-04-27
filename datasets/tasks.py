@@ -1,14 +1,17 @@
+import logging
 import os
 from logging import info
 from pathlib import Path
-from urllib.request import urlopen
 
 import boto3
+import requests
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from dramatiq import actor, set_broker
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from tika import parser
+
+logger = logging.getLogger(__name__)
 
 # Esse bloco (feio) faz com que esse módulo funcione dentro ou fora do Django
 try:
@@ -60,10 +63,10 @@ def content_from_file(item_name, url, path, checksum, save_to_db, keep_file):
 
 
 def create_temp_file(url):
-    content = urlopen(url).read()
+    response = requests.get(url)
     start_index = url.rfind("/") + 1
     temp_file_name = f"{url[start_index:]}"
-    open(f"{Path.cwd()}/{temp_file_name}", "wb").write(content)
+    open(f"{Path.cwd()}/{temp_file_name}", "wb").write(response.content)
     return temp_file_name
 
 
@@ -76,7 +79,7 @@ def backup_file(file_id):
     try:
         file_obj = File.objects.get(pk=file_id, s3_url__isnull=True)
     except File.DoesNotExist:
-        info(f"O arquivo não existe ou já possui backup {file_id}.")
+        info(f"O arquivo ({file_id}) não existe ou já possui backup.")
         return
 
     model_name = file_obj.content_object._meta.model_name

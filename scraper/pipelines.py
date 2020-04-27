@@ -35,6 +35,8 @@ class ExtractFileContentPipeline(FilesPipeline):
             if not ok:
                 continue
 
+            # TODO add checksum to item?
+
             kwargs = {
                 "item_name": item.__class__.__name__,
                 "url": file_info["url"],
@@ -43,11 +45,17 @@ class ExtractFileContentPipeline(FilesPipeline):
                 "save_to_db": ASYNC_FILE_PROCESSING,
                 "keep_file": KEEP_FILES,
             }
-            if ASYNC_FILE_PROCESSING:
-                # TODO file url
-                # TODO download e extração do conteúdo do arquivo
-                content_from_file.send(**kwargs)
-            else:
+            if not ASYNC_FILE_PROCESSING:
                 content_from_file_urls.append(content_from_file(**kwargs))
+            # else:
+            #     # TODO file url
+            #     # TODO download e extração do conteúdo do arquivo
+            # FIXME só chama o próximo se deu certo
+            #     pipeline([
+            #         save_file.message(**kwargs),
+            #         content_from_file.message(**kwargs),
+            #     ]).run()
+
+            #     content_from_file.send(**kwargs)
         item["file_content"] = content_from_file_urls
         return item

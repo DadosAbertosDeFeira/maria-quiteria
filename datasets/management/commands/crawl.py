@@ -67,7 +67,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options.get("drop_all"):
-            self.warn("Dropping existing records...")
+            self.warn("Apagando registros...")
             CityCouncilAgenda.objects.all().delete()
             CityCouncilAttendanceList.objects.all().delete()
             CityCouncilMinute.objects.all().delete()
@@ -107,4 +107,4 @@ class Command(BaseCommand):
         )
 
         process.start()
-        self.success("Done!")
+        self.success("Pronto!")

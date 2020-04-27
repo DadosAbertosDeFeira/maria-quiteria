@@ -2,12 +2,15 @@ import re
 from datetime import date
 
 from datasets.models import Gazette, GazetteEvent
+from django.contrib.admin.options import get_content_type_for_model
 from django.utils.timezone import make_aware
+
+from ._file import save_file
 
 
 def save_gazette(item):
     """Salva diários oficiais do executivo a partir de 2015."""
-    gazette, _ = Gazette.objects.update_or_create(
+    gazette, created = Gazette.objects.update_or_create(
         date=item["date"],
         power=item["power"],
         year_and_edition=item["year_and_edition"],
@@ -17,6 +20,13 @@ def save_gazette(item):
             "file_url": item["file_urls"][0],
         },
     )
+
+    if created:
+        content_type = get_content_type_for_model(gazette)
+        for file_url in item["file_urls"]:
+            # FIXME checksum
+            save_file(file_url, content_type, gazette.pk)
+
     for event in item["events"]:
         GazetteEvent.objects.get_or_create(
             gazette=gazette,
@@ -46,14 +56,20 @@ def save_legacy_gazette(item):
             item["date"] = extracted_date
             notes = "Data extraída do título."
 
-    gazette, _ = Gazette.objects.get_or_create(
+    gazette, created = Gazette.objects.get_or_create(
         date=item["date"],
         power="executivo",
         crawled_from=item["crawled_from"],
-        file_url=item["file_urls"][0],
         is_legacy=True,
         defaults={"crawled_at": make_aware(item["crawled_at"]), "notes": notes},
     )
+
+    if created:
+        content_type = get_content_type_for_model(gazette)
+        for file_url in item["file_urls"]:
+            # FIXME checksum
+            save_file(file_url, content_type, gazette.pk)
+
     GazetteEvent.objects.create(
         gazette=gazette,
         title=item["title"],
