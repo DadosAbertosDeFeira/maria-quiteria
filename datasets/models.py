@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
@@ -231,6 +231,22 @@ class CityHallBid(DatasetMixin):
 
     def __str__(self):
         return f"{self.session_at} {self.modality} {self.public_agency}"
+
+    @classmethod
+    def last_collected_item_date(cls):
+        """Retorna data para início da coleta.
+
+        Dado que as licitações são constantemente atualizadas e nós não temos
+        um maneira mais simples de verificar os últimos itens atualizados,
+        vamos assumir que os últimos seis meses é um período razoável para
+        ter licitações sendo atualizadas.
+        """
+        try:
+            # checa se existe algum registro antes
+            cls.objects.latest()
+            return date.today() - timedelta(days=180)
+        except cls.DoesNotExist:
+            return
 
 
 class CityHallBidEvent(DatasetMixin):
