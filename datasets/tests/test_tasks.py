@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pytest
-from datasets.models import Gazette
 from datasets.tasks import (
     backup_file,
     content_from_file,
@@ -11,57 +10,81 @@ from datasets.tasks import (
 from model_bakery import baker
 
 
-def test_content_from_files_not_saving_to_db(mocker):
-    url = "https://maria.quiteria/quarenta-e-dois.pdf"
-    path = "full/42.pdf"
+@pytest.fixture
+def parser(mocker):
+    parser_mock = mocker.patch("datasets.tasks.parser")
+    parser_mock.from_file.return_value = {"content": "quarenta e dois"}
+    return parser_mock
 
-    path = mocker.patch("datasets.tasks.Path")
-    parser = mocker.patch("datasets.tasks.parser")
-    parser.from_file.return_value = {"content": "quarenta e dois"}
 
-    result = content_from_file("GazetteItem", url, path, "f42", False, False)
-    parser.from_file.assert_called_once_with(path)
-    path.return_value.unlink.assert_called_once_with()
+@pytest.fixture
+def path(mocker):
+    path_mock = mocker.patch("datasets.tasks.Path")
+    path_mock.return_value.mkdir.return_value = True
+    path_mock.return_value.exists.return_value = True
+    path_mock.return_value.unlink.return_value = True
+    return path_mock
+
+
+@pytest.fixture
+def s3(mocker):
+    return mocker.patch("datasets.tasks.s3_resource.Object")
+
+
+@pytest.mark.django_db
+def test_content_from_file_saved_to_db(parser, path, s3):
+    gazette = baker.make("datasets.Gazette")
+    a_file = baker.make(
+        "datasets.File",
+        url="https://url.com",
+        content_object=gazette,
+        checksum="random",
+        s3_url="https://dadosabertosdefeira.com/mq/Termo_de_Referência_-_HOSP_CAMP.pdf",
+        s3_file_path="mq/Termo_de_Referência_-_HOSP_CAMP.pdf",
+        content=None,
+    )
+
+    result = content_from_file(a_file.pk)
+
+    assert s3.called
+
+    a_file.refresh_from_db()
+    assert a_file.content == "quarenta e dois"
+    assert result == "quarenta e dois"
+
+    assert parser.from_file.called
+    assert path().unlink.called
+
+
+def test_content_from_files_not_saving_to_db(parser, path):
+    result = content_from_file(path="/tmp/README.md")
+
+    assert parser.from_file.called
+    assert path().unlink.called is False
+
     assert result == "quarenta e dois"
 
 
 @pytest.mark.django_db
-def test_content_from_files_saving_to_db(mocker):
-    url = "https://maria.quiteria/quarenta-e-dois.pdf"
-    path = "full/42.pdf"
-    baker.make(Gazette, file_url=url)
-
-    path = mocker.patch("datasets.tasks.Path")
-    parser = mocker.patch("datasets.tasks.parser")
-    parser.from_file.return_value = {"content": "quarenta e dois"}
-
-    result = content_from_file("GazetteItem", url, path, "f42", True, True)
-    parser.from_file.assert_called_once_with(path)
-    path.return_value.unlink.assert_not_called()
-    assert Gazette.objects.get(file_url=url).file_content == "quarenta e dois"
-    assert result == "quarenta e dois"
-
-
-@pytest.mark.django_db
-def test_backup_file(mocker):
+def test_backup_file(s3):
     url = "http://www.feiradesantana.ba.gov.br/licitacoes/4914pmfspp2182019.pdf"
     gazette = baker.make("datasets.Gazette")
     a_file = baker.make(
         "datasets.File", url=url, content_object=gazette, checksum="random"
     )
-
-    expected_s3_url = (
-        "https://test-bucket.s3.test-region.amazonaws.com/maria-quiteria-staging/"
-        "files/gazette/2020/4/26/random-4914pmfspp2182019.pdf"
+    expected_s3_file_path = (
+        f"None/files/gazette/{a_file.created_at.year}/{a_file.created_at.month}/"
+        f"{a_file.created_at.day}/random-4914pmfspp2182019.pdf"
     )
-    boto3_mock = mocker.patch("datasets.tasks.s3_resource.Object")
+    expected_s3_url = f"https://None.s3.None.amazonaws.com/{expected_s3_file_path}"
 
     backup_file(a_file.pk)
 
-    assert boto3_mock.called
+    assert s3.called
     a_file.refresh_from_db()
 
     assert a_file.s3_url == expected_s3_url
+    assert a_file.s3_file_path == expected_s3_file_path
 
 
 @pytest.mark.django_db

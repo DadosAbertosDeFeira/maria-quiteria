@@ -39,6 +39,7 @@ class File(models.Model):
     content_object = GenericForeignKey("content_type", "object_id")
     checksum = models.CharField(max_length=128, null=True, blank=True)
     s3_url = models.URLField("Backup", null=True, blank=True)
+    s3_file_path = models.CharField(max_length=300, null=True, blank=True)
 
     search_vector = SearchVectorField(null=True, editable=False)
     # FIXME checar ON DELETE

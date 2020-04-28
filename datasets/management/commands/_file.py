@@ -9,3 +9,8 @@ def save_file(url, content_type, object_id):
     )
     if created:
         backup_file.send(file_.pk)
+        # FIXME só chama o próximo se o anterior deu certo
+        #     pipeline([
+        #         backup_file.message(**kwargs),
+        #         content_from_file.message(**kwargs),
+        #     ]).run()
