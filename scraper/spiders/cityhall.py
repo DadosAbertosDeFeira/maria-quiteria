@@ -9,6 +9,7 @@ from .utils import (
     extract_param,
     from_str_to_datetime,
     identify_contract_id,
+    is_url,
     strip_accents,
 )
 
@@ -111,14 +112,19 @@ class BidsSpider(BaseSpider):
     def _parse_descriptions(self, raw_descriptions):
         descriptions = []
         for raw_description in raw_descriptions:
+            document_url = raw_description.xpath(".//@href").extract_first()
+            if document_url and is_url(document_url) is False:
+                self.logger.warning(f"URL Inválida: {document_url}")
+                document_url = None
             description = raw_description.xpath(".//text()").extract()
-            document_url = raw_description.xpath(
-                ".//a[contains(@href, 'pdf')]/@href"
-            ).extract_first()
             description = self._parse_description(description)
 
+            document_urls = raw_description.xpath(".//@href").extract()
+            if len(document_urls) > 1:
+                # FIXME precisa ter suporte a múltiplos arquivos
+                self.logger.warning(f"Múltiplas URLs: {document_urls}")
+
             if description != "Objeto":
-                document_url = document_url if document_url else ""
                 descriptions.append((description, document_url))
         return descriptions
 

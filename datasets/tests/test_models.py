@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 
 import pytest
 from model_bakery import baker
@@ -69,3 +69,15 @@ class TestGazette:
         expected_date = date(2019, 10, 1)
         gazette = baker.make_recipe("datasets.Gazette", date=expected_date,)
         assert gazette.last_collected_item_date() == expected_date
+
+
+@pytest.mark.django_db
+class TestCityHallBid:
+    def test_return_none_for_last_collected_item_date_if_nothing_is_found(self):
+        bid = baker.prepare_recipe("datasets.CityHallBid")
+        assert bid.last_collected_item_date() is None
+
+    def test_last_collected_item_date_is_six_months_ago(self):
+        expected_date = date.today() - timedelta(days=180)
+        bid = baker.make_recipe("datasets.CityHallBid")
+        assert bid.last_collected_item_date() == expected_date

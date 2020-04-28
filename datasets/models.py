@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -262,14 +262,18 @@ class CityHallBid(DatasetMixin):
 
     @classmethod
     def last_collected_item_date(cls):
-        """Retorna primeiro dia do ano."""
+        """Retorna data para início da coleta.
+
+        Dado que as licitações são constantemente atualizadas e nós não temos
+        um maneira mais simples de verificar os últimos itens atualizados,
+        vamos assumir que os últimos seis meses é um período razoável para
+        ter licitações sendo atualizadas.
+        """
         try:
-            # checa se tem algum; se sim, coleta desde o início do ano
+            # checa se existe algum registro antes
             cls.objects.latest()
-            today = datetime.now()
-            return date(today.year, 1, 1)
+            return date.today() - timedelta(days=180)
         except cls.DoesNotExist:
-            # caso não tenha, coleta desde o início
             return
 
 
