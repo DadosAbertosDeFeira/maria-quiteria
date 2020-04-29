@@ -40,6 +40,9 @@ def content_from_file(file_pk=None, path=None, keep_file=True):
     if file_pk:
         a_file = File.objects.get(pk=file_pk)
 
+        if a_file.content is not None:
+            return a_file.content
+
         temporary_directory = f"{Path.cwd()}/data/tmp/"
         Path(temporary_directory).mkdir(parents=True, exist_ok=True)
 

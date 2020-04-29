@@ -1,5 +1,6 @@
 from datasets.models import File
-from datasets.tasks import backup_file
+from datasets.tasks import backup_file, content_from_file
+from dramatiq import pipeline
 
 
 def save_file(url, content_type, object_id):
@@ -7,10 +8,12 @@ def save_file(url, content_type, object_id):
     file_, created = File.objects.get_or_create(
         url=url, content_type=content_type, object_id=object_id
     )
-    if created:
-        backup_file.send(file_.pk)
-        # FIXME só chama o próximo se o anterior deu certo
-        #     pipeline([
-        #         backup_file.message(**kwargs),
-        #         content_from_file.message(**kwargs),
-        #     ]).run()
+    if file_.s3_url is None or file_.content is None:
+        pipeline(
+            [
+                backup_file.message(file_.pk),
+                content_from_file.message_with_options(
+                    pipe_ignore=True, args=(file_.pk,)
+                ),
+            ]
+        ).run()

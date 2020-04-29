@@ -83,9 +83,9 @@ class Common(Configuration):
     STATICFILES_DIRS = ()
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-    AWS_S3_BUCKET = None
-    AWS_S3_BUCKET_FOLDER = None
-    AWS_S3_REGION = None
+    AWS_S3_BUCKET = values.Value()
+    AWS_S3_BUCKET_FOLDER = values.Value()
+    AWS_S3_REGION = values.Value()
 
 
 class Dev(Common):
@@ -104,6 +104,3 @@ class Prod(Common):
     SECRET_KEY = values.SecretValue()
     ALLOWED_HOSTS = values.ListValue()
     CLOUDAMQP_URL = values.Value(environ_prefix=None)
-    AWS_S3_BUCKET = values.Value()
-    AWS_S3_BUCKET_FOLDER = values.Value()
-    AWS_S3_REGION = values.Value()
