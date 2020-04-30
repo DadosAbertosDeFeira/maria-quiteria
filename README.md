@@ -112,9 +112,6 @@ Para executar os _spiders_ e salvar os itens no banco de dados, execute:
 python manage.py crawl
 ```
 
-Nota: estamos migrando do comando `runner.py` para `crawl`, então pode acontecer
-de nem todos os _spiders_ estarem disponíveis no comando novo.
-
 #### Serviço de fila e processamento assíncrono
 
 Você pode utilizar ou não um serviço de fila para processamento assíncrono. Isso
