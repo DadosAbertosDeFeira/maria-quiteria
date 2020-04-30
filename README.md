@@ -132,7 +132,12 @@ instância dele rodando é com o [Docker](https://docs.docker.com/install/):
 docker run -p 5672:5672 rabbitmq
 ```
 
-Deixe esse processo rodando em uma janela do terminal e pronto!
+Deixe esse processo rodando em uma janela do terminal.
+Em outra janela, execute o `dramatiq`:
+
+```
+dramatiq datasets.tasks -p3 -v
+```
 
 ##### Instalando o RabbitMQ localmente
 
