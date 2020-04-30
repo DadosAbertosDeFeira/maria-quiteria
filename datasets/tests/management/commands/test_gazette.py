@@ -115,7 +115,6 @@ class TestSaveLegacyGazette:
         assert gazette.power == "executivo"
         assert gazette.year_and_edition == ""
         assert gazette.is_legacy is True
-        assert gazette.file_url == legacy_item["file_urls"][0]
         assert gazette.crawled_at.replace(tzinfo=None) == legacy_item["crawled_at"]
         assert gazette.crawled_from == legacy_item["crawled_from"]
         assert gazette.gazetteevent_set.count() == 1
@@ -195,7 +194,7 @@ class TestSaveLegacyGazette:
             {
                 "title": "DECRETO Nº 9.414, DE 26 DE NOVEMBRO DE 2014.",
                 "published_on": "Folha do Estado",
-                "date": datetime(2014, 11, 27),
+                "date": datetime(2014, 11, 26),
                 "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA...",
                 "file_urls": [
                     "http://www.feiradesantana.ba.gov.br/leis/Deno20149414.pdf"

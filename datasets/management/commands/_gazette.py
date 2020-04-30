@@ -17,7 +17,7 @@ def save_gazette(item):
         defaults={
             "crawled_at": make_aware(item["crawled_at"]),
             "crawled_from": item["crawled_from"],
-            "file_url": item["file_urls"][0],
+            "file_url": item["file_urls"][0],  # FIXME remover
         },
     )
 
