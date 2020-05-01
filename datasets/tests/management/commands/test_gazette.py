@@ -10,7 +10,7 @@ from datasets.management.commands._gazette import (
 
 @pytest.mark.django_db
 class TestSaveGazette:
-    def test_save_gazette(self):
+    def test_save_gazette(self, mock_save_file):
         item = {
             "date": datetime(2019, 11, 5),
             "power": "executivo",
@@ -42,7 +42,7 @@ class TestSaveGazette:
         assert event.secretariat == item["events"][0]["secretariat"]
         assert event.summary == item["events"][0]["summary"]
 
-    def test_handle_with_changed_gazettes(self):
+    def test_handle_with_changed_gazettes(self, mock_save_file):
         item = {
             "date": datetime(2019, 11, 5),
             "power": "executivo",
@@ -68,7 +68,7 @@ class TestSaveGazette:
 
         assert gazette.pk == updated_gazette.pk
 
-    def test_save_different_events_to_same_gazette(self):
+    def test_save_different_events_to_same_gazette(self, mock_save_file):
         item = {
             "date": datetime(2019, 11, 5),
             "power": "executivo",
@@ -98,7 +98,7 @@ class TestSaveGazette:
 
 @pytest.mark.django_db
 class TestSaveLegacyGazette:
-    def test_save_legacy_gazette(self):
+    def test_save_legacy_gazette(self, mock_save_file):
         legacy_item = {
             "title": "DECRETO Nº 9.416, DE 26 DE NOVEMBRO DE 2014.",
             "published_on": "Folha do Estado",
@@ -125,7 +125,7 @@ class TestSaveLegacyGazette:
         assert event.summary == legacy_item["details"]
         assert event.published_on == legacy_item["published_on"]
 
-    def test_save_different_events_to_same_legacy_gazette(self):
+    def test_save_different_events_to_same_legacy_gazette(self, mock_save_file):
         legacy_items = [
             {
                 "title": "DECRETO Nº 9.416, DE 26 DE NOVEMBRO DE 2014.",
@@ -167,7 +167,7 @@ class TestSaveLegacyGazette:
         assert len(set([g.pk for g in gazettes])) == 1
         assert gazettes[0].gazetteevent_set.count() == 3
 
-    def test_save_different_events_to_different_legacy_gazette(self):
+    def test_save_different_events_to_different_legacy_gazette(self, mock_save_file):
         legacy_items = [
             {
                 "title": "DECRETO Nº 9.416, DE 1 DE NOVEMBRO DE 2014.",

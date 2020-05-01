@@ -5,6 +5,7 @@ from datasets.management.commands._citycouncil import (
     save_agenda,
     save_attendance_list,
     save_expense,
+    save_minute,
 )
 
 
@@ -200,3 +201,26 @@ class TestSaveExpense:
         assert expense.summary == item["summary"]
         assert expense.type_of_process == item["type_of_process"]
         assert expense.value == item["value"]
+
+
+@pytest.mark.django_db
+class TestSaveMinute:
+    def test_save_minute(self, mock_save_file):
+        item = {
+            "crawled_at": datetime(2020, 4, 30, 18, 18, 56, 173788),
+            "crawled_from": "https://www.feiradesantana.ba.leg.br/atas?"
+            "mes=9&ano=2018&Acessar=OK",
+            "date": date(2018, 9, 11),
+            "event_type": None,
+            "file_content": "Casa da Cidadania",
+            "file_urls": [
+                "https://www.feiradesantana.ba.leg.br/admin/atas/5eaabb5e91088.pdf"
+            ],
+            "title": "Ata da 4ª Reunião para Instalação da Comissão Especial",
+        }
+
+        minute = save_minute(item)
+        assert minute.date == item["date"]
+        assert minute.title == item["title"]
+        assert minute.event_type == item["event_type"]
+        assert minute.crawled_from == item["crawled_from"]

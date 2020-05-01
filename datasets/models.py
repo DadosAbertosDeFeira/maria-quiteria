@@ -88,7 +88,9 @@ class DatasetMixin(models.Model):
 class CityCouncilAgenda(DatasetMixin):
     date = models.DateField()
     details = models.TextField(null=True, blank=True)
-    event_type = models.CharField(max_length=20, choices=CITY_COUNCIL_EVENT_TYPE)
+    event_type = models.CharField(
+        max_length=20, choices=CITY_COUNCIL_EVENT_TYPE, null=True, blank=True
+    )
     title = models.CharField(max_length=100, null=True, blank=True)
 
     class Meta:
@@ -179,7 +181,9 @@ class CityCouncilExpense(DatasetMixin):
 class CityCouncilMinute(DatasetMixin):
     date = models.DateField()
     title = models.CharField(max_length=300, null=True, blank=True)
-    event_type = models.CharField(max_length=20, choices=CITY_COUNCIL_EVENT_TYPE)
+    event_type = models.CharField(
+        max_length=20, choices=CITY_COUNCIL_EVENT_TYPE, null=True, blank=True
+    )
     file_url = models.URLField(null=True, blank=True)
     file_content = models.TextField(null=True, blank=True)
 
