@@ -23,6 +23,7 @@ EXTENSIONS = {
     "spidermon.contrib.scrapy.extensions.Spidermon": 500,
 }
 SENTRY_DSN = os.getenv("SENTRY_DSN", "")
+FILES_STORE = f"{os.getcwd()}/data/"
 
 # pipelines
 ITEM_PIPELINES = {
@@ -30,7 +31,7 @@ ITEM_PIPELINES = {
     "spidermon.contrib.scrapy.pipelines.ItemValidationPipeline": 200,
 }
 KEEP_FILES = os.getenv("KEEP_FILES", False)
-ASYNC_FILE_PROCESSING = os.getenv("ASYNC_FILE_PROCESSING")
+ASYNC_FILE_PROCESSING = os.getenv("ASYNC_FILE_PROCESSING", True)
 
 # http cache
 HTTPCACHE_ENABLED = True
@@ -72,10 +73,3 @@ AUTOTHROTTLE_ENABLED = True
 
 if os.getenv("ENABLE_AUTOTHROTTLE_DEBUG", False):
     AUTOTHROTTLE_DEBUG = True
-
-# storage
-# FILES_STORE = 's3://dadosabertosdefeira/maria-quiteria/'
-FILES_STORE = f"{os.getcwd()}/data/"  # FIXME  LOCAL_STORE
-# FILES_STORE_S3_ACL = 'public-read'
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")

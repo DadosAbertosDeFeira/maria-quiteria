@@ -35,9 +35,6 @@ class ExtractFileContentPipeline(FilesPipeline):
             if not ok:
                 continue
 
-            # TODO add checksum to item?
-            # "checksum": file_info["checksum"],
-
             kwargs = {
                 "path": f"{FILES_STORE}{file_info['path']}",
                 "keep_file": KEEP_FILES,
@@ -45,4 +42,7 @@ class ExtractFileContentPipeline(FilesPipeline):
             if not ASYNC_FILE_PROCESSING:
                 content_from_file_urls.append(content_from_file(**kwargs))
         item["file_content"] = content_from_file_urls
+
+        # TODO item["files]
+
         return item
