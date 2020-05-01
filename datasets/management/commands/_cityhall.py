@@ -38,7 +38,6 @@ def save_bid(item):
             defaults={"crawled_at": make_aware(item["crawled_at"])},
         )
         if created and event.get("url"):
-            for file_url in event["url"]:
-                # FIXME checksum
-                save_file(file_url, content_type, event_obj.pk)
+            # FIXME checksum
+            save_file(event.get("url"), content_type, event_obj.pk)
     return bid
