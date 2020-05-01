@@ -4,6 +4,7 @@ from pathlib import Path
 from datasets.services import get_s3_client
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from dotenv import find_dotenv, load_dotenv
 from dramatiq import actor, set_broker
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from tika import parser
@@ -17,6 +18,7 @@ except ImproperlyConfigured:
 
     os.environ.setdefault("DJANGO_CONFIGURATION", "Dev")
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+    load_dotenv(find_dotenv())
     configurations.setup()
     from datasets.models import File
 

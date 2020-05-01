@@ -35,7 +35,6 @@ class TestSaveBid:
         assert bid.modality == item["modality"]
         assert bid.file_url == item["file_urls"][0]
         assert bid.file_content == item["file_content"]
-        assert mock_save_file.called
 
     def test_save_history(self, mock_save_file):
         item = {
