@@ -57,7 +57,11 @@ class Common(Configuration):
     WSGI_APPLICATION = "core.wsgi.application"
 
     default_db = "sqlite:///" + os.path.join(BASE_DIR, "db.sqlite3")
-    DATABASES = {"default": dj_database_url.config(default=default_db)}
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=default_db, conn_max_age=600, ssl_require=True
+        )
+    }
 
     AUTH_PASSWORD_VALIDATORS = [
         {
