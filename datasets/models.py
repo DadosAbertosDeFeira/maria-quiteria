@@ -193,7 +193,10 @@ class CityCouncilMinute(DatasetMixin):
         get_latest_by = "date"
 
     def __repr__(self):
-        return f"{self.date} {self.title} {self.file_url}"
+        return f"{self.date} {self.title}"
+
+    def __str__(self):
+        return f"{self.date} {self.title}"
 
 
 class Gazette(DatasetMixin):

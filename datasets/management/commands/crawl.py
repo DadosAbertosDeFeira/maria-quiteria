@@ -6,6 +6,7 @@ from datasets.models import (
     CityCouncilAttendanceList,
     CityCouncilMinute,
     CityHallBid,
+    File,
     Gazette,
     GazetteEvent,
 )
@@ -74,6 +75,7 @@ class Command(BaseCommand):
             CityHallBid.objects.all().delete()
             Gazette.objects.all().delete()
             GazetteEvent.objects.all().delete()
+            File.objects.all().delete()
 
         dispatcher.connect(self.save, signal=signals.item_passed)
         os.environ["SCRAPY_SETTINGS_MODULE"] = "scraper.settings"
@@ -106,5 +108,6 @@ class Command(BaseCommand):
             start_from_date=last_collected_gazette,
         )
 
+        self.warn("Iniciando a coleta...")
         process.start()
         self.success("Pronto!")

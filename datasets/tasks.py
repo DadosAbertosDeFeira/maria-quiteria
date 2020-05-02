@@ -28,7 +28,7 @@ set_broker(rabbitmq_broker)
 client = get_s3_client(settings)
 
 
-@actor
+@actor(max_retries=5)
 def content_from_file(file_pk=None, path=None, keep_file=True):
     if not any([file_pk, path]):
         raise Exception("Ou `file_pk` ou `path` devem ser informados.")
@@ -59,7 +59,7 @@ def content_from_file(file_pk=None, path=None, keep_file=True):
     return raw["content"]
 
 
-@actor
+@actor(max_retries=5)
 def backup_file(file_id):
     try:
         file_obj = File.objects.get(pk=file_id, s3_url__isnull=True)
@@ -68,13 +68,13 @@ def backup_file(file_id):
         return
 
     model_name = file_obj.content_object._meta.model_name
-    file_path = (
+    relative_file_path = (
         f"{model_name}/{file_obj.created_at.year}/"
         f"{file_obj.created_at.month}/{file_obj.created_at.day}/"
     )
 
     s3_url, s3_file_path = client.upload_file(
-        file_obj.url, file_path, file_obj.checksum
+        file_obj.url, relative_file_path, prefix=file_obj.checksum
     )
     file_obj.s3_file_path = s3_file_path
     file_obj.s3_url = s3_url

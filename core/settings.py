@@ -83,9 +83,9 @@ class Common(Configuration):
     STATICFILES_DIRS = ()
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-    AWS_S3_BUCKET = values.Value()
-    AWS_S3_BUCKET_FOLDER = values.Value()
-    AWS_S3_REGION = values.Value()
+    AWS_S3_BUCKET = values.Value(environ_prefix=None)
+    AWS_S3_BUCKET_FOLDER = values.Value(environ_prefix=None)
+    AWS_S3_REGION = values.Value(environ_prefix=None)
 
 
 class Dev(Common):
