@@ -83,6 +83,10 @@ class Common(Configuration):
     STATICFILES_DIRS = ()
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+    ASYNC_FILE_PROCESSING = values.Value(default=True, environ_prefix=None)
+
+    AWS_ACCESS_KEY_ID = values.Value(environ_prefix=None)
+    AWS_SECRET_ACCESS_KEY = values.Value(environ_prefix=None)
     AWS_S3_BUCKET = values.Value(environ_prefix=None)
     AWS_S3_BUCKET_FOLDER = values.Value(environ_prefix=None)
     AWS_S3_REGION = values.Value(environ_prefix=None)

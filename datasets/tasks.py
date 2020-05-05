@@ -1,3 +1,4 @@
+import logging
 from logging import info
 from pathlib import Path
 
@@ -5,9 +6,12 @@ from datasets.services import get_s3_client
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import find_dotenv, load_dotenv
-from dramatiq import actor, set_broker
+from dramatiq import actor, middleware, set_broker
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from tika import parser
+
+logging.getLogger("pika").setLevel(logging.WARNING)
+logging.getLogger("botocore").setLevel(logging.WARNING)
 
 # Esse bloco (feio) faz com que esse módulo funcione dentro ou fora do Django
 try:
