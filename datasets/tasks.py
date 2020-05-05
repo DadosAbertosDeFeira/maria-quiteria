@@ -2,6 +2,8 @@ import logging
 from logging import info
 from pathlib import Path
 
+import sentry_dramatiq
+import sentry_sdk
 from datasets.services import get_s3_client
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -10,6 +12,9 @@ from dramatiq import actor, middleware, set_broker
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from tika import parser
 
+sentry_sdk.init(
+    "__DSN__", integrations=[sentry_dramatiq.DramatiqIntegration()],
+)
 logging.getLogger("pika").setLevel(logging.WARNING)
 logging.getLogger("botocore").setLevel(logging.WARNING)
 
