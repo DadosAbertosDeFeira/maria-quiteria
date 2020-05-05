@@ -51,7 +51,8 @@ class S3Client:
         if prefix:
             temp_file_name = f"{prefix}-{temp_file_name}"
         temp_file_path = f"{temporary_directory}{temp_file_name}"
-        open(temp_file_path, "wb").write(response.content)
+        with open(temp_file_path, "wb") as tmp_file:
+            tmp_file.write(response.content)
         return temp_file_name, temp_file_path
 
     @staticmethod
