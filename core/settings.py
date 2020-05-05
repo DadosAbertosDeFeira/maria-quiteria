@@ -1,7 +1,15 @@
 import os
 
 import dj_database_url
+import sentry_sdk
 from configurations import Configuration, values
+from sentry_dramatiq import DramatiqIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
+
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"),
+    integrations=[DjangoIntegration(), DramatiqIntegration()],
+)
 
 
 class Common(Configuration):
