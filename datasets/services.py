@@ -21,9 +21,12 @@ class S3Client:
             url, relative_file_path, prefix
         )
         bucket_file_path = f"{bucket_file_path}{file_name}"
-
+        url = (
+            f"https://{self.bucket}.s3.{self.bucket_region}.amazonaws.com/"
+            f"{bucket_file_path}"
+        )
         with open(temp_file_path, "rb") as body_file:
-            url, bucket_file_path = client.put_object(
+            client.put_object(
                 Bucket=self.bucket,
                 Key=bucket_file_path,
                 Body=body_file,
@@ -86,7 +89,6 @@ def get_s3_client(settings):
     use_local_file = all(
         [settings.AWS_ACCESS_KEY_ID is None, settings.AWS_SECRET_ACCESS_KEY is None]
     )
-
     if use_local_file:
         return FakeS3Client("teste", "maria-quiteria-local", "brasil")
     else:
