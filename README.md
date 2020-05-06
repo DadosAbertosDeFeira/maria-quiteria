@@ -117,11 +117,14 @@ python manage.py crawl
 Você pode utilizar ou não um serviço de fila para processamento assíncrono. Isso
 é **totalmente** opcional. Essa funcionalidade pode ser utilizada para
 extraírmos o conteúdo de PDFs para texto, com o Tika, de maneira assíncrona à
-raspagem de dados.
+raspagem de dados. Por padrão, essa funcionalidade está ativada, seguindo
+a configuração do ambiente de produção.
 
-Caso queira ativar essa funcionalidade, você vai precisar configurar a variável
-de ambiente `ASYNC_FILE_PROCESSING` para `True` e instalar o RabbitMQ. Para
-essa última parte, temos duas formas de te ajudar.
+Para utilizá-la, basta instalar o RabbitMQ. Para essa última parte, temos duas
+formas de te ajudar. Basta seguir para a próxima seção.
+
+Caso queira desativar essa funcionalidade, você vai precisar configurar a variável
+de ambiente `ASYNC_FILE_PROCESSING` para `False`.
 
 ##### Utilizando o Docker para subir o RabbitMQ
 
