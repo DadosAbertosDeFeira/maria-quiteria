@@ -1,3 +1,4 @@
+import logging
 import os
 
 import dj_database_url
@@ -10,6 +11,9 @@ sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
     integrations=[DjangoIntegration(), DramatiqIntegration()],
 )
+
+logging.getLogger("pika").setLevel(logging.WARNING)
+logging.getLogger("botocore").setLevel(logging.WARNING)
 
 
 class Common(Configuration):
