@@ -23,15 +23,17 @@ EXTENSIONS = {
     "spidermon.contrib.scrapy.extensions.Spidermon": 500,
 }
 SENTRY_DSN = os.getenv("SENTRY_DSN", "")
-FILES_STORE = f"{os.getcwd()}/data/"
 
 # pipelines
 ITEM_PIPELINES = {
     "scraper.pipelines.ExtractFileContentPipeline": 100,
     "spidermon.contrib.scrapy.pipelines.ItemValidationPipeline": 200,
 }
+FILES_STORE = f"{os.getcwd()}/data/"
 KEEP_FILES = os.getenv("KEEP_FILES", False)
-ASYNC_FILE_PROCESSING = os.getenv("ASYNC_FILE_PROCESSING", True)
+EXTRACT_FILE_CONTENT_FROM_PIPELINE = os.getenv(
+    "EXTRACT_FILE_CONTENT_FROM_PIPELINE", False
+)
 
 # http cache
 HTTPCACHE_ENABLED = True

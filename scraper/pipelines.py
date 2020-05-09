@@ -3,7 +3,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from datasets.tasks import content_from_file
-from scraper.settings import ASYNC_FILE_PROCESSING, FILES_STORE, KEEP_FILES
+from scraper.settings import EXTRACT_FILE_CONTENT_FROM_PIPELINE, FILES_STORE, KEEP_FILES
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.utils.python import to_bytes
 
@@ -18,7 +18,6 @@ class ExtractFileContentPipeline(FilesPipeline):
         para:
         8e61990b27c6158edaaa715ea76eca65459d92f4.asp
 
-
         Issue no scrapy: https://github.com/scrapy/scrapy/issues/4225
         """
         uid = sha1(to_bytes(request.url)).hexdigest()
@@ -29,20 +28,28 @@ class ExtractFileContentPipeline(FilesPipeline):
         if not results:
             return item
 
-        content_from_file_urls = []
+        files = []
         for result in results:
             ok, file_info = result
             if not ok:
                 continue
 
-            kwargs = {
-                "path": f"{FILES_STORE}{file_info['path']}",
-                "keep_file": KEEP_FILES,
-            }
-            if not ASYNC_FILE_PROCESSING:
-                content_from_file_urls.append(content_from_file(**kwargs))
-        item["file_content"] = content_from_file_urls
-
-        # TODO item["files]
+            if EXTRACT_FILE_CONTENT_FROM_PIPELINE:
+                kwargs = {
+                    "path": f"{FILES_STORE}{file_info['path']}",
+                    "keep_file": KEEP_FILES,
+                }
+                content = content_from_file(**kwargs)
+            else:
+                content = None
+            files.append(
+                {
+                    "url": file_info["url"],
+                    "checksum": file_info["checksum"],
+                    "content": content,
+                }
+            )
+        item["files"] = files
+        del item["file_urls"]
 
         return item

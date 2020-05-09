@@ -22,8 +22,7 @@ class LegacyGazetteItem(BaseModel):
     # important info but not available in years like 2010
     date = DateType(required=False)
     details = StringType(required=True)
-    file_urls = ListType(StringType)
-    file_content = StringType()
+    files = ListType(DictType(StringType))
 
 
 class GazetteItem(BaseModel):
@@ -31,8 +30,7 @@ class GazetteItem(BaseModel):
     power = StringType(required=True)
     year_and_edition = StringType(required=True)
     events = ListType(DictType(StringType), required=True)
-    file_urls = ListType(StringType, required=True)
-    file_content = StringType()
+    files = ListType(DictType(StringType))
 
 
 class CityCouncilAgendaItem(BaseModel):
@@ -72,8 +70,7 @@ class CityCouncilMinuteItem(BaseModel):
     date = DateType()
     title = StringType(required=True)
     event_type = StringType(required=True)
-    file_urls = ListType(StringType, required=True)
-    file_content = StringType()
+    files = ListType(DictType(StringType))
 
 
 class CityHallContractItem(BaseModel):
@@ -84,8 +81,7 @@ class CityHallContractItem(BaseModel):
     contractor_name = StringType()
     value = StringType()
     ends_at = DateType(formats=("%d/%m/%Y", "%d/%m/%y"))
-    file_urls = ListType(StringType)
-    file_content = StringType()
+    files = ListType(DictType(StringType))
 
 
 class CityHallBidItem(BaseModel):
@@ -97,8 +93,7 @@ class CityHallBidItem(BaseModel):
     codes = StringType()
     modality = StringType()
     session_at = DateTimeType()
-    file_urls = ListType(StringType)
-    file_content = StringType()
+    files = ListType(DictType(StringType))
 
 
 class CityHallPaymentsItem(BaseModel):

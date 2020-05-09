@@ -103,6 +103,11 @@ scrapy crawl cityhall_payments -o pagamentos.json
 
 Você pode substituir `json` por outros formatos como `csv`.
 
+#### Extraindo o conteúdo dos arquivos ao rodar os spiders
+
+Para incluir o conteúdo dos arquivos nos itens raspados
+você deve configurar a variável de ambiente `EXTRACT_FILE_CONTENT_FROM_PIPELINE`
+como `True`.
 
 ### Salvando dados da coleta no banco de dados
 
