@@ -10,6 +10,7 @@ from .models import (
     CityCouncilMinute,
     CityHallBid,
     Gazette,
+    File,
 )
 
 
@@ -27,7 +28,7 @@ class ReadOnlyMixin:
 @admin.register(Gazette)
 class GazetteAdmin(ReadOnlyMixin, admin.ModelAdmin):
     ordering = ["-date"]
-    search_fields = ["year_and_edition", "search_vector"]
+    search_fields = ["year_and_edition"]
     list_filter = ["power", "date"]
     list_display = (
         "date",
@@ -50,25 +51,12 @@ class GazetteAdmin(ReadOnlyMixin, admin.ModelAdmin):
 
     @mark_safe
     def url(self, obj):
-        return f"<a href={obj.file_url}>{obj.file_url}</a>"
+        file_ = obj.files.first()
+        return f"<a href={file_.url}>{file_.url}</a>"
 
     @mark_safe
     def page(self, obj):
         return f"<a href={obj.crawled_from}>{obj.crawled_from}</a>"
-
-    def get_search_results(self, request, queryset, search_term):
-        if not search_term:
-            return super().get_search_results(request, queryset, search_term)
-
-        query = SearchQuery(search_term, config="portuguese")
-        rank = SearchRank(F("search_vector"), query)
-        queryset = (
-            Gazette.objects.annotate(rank=rank)
-            .filter(search_vector=query)
-            .order_by("-rank")
-        )
-
-        return queryset, False
 
 
 @admin.register(CityCouncilAgenda)
@@ -135,14 +123,18 @@ class CityCouncilMinuteAdmin(ReadOnlyMixin, admin.ModelAdmin):
         "date",
         "title",
         "event_type",
-        "url",
+        "files",
         "crawled_at",
         "crawled_from",
     )
 
     @mark_safe
-    def url(self, obj):
-        return f"<a href={obj.file_url}>{obj.file_url}</a>"
+    def files(self, obj):
+        return "<br>".join(
+            [f"<a href={file_.url}>{file_.url}</a>" for file_ in obj.files.all()]
+        )
+
+    files.short_description = "Arquivos"
 
 
 @admin.register(CityHallBid)
@@ -157,23 +149,59 @@ class CityHallBidAdmin(ReadOnlyMixin, admin.ModelAdmin):
         "modality",
         "description",
         "events",
-        "url",
+        "files",
     )
 
     @mark_safe
-    def url(self, obj):
-        return f"<a href={obj.file_url}>{obj.file_url}</a>"
+    def files(self, obj):
+        return "<br>".join(
+            [f"<a href={file_.url}>{file_.url}</a>" for file_ in obj.files.all()]
+        )
 
-    url.short_description = "Arquivo"
+    files.short_description = "Arquivos"
 
     @mark_safe
     def events(self, obj):
-        return "<br><br>".join(
-            [
-                f"{event.published_at}: {event.summary} "
-                f"{event.file_url if event.file_url else ''}"
-                for event in obj.events.all()
-            ]
-        )
+        to_be_displayed = []
+        for event in obj.events.all():
+            event_label = f"{event.published_at}: {event.summary} "
+            for url in event.file_urls:
+                event_label += f"<a href={url}>{url}</a>"
+            to_be_displayed.append(event_label)
+
+        return "<br><br>".join(to_be_displayed)
 
     events.short_description = "Histórico"
+
+
+@admin.register(File)
+class FileAdmin(ReadOnlyMixin, admin.ModelAdmin):
+    ordering = ["-created_at"]
+    search_fields = ["search_vector", "content"]
+    list_filter = ["content_type"]
+    list_display = (
+        "created_at",
+        "updated_at",
+        "url",
+        "from_",
+    )
+
+    @mark_safe
+    def from_(self, obj):
+        return obj.content_object
+
+    from_.short_description = "Origem"
+
+    def get_search_results(self, request, queryset, search_term):
+        if not search_term:
+            return super().get_search_results(request, queryset, search_term)
+
+        query = SearchQuery(search_term, config="portuguese")
+        rank = SearchRank(F("search_vector"), query)
+        queryset = (
+            File.objects.annotate(rank=rank)
+            .filter(search_vector=query)
+            .order_by("-rank")
+        )
+
+        return queryset, False

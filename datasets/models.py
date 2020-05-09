@@ -38,11 +38,10 @@ class File(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
     checksum = models.CharField(max_length=128, null=True, blank=True)
-    s3_url = models.URLField("Backup", null=True, blank=True)
+    s3_url = models.URLField("URL externa", null=True, blank=True)
     s3_file_path = models.CharField(max_length=300, null=True, blank=True)
 
     search_vector = SearchVectorField(null=True, editable=False)
-    # FIXME checar ON DELETE
 
     class Meta:
         verbose_name = "Arquivo"
@@ -184,6 +183,7 @@ class CityCouncilMinute(DatasetMixin):
     event_type = models.CharField(
         max_length=20, choices=CITY_COUNCIL_EVENT_TYPE, null=True, blank=True
     )
+    files = GenericRelation(File)
     file_url = models.URLField(null=True, blank=True)
     file_content = models.TextField(null=True, blank=True)
 
@@ -210,7 +210,6 @@ class Gazette(DatasetMixin):
     is_legacy = models.BooleanField(default=False)
     file_url = models.URLField(null=True, blank=True)
     file_content = models.TextField(null=True, blank=True)
-
     files = GenericRelation(File)
     search_vector = SearchVectorField(null=True, editable=False)
 
@@ -291,6 +290,7 @@ class CityHallBidEvent(DatasetMixin):
     )
     published_at = models.DateTimeField("Publicado em", null=True)
     summary = models.TextField("Descrição", null=True, blank=True)
+    files = GenericRelation(File)
     file_url = models.URLField("Arquivo", null=True, blank=True)
     file_content = models.TextField("Conteúdo", null=True, blank=True)
 
@@ -301,3 +301,7 @@ class CityHallBidEvent(DatasetMixin):
     def __repr__(self):
         bid_info = f"{self.bid.session_at} {self.bid.modality}"
         return f"[{bid_info}] {self.published_at} {self.summary}"
+
+    @property
+    def file_urls(self):
+        return [file_.url for file_ in self.files.all()]

@@ -212,9 +212,12 @@ class TestSaveMinute:
             "mes=9&ano=2018&Acessar=OK",
             "date": date(2018, 9, 11),
             "event_type": None,
-            "file_content": "Casa da Cidadania",
-            "file_urls": [
-                "https://www.feiradesantana.ba.leg.br/admin/atas/5eaabb5e91088.pdf"
+            "files": [
+                {
+                    "url": "https://www.feiradesantana.ba.leg.br/5eaabb5e91088.pd",
+                    "checksum": "checksum",
+                    "content": None,
+                }
             ],
             "title": "Ata da 4ª Reunião para Instalação da Comissão Especial",
         }

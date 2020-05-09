@@ -24,8 +24,12 @@ class TestSaveGazette:
                     "summary": "Joãozinho da Silva - NOMEIA",
                 }
             ],
-            "file_urls": [
-                "http://www.diariooficial.feiradesantana.ba.gov.br/1VFJCB4112019.pdf"
+            "files": [
+                {
+                    "url": "http://www.diariooficial.feira.ba.gov.br/d.pdf",
+                    "checksum": "checksum",
+                    "content": None,
+                }
             ],
         }
 
@@ -35,38 +39,12 @@ class TestSaveGazette:
         assert gazette.year_and_edition == item["year_and_edition"]
         assert gazette.crawled_at.replace(tzinfo=None) == item["crawled_at"]
         assert gazette.crawled_from == item["crawled_from"]
-        assert gazette.file_url == item["file_urls"][0]
+        assert gazette.files.count() == 1
 
         event = gazette.gazetteevent_set.first()
         assert event.title == item["events"][0]["title"]
         assert event.secretariat == item["events"][0]["secretariat"]
         assert event.summary == item["events"][0]["summary"]
-
-    def test_handle_with_changed_gazettes(self, mock_save_file):
-        item = {
-            "date": datetime(2019, 11, 5),
-            "power": "executivo",
-            "year_and_edition": "Ano V - Edi\u00e7\u00e3o N\u00ba 1131",
-            "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
-            "crawled_from": "http://www.diariooficial.br/st=1&edicao=1131",
-            "events": [
-                {
-                    "title": "DECRETO INDIVIDUAL N\u00ba 1.294/2019",
-                    "secretariat": "Gabinete do Prefeito",
-                    "summary": "Joãozinho da Silva - NOMEIA",
-                }
-            ],
-            "file_urls": [
-                "http://www.diariooficial.feiradesantana.ba.gov.br/1VFJCB4112019.pdf"
-            ],
-        }
-
-        gazette = save_gazette(item)
-        item["file_url"] = ["http://naodeveriamudar.com"]
-        item["crawled_at"] = datetime(2020, 3, 22, 7, 15, 17, 908831)
-        updated_gazette = save_gazette(item)
-
-        assert gazette.pk == updated_gazette.pk
 
     def test_save_different_events_to_same_gazette(self, mock_save_file):
         item = {
@@ -87,8 +65,12 @@ class TestSaveGazette:
                     "summary": "Joãozinho da Silva - NOMEIA",
                 },
             ],
-            "file_urls": [
-                "http://www.diariooficial.feiradesantana.ba.gov.br/1VFJCB4112019.pdf"
+            "files": [
+                {
+                    "url": "http://www.diariooficial.feira.ba.gov.br/d.pdf",
+                    "checksum": "checksum",
+                    "content": None,
+                }
             ],
         }
 
@@ -104,9 +86,8 @@ class TestSaveLegacyGazette:
             "published_on": "Folha do Estado",
             "date": datetime(2014, 11, 27),
             "details": "ABRE CRÉDITO SUPLEMENTAR AO ORÇAMENTO DO MUNICÍPIO...",
-            "file_urls": ["http://www.feiradesantana.ba.gov.br/leis/Deno20149416.pdf"],
             "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
-            "crawled_from": "http://www.diariooficial.br/st=1&publicacao=1&edicao=1131",
+            "crawled_from": "http://www.diariooficial.br/st=1&publicacao=1",
         }
 
         gazette = save_legacy_gazette(legacy_item)
@@ -143,8 +124,12 @@ class TestSaveLegacyGazette:
                 "published_on": "Folha do Estado",
                 "date": datetime(2014, 11, 27),
                 "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA...",
-                "file_urls": [
-                    "http://www.feiradesantana.ba.gov.br/leis/Deno20149416.pdf"
+                "files": [
+                    {
+                        "url": "http://www.diariooficial.feira.ba.gov.br/d.pdf",
+                        "checksum": "checksum",
+                        "content": None,
+                    }
                 ],
                 "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
                 "crawled_from": "http://www.diariooficial.br/st=1&&edicao=1131",
@@ -154,8 +139,12 @@ class TestSaveLegacyGazette:
                 "published_on": "Folha do Estado",
                 "date": datetime(2014, 11, 27),
                 "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA...",
-                "file_urls": [
-                    "http://www.feiradesantana.ba.gov.br/leis/Deno20149416.pdf"
+                "files": [
+                    {
+                        "url": "http://www.diariooficial.feira.ba.gov.br/d.pdf",
+                        "checksum": "checksum",
+                        "content": None,
+                    }
                 ],
                 "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
                 "crawled_from": "http://www.diariooficial.br/st=1&&edicao=1131",
@@ -174,8 +163,12 @@ class TestSaveLegacyGazette:
                 "published_on": None,
                 "date": None,
                 "details": "ABRE CRÉDITO SUPLEMENTAR AO ORÇAMENTO DO MUNICÍPIO...",
-                "file_urls": [
-                    "http://www.feiradesantana.ba.gov.br/leis/Deno20149416.pdf"
+                "files": [
+                    {
+                        "url": "http://www.diariooficial.feira.ba.gov.br/d.pdf",
+                        "checksum": "checksum",
+                        "content": None,
+                    }
                 ],
                 "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
                 "crawled_from": "http://www.diariooficial.br/?st=1&edicao=1130",
@@ -185,8 +178,12 @@ class TestSaveLegacyGazette:
                 "published_on": "Folha do Estado",
                 "date": datetime(2014, 11, 27),
                 "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA...",
-                "file_urls": [
-                    "http://www.feiradesantana.ba.gov.br/leis/Deno20149415.pdf"
+                "files": [
+                    {
+                        "url": "http://www.diariooficial.feira.ba.gov.br/d.pdf",
+                        "checksum": "checksum",
+                        "content": None,
+                    }
                 ],
                 "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
                 "crawled_from": "http://www.diariooficial.br/?&edicao=1131",
@@ -196,8 +193,12 @@ class TestSaveLegacyGazette:
                 "published_on": "Folha do Estado",
                 "date": datetime(2014, 11, 26),
                 "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA...",
-                "file_urls": [
-                    "http://www.feiradesantana.ba.gov.br/leis/Deno20149414.pdf"
+                "files": [
+                    {
+                        "url": "http://www.diariooficial.feira.ba.gov.br/d.pdf",
+                        "checksum": "checksum",
+                        "content": None,
+                    }
                 ],
                 "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
                 "crawled_from": "http://www.diariooficial.br/?&edicao=1131",

@@ -6,7 +6,6 @@ from ._file import save_file
 
 
 def save_bid(item):
-    file_url = item["file_urls"][0] if item.get("file_urls") else None  # FIXME remover
     bid, created = CityHallBid.objects.update_or_create(
         session_at=item["session_at"],
         public_agency=item["public_agency"],
@@ -16,16 +15,13 @@ def save_bid(item):
             "crawled_at": make_aware(item["crawled_at"]),
             "description": item["description"],
             "modality": item["modality"],
-            "file_url": file_url,  # FIXME remover
-            "file_content": item.get("file_content"),  # FIXME remover
         },
     )
 
-    if created and item.get("file_urls"):
+    if created and item.get("files"):
         content_type = get_content_type_for_model(bid)
-        for file_url in item.get("file_urls"):
-            # FIXME checksum
-            save_file(file_url, content_type, bid.pk)
+        for file_ in item["files"]:
+            save_file(file_["url"], content_type, bid.pk, file_["checksum"])
 
     content_type = get_content_type_for_model(CityHallBidEvent)
     for event in item["history"]:
@@ -34,10 +30,8 @@ def save_bid(item):
             bid=bid,
             published_at=event["published_at"],
             summary=event["event"],
-            file_url=event.get("url"),  # FIXME remover
             defaults={"crawled_at": make_aware(item["crawled_at"])},
         )
         if created and event.get("url"):
-            # FIXME checksum
             save_file(event.get("url"), content_type, event_obj.pk)
     return bid

@@ -17,15 +17,13 @@ def save_gazette(item):
         defaults={
             "crawled_at": make_aware(item["crawled_at"]),
             "crawled_from": item["crawled_from"],
-            "file_url": item["file_urls"][0],  # FIXME remover
         },
     )
 
-    if created:
+    if created and item.get("files"):
         content_type = get_content_type_for_model(gazette)
-        for file_url in item["file_urls"]:
-            # FIXME checksum
-            save_file(file_url, content_type, gazette.pk)
+        for file_ in item["files"]:
+            save_file(file_["url"], content_type, gazette.pk, file_["checksum"])
 
     for event in item["events"]:
         GazetteEvent.objects.get_or_create(
@@ -64,11 +62,10 @@ def save_legacy_gazette(item):
         defaults={"crawled_at": make_aware(item["crawled_at"]), "notes": notes},
     )
 
-    if created:
+    if created and item.get("files"):
         content_type = get_content_type_for_model(gazette)
-        for file_url in item["file_urls"]:
-            # FIXME checksum
-            save_file(file_url, content_type, gazette.pk)
+        for file_ in item["files"]:
+            save_file(file_["url"], content_type, gazette.pk, file_["checksum"])
 
     GazetteEvent.objects.create(
         gazette=gazette,
