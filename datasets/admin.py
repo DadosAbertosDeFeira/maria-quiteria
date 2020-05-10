@@ -9,8 +9,8 @@ from .models import (
     CityCouncilExpense,
     CityCouncilMinute,
     CityHallBid,
-    Gazette,
     File,
+    Gazette,
 )
 
 
@@ -28,7 +28,7 @@ class ReadOnlyMixin:
 @admin.register(Gazette)
 class GazetteAdmin(ReadOnlyMixin, admin.ModelAdmin):
     ordering = ["-date"]
-    search_fields = ["year_and_edition"]
+    search_fields = ["year_and_edition", "search_vector"]
     list_filter = ["power", "date"]
     list_display = (
         "date",
@@ -131,7 +131,7 @@ class CityCouncilMinuteAdmin(ReadOnlyMixin, admin.ModelAdmin):
     @mark_safe
     def files(self, obj):
         return "<br>".join(
-            [f"<a href={file_.url}>{file_.url}</a>" for file_ in obj.files.all()]
+            f"<a href={file_.url}>{file_.url}</a>" for file_ in obj.files.all()
         )
 
     files.short_description = "Arquivos"
@@ -155,7 +155,7 @@ class CityHallBidAdmin(ReadOnlyMixin, admin.ModelAdmin):
     @mark_safe
     def files(self, obj):
         return "<br>".join(
-            [f"<a href={file_.url}>{file_.url}</a>" for file_ in obj.files.all()]
+            f"<a href={file_.url}>{file_.url}</a>" for file_ in obj.files.all()
         )
 
     files.short_description = "Arquivos"

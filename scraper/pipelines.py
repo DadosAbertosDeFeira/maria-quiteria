@@ -10,7 +10,7 @@ from scrapy.utils.python import to_bytes
 
 class ExtractFileContentPipeline(FilesPipeline):
     def file_path(self, request, response=None, info=None):
-        """Retorna um nome único para o arquivo foi baixado, removendo
+        """Retorna um nome único para o arquivo baixado, removendo
         parâmetros da URL. Por exemplo:
 
         de:
@@ -29,8 +29,7 @@ class ExtractFileContentPipeline(FilesPipeline):
             return item
 
         files = []
-        for result in results:
-            ok, file_info = result
+        for ok, file_info in results:
             if not ok:
                 continue
 
