@@ -30,9 +30,7 @@ def test_save_expense_from_csv():
     }
 
     expected_expense = {
-        "file_code": "253",
         "phase": "empenho",
-        "file_line": "2",
         "budget_unit": "101",
         "summary": "IMPORTE DESTINADO A PAGAMENTO DE SUBSIDIOS DURANTE O PERIODO.",
         "resource": "0000 - TESOURO",
@@ -44,7 +42,7 @@ def test_save_expense_from_csv():
         "published_at": date(2014, 1, 2),
         "date": date(2014, 1, 2),
         "excluded": False,
-        "modality": "ISENTO",
+        "modality": "isento",
         "company_or_person": "VEREADORES",
         "document": "14.488.415/0001-60",
         "phase_code": "14000001",
@@ -52,4 +50,19 @@ def test_save_expense_from_csv():
         "process_number": "",
         "value": 3790000.00,
     }
-    assert to_expense(item) == expected_expense
+    expense_obj = to_expense(item)
+    assert expense_obj.phase == expected_expense["phase"]
+    assert expense_obj.budget_unit == expected_expense["budget_unit"]
+    assert expense_obj.resource == expected_expense["resource"]
+    assert expense_obj.function == expected_expense["function"]
+    assert expense_obj.legal_status == expected_expense["legal_status"]
+    assert expense_obj.subfunction == expected_expense["subfunction"]
+    assert expense_obj.published_at == expected_expense["published_at"]
+    assert expense_obj.excluded == expected_expense["excluded"]
+    assert expense_obj.modality == expected_expense["modality"]
+    assert expense_obj.company_or_person == expected_expense["company_or_person"]
+    assert expense_obj.document == expected_expense["document"]
+    assert expense_obj.phase_code == expected_expense["phase_code"]
+    assert expense_obj.number == expected_expense["number"]
+    assert expense_obj.process_number == expected_expense["process_number"]
+    assert expense_obj.value == expected_expense["value"]

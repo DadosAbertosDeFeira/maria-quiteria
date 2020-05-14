@@ -1,11 +1,13 @@
 import csv
+import os
+from datetime import datetime
 
 from datasets.adapters import to_expense
 from datasets.models import CityCouncilExpense
 from django.core.management.base import BaseCommand
 
 mapping = {
-    "citycouncil_expenses": {"model": CityCouncilExpense, "adapter": to_expense,},
+    "citycouncil_expenses": {"model": CityCouncilExpense, "adapter": to_expense},
 }
 
 
@@ -15,6 +17,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("source")
         parser.add_argument("file")
+        parser.add_argument("--drop-all", action="store_true")
 
     def echo(self, text, style=None):
         self.stdout.write(style(text) if style else text)
@@ -26,13 +29,26 @@ class Command(BaseCommand):
         return self.echo(text, self.style.SUCCESS)
 
     def handle(self, *args, **options):
-        self.warn(options.get("source"))
-        self.warn(options.get("file"))
+        self.echo(options.get("source"))
+        self.echo(options.get("file"))
 
         source_map = mapping.get(options.get("source"))
+        adapter = source_map["adapter"]
+        model = source_map["model"]
+
+        if options.get("drop_all"):
+            model.objects.all().delete()
 
         with open(options.get("file"), newline="") as csv_file:
             reader = csv.DictReader(csv_file)
+
             for row in reader:
-                item = source_map["adapter"](row)
-                # TODO salvar
+                item = adapter(row)
+                item.crawled_at = datetime.now()
+                item.crawled_from = os.getenv("CITY_COUNCIL_WEBSERVICE")
+                try:
+                    item.save()
+                except Exception as e:
+                    self.warn(f"{e}\n{str(row)}")
+
+        self.success("Concluído!")

@@ -106,9 +106,7 @@ class CityCouncilExpenseAdmin(ReadOnlyMixin, admin.ModelAdmin):
     search_fields = ["summary", "document", "number", "process_number"]
     list_filter = [
         "date",
-        "subgroup",
-        "group",
-        "type_of_process",
+        "modality",
         "phase",
         "company_or_person",
     ]
@@ -118,9 +116,8 @@ class CityCouncilExpenseAdmin(ReadOnlyMixin, admin.ModelAdmin):
         "company_or_person",
         "summary",
         "value",
-        "subgroup",
-        "group",
-        "type_of_process",
+        "legal_status",
+        "modality",
         "number",
         "process_number",
     )

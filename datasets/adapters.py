@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from datasets.models import CityCouncilExpense
+
 
 def get_phase(value):
     mapping = {
@@ -38,10 +40,14 @@ def from_str_to_date(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y"]):
         return datetime_obj.date()
 
 
+def lower(value):
+    return value.lower()
+
+
 citycouncil_expenses = {
-    "CODARQUIVO": "file_code",  # TODO
-    "CODLINHA": "file_line",  # TODO
-    "CODUNIDORCAM": "budget_unit",  # TODO sempre 101
+    "CODARQUIVO": None,
+    "CODLINHA": None,
+    "CODUNIDORCAM": "budget_unit",
     "DTPUBLICACAO": "published_at",
     "DTREGISTRO": "date",
     "CODETAPA": "phase",
@@ -55,9 +61,9 @@ citycouncil_expenses = {
     "DSSUBFUNCAO": "subfunction",
     "DSNATUREZA": "legal_status",  # TODO natureza do TCM-BA
     "DSFONTEREC": "resource",
-    "NUMETAPA": "phase_code",  # TODO
-    "MODALIDADE": "modality",  # TODO
-    "EXCLUIDO": "excluded",  # TODO
+    "NUMETAPA": "phase_code",
+    "MODALIDADE": "modality",
+    "EXCLUIDO": "excluded",
 }
 
 
@@ -68,10 +74,12 @@ def to_expense(item):
         "published_at": from_str_to_date,
         "date": from_str_to_date,
         "phase": get_phase,
+        "modality": lower,
     }
     new_item = {}
     for key, value in item.items():
         field = citycouncil_expenses[key]
-        value = value.strip()
-        new_item[field] = functions.get(field, lambda x: x)(value)
-    return new_item
+        if field:
+            value = value.strip()
+            new_item[field] = functions.get(field, lambda x: x)(value)
+    return CityCouncilExpense(**new_item)
