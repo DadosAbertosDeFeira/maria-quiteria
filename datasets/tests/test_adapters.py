@@ -1,6 +1,7 @@
 from datetime import date
 
-from datasets.adapters import to_expense
+import pytest
+from datasets.adapters import currency_to_float, to_expense
 
 
 def test_save_expense_from_csv():
@@ -66,3 +67,18 @@ def test_save_expense_from_csv():
     assert expense_obj.number == expected_expense["number"]
     assert expense_obj.process_number == expected_expense["process_number"]
     assert expense_obj.value == expected_expense["value"]
+
+
+@pytest.mark.parametrize(
+    "original_value,expected_value",
+    [
+        ("R$ 69.848,70", 69848.70),
+        ("69.848,70", 69848.70),
+        ("R$ -69.848,70", -69848.70),
+        ("1,70", 1.70),
+        ("00,00", 0),
+        ("Random", None),
+    ],
+)
+def test_currency_to_float(original_value, expected_value):
+    assert currency_to_float(original_value) == expected_value

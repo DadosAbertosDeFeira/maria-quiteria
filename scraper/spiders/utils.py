@@ -86,16 +86,6 @@ def extract_date(str_with_date):
     return
 
 
-def normalize_currency(value):
-    """Converte de R$ 69.848,70 (str) para 69848.70 (float)."""
-    try:
-        cleaned_value = value.replace("R$", "").replace(".", "").replace(",", ".")
-        return float(cleaned_value)
-    except ValueError:
-        logger.error("Falha ao converter valor", exc_info=True)
-    return
-
-
 def strip_accents(string):
     if string is None:
         return

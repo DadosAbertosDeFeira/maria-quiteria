@@ -45,25 +45,6 @@ class CityCouncilAttendanceListItem(BaseItem):
     status = scrapy.Field()
 
 
-class CityCouncilExpenseItem(BaseItem):
-    published_at = scrapy.Field()
-    phase = scrapy.Field()
-    company_or_person = scrapy.Field()
-    value = scrapy.Field()
-    number = scrapy.Field()
-    document = scrapy.Field()
-    date = scrapy.Field()
-    process_number = scrapy.Field()
-    summary = scrapy.Field()
-    legal_status = scrapy.Field()
-    function = scrapy.Field()
-    subfunction = scrapy.Field()
-    type_of_process = scrapy.Field()
-    resource = scrapy.Field()
-    subgroup = scrapy.Field()
-    group = scrapy.Field()
-
-
 class CityCouncilMinuteItem(BaseItem):
     date = scrapy.Field()
     title = scrapy.Field()
