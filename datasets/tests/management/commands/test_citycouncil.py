@@ -1,11 +1,7 @@
 from datetime import date, datetime
 
 import pytest
-from datasets.management.commands._citycouncil import (
-    save_agenda,
-    save_attendance_list,
-    save_minute,
-)
+from datasets.management.commands._citycouncil import save_agenda, save_attendance_list
 
 
 @pytest.mark.django_db
@@ -107,29 +103,3 @@ class TestSaveAttendanceList:
         assert attendance.crawled_from == updated_attendance.crawled_from
         assert attendance.status != updated_attendance.status
         assert attendance.crawled_at != updated_attendance.crawled_at
-
-
-@pytest.mark.django_db
-class TestSaveMinute:
-    def test_save_minute(self, mock_save_file):
-        item = {
-            "crawled_at": datetime(2020, 4, 30, 18, 18, 56, 173788),
-            "crawled_from": "https://www.feiradesantana.ba.leg.br/atas?"
-            "mes=9&ano=2018&Acessar=OK",
-            "date": date(2018, 9, 11),
-            "event_type": None,
-            "files": [
-                {
-                    "url": "https://www.feiradesantana.ba.leg.br/5eaabb5e91088.pd",
-                    "checksum": "checksum",
-                    "content": None,
-                }
-            ],
-            "title": "Ata da 4ª Reunião para Instalação da Comissão Especial",
-        }
-
-        minute = save_minute(item)
-        assert minute.date == item["date"]
-        assert minute.title == item["title"]
-        assert minute.event_type == item["event_type"]
-        assert minute.crawled_from == item["crawled_from"]

@@ -13,8 +13,13 @@ def get_phase(value):
 
 
 def currency_to_float(value):
-    cleaned_value = value.replace("R$", "").replace(".", "").replace(",", ".")
-    return float(cleaned_value)
+    """Converte de R$ 69.848,70 (str) para 69848.70 (float)."""
+    try:
+        cleaned_value = value.replace("R$", "").replace(".", "").replace(",", ".")
+        return float(cleaned_value)
+    except ValueError:
+        pass
+    return
 
 
 def to_boolean(value):
