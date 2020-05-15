@@ -49,6 +49,8 @@ def test_save_expense_from_csv():
         "number": "001/2014",
         "process_number": "",
         "value": 3790000.00,
+        "external_file_code": "253",
+        "external_file_line": "2",
     }
     expense_obj = to_expense(item)
     assert expense_obj.phase == expected_expense["phase"]

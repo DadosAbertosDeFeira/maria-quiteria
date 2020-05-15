@@ -20,8 +20,8 @@ def map_to_fields(item, fields_mapping, functions):
 
 def to_expense(item):
     fields_mapping = {
-        "CODARQUIVO": None,
-        "CODLINHA": None,
+        "CODARQUIVO": "external_file_code",
+        "CODLINHA": "external_file_line",
         "CODUNIDORCAM": "budget_unit",
         "DTPUBLICACAO": "published_at",
         "DTREGISTRO": "date",

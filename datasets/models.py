@@ -179,6 +179,8 @@ class CityCouncilExpense(DatasetMixin):
         max_length=50, null=True, blank=True, choices=EXPENSE_MODALITIES
     )
     excluded = models.BooleanField(default=False)
+    external_file_code = models.CharField(max_length=50, null=True, blank=True)
+    external_file_line = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Despesa"
