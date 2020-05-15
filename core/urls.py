@@ -1,11 +1,14 @@
+from datasets.admin import public_admin
 from django.conf import settings
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("home.urls")),
+    path("painel/", public_admin.urls),
 ]
+
 
 if settings.DEBUG:
     import debug_toolbar
