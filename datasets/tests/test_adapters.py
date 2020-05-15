@@ -1,6 +1,6 @@
 from datetime import date
 
-from datasets.adapters import to_expense
+from datasets.adapters import to_contract, to_expense
 
 
 def test_save_expense_from_csv():
@@ -49,6 +49,8 @@ def test_save_expense_from_csv():
         "number": "001/2014",
         "process_number": "",
         "value": 3790000.00,
+        "external_file_code": "253",
+        "external_file_line": "2",
     }
     expense_obj = to_expense(item)
     assert expense_obj.phase == expected_expense["phase"]
@@ -66,3 +68,42 @@ def test_save_expense_from_csv():
     assert expense_obj.number == expected_expense["number"]
     assert expense_obj.process_number == expected_expense["process_number"]
     assert expense_obj.value == expected_expense["value"]
+
+
+def test_save_contract_from_csv():
+    item = {
+        "CODCON": "43",
+        "DSCON": "CONTRATO Nº 004/2014 - PRESTAÇÃO DE SERVIÇO",
+        "OBJETOCON": "Contratação conforme Licitação 01/2014, Pregão 01/2014.",
+        "CPFCNPJCON": "92.559.830/0001-71",
+        "NMCON": "GREEN CARD S/A REFEIÇÕES COMÉRCIO E SERVIÇOS",
+        "VALORCON": "1157115,96",
+        "DTCON": "28/3/2014",
+        "DTCONFIM": "27/3/2015",
+        "EXCLUIDO": "N",
+    }
+
+    expected_expense = {
+        "external_code": "43",
+        "description": "CONTRATO Nº 004/2014 - PRESTAÇÃO DE SERVIÇO",
+        "details": "Contratação conforme Licitação 01/2014, Pregão 01/2014.",
+        "company_or_person_document": "92.559.830/0001-71",
+        "company_or_person": "GREEN CARD S/A REFEIÇÕES COMÉRCIO E SERVIÇOS",
+        "value": 1157115.96,
+        "start_date": date(2014, 3, 28),
+        "end_date": date(2015, 3, 27),
+        "excluded": False,
+    }
+    contract_obj = to_contract(item)
+    assert contract_obj.external_code == expected_expense["external_code"]
+    assert contract_obj.description == expected_expense["description"]
+    assert contract_obj.details == expected_expense["details"]
+    assert (
+        contract_obj.company_or_person_document
+        == expected_expense["company_or_person_document"]
+    )
+    assert contract_obj.company_or_person == expected_expense["company_or_person"]
+    assert contract_obj.value == expected_expense["value"]
+    assert contract_obj.start_date == expected_expense["start_date"]
+    assert contract_obj.end_date == expected_expense["end_date"]
+    assert contract_obj.excluded == expected_expense["excluded"]

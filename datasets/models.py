@@ -125,6 +125,33 @@ class CityCouncilAttendanceList(DatasetMixin):
             return
 
 
+class CityCouncilContract(DatasetMixin):
+    external_code = models.PositiveIntegerField("Código externo")
+    description = models.TextField("Descrição", null=True, blank=True)
+    details = models.TextField("Objeto do contrato", null=True, blank=True)
+    company_or_person_document = models.CharField(
+        "CNPJ ou CPF", max_length=50, null=True, blank=True
+    )
+    company_or_person = models.TextField("Empresa ou pessoa", null=True, blank=True)
+    value = models.DecimalField("Valor", max_digits=10, decimal_places=2)
+    start_date = models.DateField("Data de início")
+    end_date = models.DateField("Data final")
+    excluded = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = "Câmara de Vereadores - Contrato"
+        verbose_name_plural = "Câmara de Vereadores - Contratos"
+        get_latest_by = "start_date"
+
+    def __repr__(self):
+        interval = f"{self.start_date} {self.end_date}"
+        return f"{interval} {self.description} {self.company_or_person}"
+
+    def __str__(self):
+        interval = f"{self.start_date} {self.end_date}"
+        return f"{interval} {self.description} {self.company_or_person}"
+
+
 class CityCouncilExpense(DatasetMixin):
     PHASE = (
         ("empenho", "Empenho"),
@@ -152,6 +179,8 @@ class CityCouncilExpense(DatasetMixin):
         max_length=50, null=True, blank=True, choices=EXPENSE_MODALITIES
     )
     excluded = models.BooleanField(default=False)
+    external_file_code = models.CharField(max_length=50, null=True, blank=True)
+    external_file_line = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Despesa"
