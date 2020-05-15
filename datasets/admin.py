@@ -1,7 +1,8 @@
-from django.contrib import admin
 from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.db.models import F
 from django.utils.safestring import mark_safe
+from public_admin.admin import PublicModelAdmin
+from public_admin.sites import PublicAdminSite, PublicApp
 
 from .models import (
     CityCouncilAgenda,
@@ -13,19 +14,7 @@ from .models import (
 )
 
 
-class ReadOnlyMixin:
-    def has_add_permission(self, request):
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-
-@admin.register(Gazette)
-class GazetteAdmin(ReadOnlyMixin, admin.ModelAdmin):
+class GazetteAdmin(PublicModelAdmin):
     ordering = ["-date"]
     search_fields = ["year_and_edition", "search_vector"]
     list_filter = ["power", "date"]
@@ -71,8 +60,7 @@ class GazetteAdmin(ReadOnlyMixin, admin.ModelAdmin):
         return queryset, False
 
 
-@admin.register(CityCouncilAgenda)
-class CityCouncilAgendaAdmin(ReadOnlyMixin, admin.ModelAdmin):
+class CityCouncilAgendaAdmin(PublicModelAdmin):
     ordering = ["-date"]
     search_fields = ["title", "details"]
     list_filter = ["date", "event_type"]
@@ -86,8 +74,7 @@ class CityCouncilAgendaAdmin(ReadOnlyMixin, admin.ModelAdmin):
     )
 
 
-@admin.register(CityCouncilAttendanceList)
-class CityCouncilAttendanceListAdmin(ReadOnlyMixin, admin.ModelAdmin):
+class CityCouncilAttendanceListAdmin(PublicModelAdmin):
     ordering = ["-date"]
     list_filter = ["date", "status", "council_member"]
     list_display = (
@@ -100,8 +87,7 @@ class CityCouncilAttendanceListAdmin(ReadOnlyMixin, admin.ModelAdmin):
     )
 
 
-@admin.register(CityCouncilExpense)
-class CityCouncilExpenseAdmin(ReadOnlyMixin, admin.ModelAdmin):
+class CityCouncilExpenseAdmin(PublicModelAdmin):
     ordering = ["-date"]
     search_fields = ["summary", "document", "number", "process_number"]
     list_filter = [
@@ -126,8 +112,7 @@ class CityCouncilExpenseAdmin(ReadOnlyMixin, admin.ModelAdmin):
     )
 
 
-@admin.register(CityCouncilMinute)
-class CityCouncilMinuteAdmin(ReadOnlyMixin, admin.ModelAdmin):
+class CityCouncilMinuteAdmin(PublicModelAdmin):
     ordering = ["-date"]
     search_fields = ["title", "file_content"]
     list_filter = ["date", "event_type"]
@@ -145,8 +130,7 @@ class CityCouncilMinuteAdmin(ReadOnlyMixin, admin.ModelAdmin):
         return f"<a href={obj.file_url}>{obj.file_url}</a>"
 
 
-@admin.register(CityHallBid)
-class CityHallBidAdmin(ReadOnlyMixin, admin.ModelAdmin):
+class CityHallBidAdmin(PublicModelAdmin):
     ordering = ["-session_at"]
     search_fields = ["description", "codes", "file_content"]
     list_filter = ["session_at", "public_agency", "modality"]
@@ -177,3 +161,24 @@ class CityHallBidAdmin(ReadOnlyMixin, admin.ModelAdmin):
         )
 
     events.short_description = "Histórico"
+
+
+class MariaQuiteriaPublicAdminSite(PublicAdminSite):
+    site_title = "Dados Abertos de Feira"
+    site_header = "Dados Abertos de Feira"
+    index_title = "Painel de buscas"
+
+
+public_app = PublicApp("datasets", models=())
+public_admin = MariaQuiteriaPublicAdminSite(public_apps=public_app)
+models_and_admins = [
+    (CityCouncilAgenda, CityCouncilAgendaAdmin),
+    (CityCouncilAttendanceList, CityCouncilAttendanceListAdmin),
+    (CityCouncilExpense, CityCouncilExpenseAdmin),
+    (CityCouncilMinute, CityCouncilMinuteAdmin),
+    (Gazette, GazetteAdmin),
+    (CityHallBid, CityHallBidAdmin),
+]
+
+for model, admin in models_and_admins:
+    public_admin.register(model, admin)
