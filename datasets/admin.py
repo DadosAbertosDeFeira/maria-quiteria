@@ -26,7 +26,7 @@ class GazetteAdmin(PublicModelAdmin):
         "events",
         "url",
         "crawled_at",
-        "page",
+        "crawled_from",
     )
 
     @mark_safe
@@ -38,13 +38,15 @@ class GazetteAdmin(PublicModelAdmin):
             ]
         )
 
-    @mark_safe
-    def url(self, obj):
-        return f"<a href={obj.file_url}>{obj.file_url}</a>"
+    events.short_description = "Eventos"
 
     @mark_safe
-    def page(self, obj):
-        return f"<a href={obj.crawled_from}>{obj.crawled_from}</a>"
+    def url(self, obj):
+        if obj.file_url:
+            return f"<a href={obj.file_url}>{obj.file_url}</a>"
+        return ""
+
+    url.short_description = "Endereço (URL)"
 
     def get_search_results(self, request, queryset, search_term):
         if not search_term:
@@ -126,6 +128,7 @@ class CityCouncilExpenseAdmin(PublicModelAdmin):
         "date",
         "phase",
         "company_or_person",
+        "document",
         "summary",
         "value",
         "legal_status",
@@ -150,7 +153,11 @@ class CityCouncilMinuteAdmin(PublicModelAdmin):
 
     @mark_safe
     def url(self, obj):
-        return f"<a href={obj.file_url}>{obj.file_url}</a>"
+        if obj.file_url:
+            return f"<a href={obj.file_url}>{obj.file_url}</a>"
+        return ""
+
+    url.short_description = "Endereço (URL)"
 
 
 class CityHallBidAdmin(PublicModelAdmin):
@@ -169,19 +176,23 @@ class CityHallBidAdmin(PublicModelAdmin):
 
     @mark_safe
     def url(self, obj):
-        return f"<a href={obj.file_url}>{obj.file_url}</a>"
+        if obj.file_url:
+            return f"<a href={obj.file_url}>{obj.file_url}</a>"
+        return ""
 
     url.short_description = "Arquivo"
 
     @mark_safe
     def events(self, obj):
-        return "<br><br>".join(
-            [
-                f"{event.published_at}: {event.summary} "
-                f"{event.file_url if event.file_url else ''}"
-                for event in obj.events.all()
-            ]
-        )
+        formatted_events = []
+        for event in obj.events.all():
+            formatted_date = event.published_at.strftime("%d/%m/%Y %H:%m")
+            url = ""
+            if event.file_url:
+                url = f"<a href={event.file_url}>{event.file_url}</a>"
+
+            formatted_events.append(f"{formatted_date}<br>{event.summary}<br>{url}")
+        return "<br><br>".join(formatted_events)
 
     events.short_description = "Histórico"
 
