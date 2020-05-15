@@ -1,4 +1,4 @@
-from datasets.models import CityCouncilExpense
+from datasets.models import CityCouncilContract, CityCouncilExpense
 from datasets.parsers import (
     currency_to_float,
     from_str_to_date,
@@ -8,8 +8,18 @@ from datasets.parsers import (
 )
 
 
+def map_to_fields(item, fields_mapping, functions):
+    new_item = {}
+    for key, value in item.items():
+        field = fields_mapping[key]
+        if field:
+            value = value.strip()
+            new_item[field] = functions.get(field, lambda x: x)(value)
+    return new_item
+
+
 def to_expense(item):
-    citycouncil_expenses = {
+    fields_mapping = {
         "CODARQUIVO": None,
         "CODLINHA": None,
         "CODUNIDORCAM": "budget_unit",
@@ -38,10 +48,27 @@ def to_expense(item):
         "phase": get_phase,
         "modality": lower,
     }
-    new_item = {}
-    for key, value in item.items():
-        field = citycouncil_expenses[key]
-        if field:
-            value = value.strip()
-            new_item[field] = functions.get(field, lambda x: x)(value)
+    new_item = map_to_fields(item, fields_mapping, functions)
     return CityCouncilExpense(**new_item)
+
+
+def to_contract(item):
+    fields_mapping = {
+        "CODCON": "external_code",
+        "DSCON": "description",
+        "OBJETOCON": "details",
+        "CPFCNPJCON": "company_or_person_document",
+        "NMCON": "company_or_person",
+        "VALORCON": "value",
+        "DTCON": "start_date",
+        "DTCONFIM": "end_date",
+        "EXCLUIDO": "excluded",
+    }
+    functions = {
+        "value": currency_to_float,
+        "excluded": to_boolean,
+        "start_date": from_str_to_date,
+        "end_date": from_str_to_date,
+    }
+    new_item = map_to_fields(item, fields_mapping, functions)
+    return CityCouncilContract(**new_item)

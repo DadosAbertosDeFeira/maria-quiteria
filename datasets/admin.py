@@ -7,6 +7,7 @@ from public_admin.sites import PublicAdminSite, PublicApp
 from .models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
+    CityCouncilContract,
     CityCouncilExpense,
     CityCouncilMinute,
     CityHallBid,
@@ -85,6 +86,31 @@ class CityCouncilAttendanceListAdmin(PublicModelAdmin):
         "crawled_at",
         "crawled_from",
     )
+
+
+class CityCouncilContractAdmin(PublicModelAdmin):
+    ordering = ["-start_date"]
+    search_fields = ["details", "description", "company_or_person"]
+    list_filter = [
+        "start_date",
+        "end_date",
+        "company_or_person",
+    ]
+    list_display = (
+        "start_date",
+        "end_date",
+        "company_or_person",
+        "company_or_person_document",
+        "description",
+        "details_with_html",
+        "value",
+    )
+
+    @mark_safe
+    def details_with_html(self, obj):
+        return obj.details
+
+    details_with_html.short_description = "Detalhes"
 
 
 class CityCouncilExpenseAdmin(PublicModelAdmin):
@@ -175,6 +201,7 @@ models_and_admins = [
     (CityCouncilMinute, CityCouncilMinuteAdmin),
     (Gazette, GazetteAdmin),
     (CityHallBid, CityHallBidAdmin),
+    (CityCouncilContract, CityCouncilContractAdmin),
 ]
 
 for model, admin in models_and_admins:
