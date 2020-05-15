@@ -3,8 +3,10 @@ from datetime import date, datetime
 from scraper.items import GazetteItem, LegacyGazetteItem
 from scrapy import Request
 
+from datasets.parsers import from_str_to_date
+
 from . import BaseSpider
-from .utils import from_str_to_date, replace_query_param
+from .utils import replace_query_param
 
 
 class LegacyGazetteSpider(BaseSpider):

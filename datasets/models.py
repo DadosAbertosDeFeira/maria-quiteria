@@ -26,6 +26,17 @@ BID_MODALITIES = (
     ("chamada_publica", "Chamada Pública"),
 )
 
+EXPENSE_MODALITIES = (
+    ("convenio", "Convênio"),
+    ("tomada_de_precos", "Tomada de Preço"),
+    ("pregao", "Pregão"),
+    ("inexigibilidade", "Inexigibilidade"),
+    ("convite", "Convite"),
+    ("concorrencia", "Concorrência"),
+    ("dispensa", "Dispensa"),
+    ("isento", "Isento"),
+)
+
 
 class DatasetMixin(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -120,8 +131,9 @@ class CityCouncilExpense(DatasetMixin):
         ("liquidacao", "Liquidação"),
         ("pagamento", "Pagamento"),
     )
-    published_at = models.DateField()
+    published_at = models.DateField(null=True, blank=True)
     phase = models.CharField(max_length=20, choices=PHASE)
+    phase_code = models.CharField(max_length=20, null=True, blank=True)
     company_or_person = models.TextField(null=True, blank=True)
     value = models.DecimalField("Valor", max_digits=10, decimal_places=2)
     number = models.CharField(max_length=50, null=True, blank=True)
@@ -132,10 +144,14 @@ class CityCouncilExpense(DatasetMixin):
     legal_status = models.CharField(max_length=200, null=True, blank=True)
     function = models.CharField(max_length=50, null=True, blank=True)
     subfunction = models.CharField(max_length=50, null=True, blank=True)
-    type_of_process = models.CharField(max_length=50, null=True, blank=True)
     resource = models.CharField(max_length=200, null=True, blank=True)
     subgroup = models.CharField(max_length=100, null=True, blank=True)
     group = models.CharField(max_length=100, null=True, blank=True)
+    budget_unit = models.PositiveIntegerField(default=101)
+    modality = models.CharField(
+        max_length=50, null=True, blank=True, choices=EXPENSE_MODALITIES
+    )
+    excluded = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Despesa"
