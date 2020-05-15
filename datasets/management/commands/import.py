@@ -2,9 +2,10 @@ import csv
 import os
 from datetime import datetime
 
+from django.core.management.base import BaseCommand
+
 from datasets.adapters import to_expense
 from datasets.models import CityCouncilExpense
-from django.core.management.base import BaseCommand
 
 mapping = {
     "citycouncil_expenses": {"model": CityCouncilExpense, "adapter": to_expense},

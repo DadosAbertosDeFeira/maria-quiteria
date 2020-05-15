@@ -1,6 +1,8 @@
 from datetime import date, datetime
 
 import scrapy
+
+from datasets.parsers import from_str_to_date
 from scraper.items import (
     CityCouncilAgendaItem,
     CityCouncilAttendanceListItem,
@@ -8,7 +10,7 @@ from scraper.items import (
 )
 
 from . import BaseSpider
-from .utils import extract_date, from_str_to_date, months_and_years
+from .utils import extract_date, months_and_years
 
 
 class AgendaSpider(BaseSpider):
