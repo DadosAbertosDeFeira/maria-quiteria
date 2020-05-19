@@ -50,6 +50,7 @@ class Common(Configuration):
                     "django.template.context_processors.request",
                     "django.contrib.auth.context_processors.auth",
                     "django.contrib.messages.context_processors.messages",
+                    "home.context_processors.google_analytics_key",
                 ],
             },
         },
@@ -100,3 +101,4 @@ class Dev(Common):
 class Prod(Common):
     SECRET_KEY = values.SecretValue()
     ALLOWED_HOSTS = values.ListValue()
+    GOOGLE_ANALYTICS_KEY = values.Value()
