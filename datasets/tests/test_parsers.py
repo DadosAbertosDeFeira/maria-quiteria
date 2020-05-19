@@ -52,3 +52,18 @@ def test_possible_date_formats(datetime_str, expected_obj):
     formats = ["%d/%m/%Y", "%d/%m/%y"]
 
     assert from_str_to_datetime(datetime_str, formats) == expected_obj
+
+
+@pytest.mark.parametrize(
+    "datetime_str,expected_obj",
+    [
+        ("18/05/2020", datetime(2020, 5, 18)),
+        ("18/09/1833", datetime(1833, 9, 18)),
+        ("17/09/1833", None),
+        ("01/01/0001", None),
+    ],
+)
+def test_dates_older_than_city_creation(datetime_str, expected_obj):
+    formats = ["%d/%m/%Y", "%d/%m/%y"]
+
+    assert from_str_to_datetime(datetime_str, formats) == expected_obj
