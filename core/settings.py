@@ -62,7 +62,8 @@ class Common(Configuration):
                     "django.template.context_processors.request",
                     "django.contrib.auth.context_processors.auth",
                     "django.contrib.messages.context_processors.messages",
-                ]
+                    "home.context_processors.google_analytics_key",
+                ],
             },
         }
     ]
@@ -124,3 +125,4 @@ class Prod(Common):
     CLOUDAMQP_URL = values.Value(environ_prefix=None)
 
     DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=True)}
+    GOOGLE_ANALYTICS_KEY = values.Value()
