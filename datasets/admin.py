@@ -2,10 +2,13 @@ from django.contrib import admin
 from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.db.models import F
 from django.utils.safestring import mark_safe
+from public_admin.admin import PublicModelAdmin
+from public_admin.sites import PublicAdminSite, PublicApp
 
 from .models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
+    CityCouncilContract,
     CityCouncilExpense,
     CityCouncilMinute,
     CityHallBid,
@@ -14,19 +17,7 @@ from .models import (
 )
 
 
-class ReadOnlyMixin:
-    def has_add_permission(self, request):
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-
-@admin.register(Gazette)
-class GazetteAdmin(ReadOnlyMixin, admin.ModelAdmin):
+class GazetteAdmin(PublicModelAdmin):
     ordering = ["-date"]
     search_fields = ["year_and_edition", "search_vector"]
     list_filter = ["power", "date"]
@@ -37,7 +28,7 @@ class GazetteAdmin(ReadOnlyMixin, admin.ModelAdmin):
         "events",
         "url",
         "crawled_at",
-        "page",
+        "crawled_from",
     )
 
     @mark_safe
@@ -49,18 +40,31 @@ class GazetteAdmin(ReadOnlyMixin, admin.ModelAdmin):
             ]
         )
 
+    events.short_description = "Eventos"
+
     @mark_safe
     def url(self, obj):
         file_ = obj.files.first()
         return f"<a href={file_.url}>{file_.url}</a>"
 
-    @mark_safe
-    def page(self, obj):
-        return f"<a href={obj.crawled_from}>{obj.crawled_from}</a>"
+    url.short_description = "Endereço (URL)"
+
+    def get_search_results(self, request, queryset, search_term):
+        if not search_term:
+            return super().get_search_results(request, queryset, search_term)
+
+        query = SearchQuery(search_term, config="portuguese")
+        rank = SearchRank(F("search_vector"), query)
+        queryset = (
+            Gazette.objects.annotate(rank=rank)
+            .filter(search_vector=query)
+            .order_by("-rank")
+        )
+
+        return queryset, False
 
 
-@admin.register(CityCouncilAgenda)
-class CityCouncilAgendaAdmin(ReadOnlyMixin, admin.ModelAdmin):
+class CityCouncilAgendaAdmin(PublicModelAdmin):
     ordering = ["-date"]
     search_fields = ["title", "details"]
     list_filter = ["date", "event_type"]
@@ -74,8 +78,7 @@ class CityCouncilAgendaAdmin(ReadOnlyMixin, admin.ModelAdmin):
     )
 
 
-@admin.register(CityCouncilAttendanceList)
-class CityCouncilAttendanceListAdmin(ReadOnlyMixin, admin.ModelAdmin):
+class CityCouncilAttendanceListAdmin(PublicModelAdmin):
     ordering = ["-date"]
     list_filter = ["date", "status", "council_member"]
     list_display = (
@@ -88,15 +91,37 @@ class CityCouncilAttendanceListAdmin(ReadOnlyMixin, admin.ModelAdmin):
     )
 
 
-@admin.register(CityCouncilExpense)
-class CityCouncilExpenseAdmin(ReadOnlyMixin, admin.ModelAdmin):
+class CityCouncilContractAdmin(PublicModelAdmin):
+    ordering = ["-start_date"]
+    search_fields = ["details", "description", "company_or_person"]
+    list_filter = [
+        "start_date",
+        "end_date",
+        "company_or_person",
+    ]
+    list_display = (
+        "start_date",
+        "end_date",
+        "company_or_person",
+        "company_or_person_document",
+        "description",
+        "details_with_html",
+        "value",
+    )
+
+    @mark_safe
+    def details_with_html(self, obj):
+        return obj.details
+
+    details_with_html.short_description = "Detalhes"
+
+
+class CityCouncilExpenseAdmin(PublicModelAdmin):
     ordering = ["-date"]
     search_fields = ["summary", "document", "number", "process_number"]
     list_filter = [
         "date",
-        "subgroup",
-        "group",
-        "type_of_process",
+        "modality",
         "phase",
         "company_or_person",
     ]
@@ -104,18 +129,17 @@ class CityCouncilExpenseAdmin(ReadOnlyMixin, admin.ModelAdmin):
         "date",
         "phase",
         "company_or_person",
+        "document",
         "summary",
         "value",
-        "subgroup",
-        "group",
-        "type_of_process",
+        "legal_status",
+        "modality",
         "number",
         "process_number",
     )
 
 
-@admin.register(CityCouncilMinute)
-class CityCouncilMinuteAdmin(ReadOnlyMixin, admin.ModelAdmin):
+class CityCouncilMinuteAdmin(PublicModelAdmin):
     ordering = ["-date"]
     search_fields = ["title", "file_content"]
     list_filter = ["date", "event_type"]
@@ -137,8 +161,8 @@ class CityCouncilMinuteAdmin(ReadOnlyMixin, admin.ModelAdmin):
     files.short_description = "Arquivos"
 
 
-@admin.register(CityHallBid)
-class CityHallBidAdmin(ReadOnlyMixin, admin.ModelAdmin):
+
+class CityHallBidAdmin(PublicModelAdmin):
     ordering = ["-session_at"]
     search_fields = ["description", "codes", "file_content"]
     list_filter = ["session_at", "public_agency", "modality"]
@@ -162,20 +186,21 @@ class CityHallBidAdmin(ReadOnlyMixin, admin.ModelAdmin):
 
     @mark_safe
     def events(self, obj):
-        to_be_displayed = []
+        formatted_events = []
         for event in obj.events.all():
-            event_label = f"{event.published_at}: {event.summary} "
-            for url in event.file_urls:
-                event_label += f"<a href={url}>{url}</a>"
-            to_be_displayed.append(event_label)
+            formatted_date = event.published_at.strftime("%d/%m/%Y %H:%m")
+            url = ""
+            if event.file_url:
+                url = f"<a href={event.file_url}>{event.file_url}</a>"
 
-        return "<br><br>".join(to_be_displayed)
+            formatted_events.append(f"{formatted_date}<br>{event.summary}<br>{url}")
+        return "<br><br>".join(formatted_events)
 
     events.short_description = "Histórico"
 
 
 @admin.register(File)
-class FileAdmin(ReadOnlyMixin, admin.ModelAdmin):
+class FileAdmin(admin.ModelAdmin):
     ordering = ["-created_at"]
     search_fields = ["search_vector", "content"]
     list_filter = ["content_type"]
@@ -205,3 +230,25 @@ class FileAdmin(ReadOnlyMixin, admin.ModelAdmin):
         )
 
         return queryset, False
+
+
+class MariaQuiteriaPublicAdminSite(PublicAdminSite):
+    site_title = "Dados Abertos de Feira"
+    site_header = "Dados Abertos de Feira"
+    index_title = "Painel de buscas"
+
+
+public_app = PublicApp("datasets", models=())
+public_admin = MariaQuiteriaPublicAdminSite(public_apps=public_app)
+models_and_admins = [
+    (CityCouncilAgenda, CityCouncilAgendaAdmin),
+    (CityCouncilAttendanceList, CityCouncilAttendanceListAdmin),
+    (CityCouncilExpense, CityCouncilExpenseAdmin),
+    (CityCouncilMinute, CityCouncilMinuteAdmin),
+    (Gazette, GazetteAdmin),
+    (CityHallBid, CityHallBidAdmin),
+    (CityCouncilContract, CityCouncilContractAdmin),
+]
+
+for model, admin in models_and_admins:
+    public_admin.register(model, admin)

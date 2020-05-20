@@ -5,11 +5,9 @@ import pytest
 from ..spiders.utils import (
     extract_date,
     extract_param,
-    from_str_to_datetime,
     identify_contract_id,
     is_url,
     months_and_years,
-    normalize_currency,
     replace_query_param,
     strip_accents,
 )
@@ -87,40 +85,6 @@ def test_extract_param(url, param, value):
 
 
 @pytest.mark.parametrize(
-    "datetime_str,expected_obj",
-    [
-        ("26/02/2020 19:28", datetime(2020, 2, 26, 19, 28)),
-        ("26/02/2020 19:28:00", None),
-        ("26/02/2020", None),
-        ("26.02.20", None),
-        (None, None),
-        ("", None),
-    ],
-)
-def test_possible_datetime_formats(datetime_str, expected_obj):
-    formats = ["%d/%m/%Y %H:%M"]
-
-    assert from_str_to_datetime(datetime_str, formats) == expected_obj
-
-
-@pytest.mark.parametrize(
-    "datetime_str,expected_obj",
-    [
-        ("26/02/20", datetime(2020, 2, 26)),
-        ("26/02/2020", datetime(2020, 2, 26)),
-        ("26/02/2020 19:28", None),
-        ("26.02.20", None),
-        (None, None),
-        ("", None),
-    ],
-)
-def test_possible_date_formats(datetime_str, expected_obj):
-    formats = ["%d/%m/%Y", "%d/%m/%y"]
-
-    assert from_str_to_datetime(datetime_str, formats) == expected_obj
-
-
-@pytest.mark.parametrize(
     "start_date,end_date,expected_month_and_year",
     [
         (datetime(2020, 1, 10), datetime(2020, 3, 1), [(2, 2020), (3, 2020)]),
@@ -157,21 +121,6 @@ def test_months_and_years(start_date, end_date, expected_month_and_year):
 )
 def test_extract_date(str_with_date, expected_obj):
     assert extract_date(str_with_date) == expected_obj
-
-
-@pytest.mark.parametrize(
-    "original_value,expected_value",
-    [
-        ("R$ 69.848,70", 69848.70),
-        ("69.848,70", 69848.70),
-        ("R$ -69.848,70", -69848.70),
-        ("1,70", 1.70),
-        ("00,00", 0),
-        ("Random", None),
-    ],
-)
-def test_normalize_currency(original_value, expected_value):
-    assert normalize_currency(original_value) == expected_value
 
 
 @pytest.mark.parametrize(

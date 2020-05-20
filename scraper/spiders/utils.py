@@ -1,8 +1,9 @@
 import logging
 import re
 import unicodedata
-from datetime import datetime
 from urllib.parse import parse_qs, urlparse
+
+from datasets.parsers import from_str_to_date
 
 DOMAIN_FORMAT = re.compile(
     r"(?:^(\w{1,255}):(.{1,255})@|^)"
@@ -38,24 +39,6 @@ def extract_param(url, param):
         return
 
 
-def from_str_to_datetime(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y"]):
-    if date_str is None:
-        return
-    for supported_format in supported_formats:
-        try:
-            return datetime.strptime(date_str, supported_format)
-        except ValueError:
-            pass
-
-
-def from_str_to_date(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y"]):
-    if date_str is None:
-        return
-    datetime_obj = from_str_to_datetime(date_str, supported_formats)
-    if datetime_obj:
-        return datetime_obj.date()
-
-
 def months_and_years(start_date, end_date):
     pairs = []
     if start_date.year == end_date.year:
@@ -83,16 +66,6 @@ def extract_date(str_with_date):
     if result:
         supported_formats = ["%d/%m/%Y", "%d/%m/%y"]
         return from_str_to_date(result.group(0), supported_formats)
-    return
-
-
-def normalize_currency(value):
-    """Converte de R$ 69.848,70 (str) para 69848.70 (float)."""
-    try:
-        cleaned_value = value.replace("R$", "").replace(".", "").replace(",", ".")
-        return float(cleaned_value)
-    except ValueError:
-        logger.error("Falha ao converter valor", exc_info=True)
     return
 
 

@@ -2,6 +2,7 @@
 black==19.10b0
 django-debug-toolbar==2.2
 flake8==3.7.9
+isort==4.3.21
 model-bakery==1.1.0
 pre-commit
 pytest==5.4.1

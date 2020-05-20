@@ -27,13 +27,14 @@ class Common(Configuration):
     ALLOWED_HOSTS = []
 
     INSTALLED_APPS = [
+        "public_admin",
         "django.contrib.admin",
         "django.contrib.auth",
         "django.contrib.contenttypes",
         "django.contrib.sessions",
         "django.contrib.messages",
         "django.contrib.staticfiles",
-        "datasets",
+        "datasets.apps.DatasetsConfig",
         "home",
     ]
 
@@ -80,13 +81,14 @@ class Common(Configuration):
         {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
     ]
 
-    LANGUAGE_CODE = "en-us"
+    LANGUAGE_CODE = "pt-br"
+    USE_L10N = False
+    DATE_FORMAT = "d/m/Y"
+    DATETIME_FORMAT = "d/m/Y H:i"
 
     TIME_ZONE = "America/Fortaleza"
 
     USE_I18N = True
-
-    USE_L10N = True
 
     USE_TZ = True
 
