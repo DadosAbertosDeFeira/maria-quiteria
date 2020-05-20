@@ -29,7 +29,9 @@ jobs:
           DJANGO_SETTINGS_MODULE: "core.settings"
           DJANGO_CONFIGURATION: "Dev"
           DATABASE_URL: "postgres://postgres:postgres@localhost:5432/postgres"
-        run: pytest
+        run: |
+          python manage.py collectstatic
+          pytest
     services:
       postgres:
         image: postgres:10.8
