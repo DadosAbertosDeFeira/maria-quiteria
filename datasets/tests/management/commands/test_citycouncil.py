@@ -4,7 +4,6 @@ import pytest
 from datasets.management.commands._citycouncil import (
     save_agenda,
     save_attendance_list,
-    save_expense,
     save_minute,
 )
 
