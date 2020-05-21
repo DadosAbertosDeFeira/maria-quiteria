@@ -1,7 +1,6 @@
 from datetime import datetime
 
 import pytest
-
 from datasets.parsers import currency_to_float, from_str_to_datetime
 
 
@@ -24,6 +23,7 @@ def test_currency_to_float(original_value, expected_value):
     "datetime_str,expected_obj",
     [
         ("26/02/2020 19:28", datetime(2020, 2, 26, 19, 28)),
+        ("26/2/2014 09:00", datetime(2014, 2, 26, 9, 0)),
         ("26/02/2020 19:28:00", None),
         ("26/02/2020", None),
         ("26.02.20", None),
@@ -42,6 +42,7 @@ def test_possible_datetime_formats(datetime_str, expected_obj):
     [
         ("26/02/20", datetime(2020, 2, 26)),
         ("26/02/2020", datetime(2020, 2, 26)),
+        ("26/2/2020", datetime(2020, 2, 26)),
         ("26/02/2020 19:28", None),
         ("26.02.20", None),
         (None, None),
