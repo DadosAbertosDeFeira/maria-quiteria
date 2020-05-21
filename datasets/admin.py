@@ -238,6 +238,7 @@ class CityCouncilBidAdmin(PublicModelAdmin):
     list_filter = ["session_at", "modality"]
     list_display = (
         "session_at",
+        "modality",
         "code",
         "code_type",
         "description_html",
