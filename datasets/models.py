@@ -102,8 +102,11 @@ class CityCouncilAgenda(DatasetMixin):
     date = models.DateField("Data")
     details = models.TextField("Detalhes", null=True, blank=True)
     event_type = models.CharField(
-        "Tipo do evento", max_length=20, choices=CITY_COUNCIL_EVENT_TYPE,
-        null=True, blank=True
+        "Tipo do evento",
+        max_length=20,
+        choices=CITY_COUNCIL_EVENT_TYPE,
+        null=True,
+        blank=True,
     )
     title = models.CharField("Título", max_length=100, null=True, blank=True)
 
@@ -238,8 +241,11 @@ class CityCouncilMinute(DatasetMixin):
     date = models.DateField("Data")
     title = models.CharField("Título", max_length=300, null=True, blank=True)
     event_type = models.CharField(
-        "Tipo de evento", max_length=20, choices=CITY_COUNCIL_EVENT_TYPE,
-        null=True, blank=True
+        "Tipo de evento",
+        max_length=20,
+        choices=CITY_COUNCIL_EVENT_TYPE,
+        null=True,
+        blank=True,
     )
     files = GenericRelation(File)
     file_url = models.URLField("Endereço (URL)", null=True, blank=True)

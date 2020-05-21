@@ -161,7 +161,6 @@ class CityCouncilMinuteAdmin(PublicModelAdmin):
     files.short_description = "Arquivos"
 
 
-
 class CityHallBidAdmin(PublicModelAdmin):
     ordering = ["-session_at"]
     search_fields = ["description", "codes", "file_content"]
@@ -250,5 +249,5 @@ models_and_admins = [
     (CityCouncilContract, CityCouncilContractAdmin),
 ]
 
-for model, admin in models_and_admins:
-    public_admin.register(model, admin)
+for model, admin_class in models_and_admins:
+    public_admin.register(model, admin_class)
