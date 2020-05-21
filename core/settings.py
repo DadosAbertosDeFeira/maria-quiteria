@@ -13,8 +13,8 @@ class Common(Configuration):
     DEBUG = False
 
     ALLOWED_HOSTS = []
-
     INSTALLED_APPS = [
+        "home",
         "public_admin",
         "django.contrib.admin",
         "django.contrib.auth",
@@ -23,7 +23,6 @@ class Common(Configuration):
         "django.contrib.messages",
         "django.contrib.staticfiles",
         "datasets.apps.DatasetsConfig",
-        "home",
     ]
 
     MIDDLEWARE = [
@@ -85,6 +84,8 @@ class Common(Configuration):
     STATIC_URL = "/static/"
     STATICFILES_DIRS = ()
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+    GOOGLE_ANALYTICS_KEY = None
 
 
 class Dev(Common):
