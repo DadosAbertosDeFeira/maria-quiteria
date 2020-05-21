@@ -375,9 +375,9 @@ class CityHallBidEvent(DatasetMixin):
 
 class CityCouncilBid(DatasetMixin):
     external_code = models.CharField("Código externo", max_length=10)
-    external_code_type = models.CharField(
-        "Código externo do tipo da licitação", max_length=10
-    )  # TODO solicitar tabela dos tipos
+    modality = models.CharField(
+        "Modalidade", max_length=60, choices=BID_MODALITIES, null=True, blank=True
+    )
     code = models.CharField("Código da licitação", max_length=15)
     code_type = models.CharField("Código do tipo da licitação", max_length=15)
     description = models.TextField("Descrição (objeto)")

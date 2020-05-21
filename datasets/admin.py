@@ -235,7 +235,7 @@ class FileAdmin(admin.ModelAdmin):
 class CityCouncilBidAdmin(PublicModelAdmin):
     ordering = ["-session_at"]
     search_fields = ["description", "code", "code_type"]
-    list_filter = ["session_at"]
+    list_filter = ["session_at", "modality"]
     list_display = (
         "session_at",
         "code",

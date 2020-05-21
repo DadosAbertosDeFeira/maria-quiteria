@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from datasets.adapters import to_contract, to_expense, to_bid
+from datasets.adapters import to_bid, to_contract, to_expense
 
 
 def test_save_expense_from_csv():
@@ -121,7 +121,7 @@ def test_adapt_from_csv_data_to_bid():
     }
     expected_bid = {
         "external_code": "42",
-        "external_code_type": "7",
+        "modality": "pregao_presencial",
         "code": "01/2014",
         "code_type": "01/2014",
         "description": "Aquisição de gêneros alimentícios em estabelecimentos",
@@ -132,7 +132,7 @@ def test_adapt_from_csv_data_to_bid():
     bid_obj = to_bid(item)
 
     assert bid_obj.external_code == expected_bid["external_code"]
-    assert bid_obj.external_code_type == expected_bid["external_code_type"]
+    assert bid_obj.modality == expected_bid["modality"]
     assert bid_obj.code == expected_bid["code"]
     assert bid_obj.code_type == expected_bid["code_type"]
     assert bid_obj.description == expected_bid["description"]

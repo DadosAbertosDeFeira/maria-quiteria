@@ -1,4 +1,7 @@
+import logging
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 
 def get_phase(value):
@@ -54,3 +57,22 @@ def from_str_to_date(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y"]):
 
 def lower(value):
     return value.lower()
+
+
+def modality_mapping_from_city_council_db(code):
+    mapping = {
+        "1": "pregao_eletronico",
+        "2": "convite",
+        "3": "concorrencia",
+        "4": "tomada_de_precos",
+        "5": "concurso",
+        "6": "leilao",
+        "7": "pregao_presencial",
+        "9": "inexigibilidade",
+        "8": "dispensada",
+    }
+    found = mapping.get(code)
+    if found:
+        return found
+    else:
+        logger.warning(f"Código da modalidade não encontrado: {code}")
