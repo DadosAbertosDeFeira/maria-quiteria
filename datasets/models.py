@@ -63,6 +63,9 @@ class File(models.Model):
     def __repr__(self):
         return f"[{self.content_type}] {self.url}"
 
+    def __str__(self):
+        return f"Arquivo ({self.pk}) de {self.content_type} ({self.object_id})"
+
 
 class DatasetMixin(models.Model):
     created_at = models.DateTimeField("Criado em", auto_now_add=True)
