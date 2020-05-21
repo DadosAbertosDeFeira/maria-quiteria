@@ -2,7 +2,6 @@ import re
 from datetime import date, datetime, timedelta
 
 import scrapy
-
 from datasets.parsers import from_str_to_datetime
 from scraper.items import CityHallBidItem, CityHallContractItem, CityHallPaymentsItem
 
@@ -14,7 +13,6 @@ class BidsSpider(BaseSpider):
     name = "cityhall_bids"
     start_urls = ["http://www.feiradesantana.ba.gov.br/seadm/licitacoes.asp"]
     initial_date = date(2001, 1, 1)
-    supported_formats = ["%d/%m/%Y %Hh%M", "%d/%m/%Y", "%d/%m/%y"]
 
     @staticmethod
     def get_modality(modality_text):
@@ -99,7 +97,7 @@ class BidsSpider(BaseSpider):
                 history=history,
                 codes=modality_and_code["codes"],
                 modality=modality_and_code["modality"],
-                session_at=from_str_to_datetime(date, self.supported_formats),
+                session_at=from_str_to_datetime(date),
             )
             if document_url:
                 item["file_urls"] = [response.urljoin(document_url)]
@@ -130,7 +128,7 @@ class BidsSpider(BaseSpider):
             bids_history = []
             for row in raw_bid_history.xpath(".//tr"):
                 date = row.xpath(".//td[2]/text()").get().strip()
-                date = from_str_to_datetime(date, self.supported_formats)
+                date = from_str_to_datetime(date)
                 event = row.xpath(".//td[3]/div/text()").get()
                 url = row.xpath(".//td[4]/div/a//@href").get()
 

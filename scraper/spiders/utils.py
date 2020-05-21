@@ -64,8 +64,7 @@ def extract_date(str_with_date):
     DATE_PATTERN = re.compile(r"\d+\/\d+\/\d+")
     result = re.search(DATE_PATTERN, str_with_date)
     if result:
-        supported_formats = ["%d/%m/%Y", "%d/%m/%y"]
-        return from_str_to_date(result.group(0), supported_formats)
+        return from_str_to_date(result.group(0))
     return
 
 
