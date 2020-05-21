@@ -4,8 +4,8 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    help = """Remonta os indices de busca e diários em caso de problemas
-            com a geração de índice via trigger"""
+    help = """Remonta os indices de busca em caso de problemas
+            com a geração de índice via trigger."""
 
     def echo(self, text, style=None):
         self.stdout.write(style(text) if style else text)
