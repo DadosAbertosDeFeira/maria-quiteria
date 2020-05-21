@@ -1,25 +1,30 @@
 import re
 from datetime import date
 
+from datasets.models import Gazette, GazetteEvent
+from django.contrib.admin.options import get_content_type_for_model
 from django.utils.timezone import make_aware
 
-from datasets.models import Gazette, GazetteEvent
+from ._file import save_file
 
 
 def save_gazette(item):
     """Salva diários oficiais do executivo a partir de 2015."""
-
-    gazette, _ = Gazette.objects.update_or_create(
+    gazette, created = Gazette.objects.update_or_create(
         date=item["date"],
         power=item["power"],
         year_and_edition=item["year_and_edition"],
         defaults={
             "crawled_at": make_aware(item["crawled_at"]),
             "crawled_from": item["crawled_from"],
-            "file_url": item["file_urls"][0],
-            "file_content": item.get("file_content"),
         },
     )
+
+    if created and item.get("files"):
+        content_type = get_content_type_for_model(gazette)
+        for file_ in item["files"]:
+            save_file(file_["url"], content_type, gazette.pk, file_["checksum"])
+
     for event in item["events"]:
         GazetteEvent.objects.get_or_create(
             gazette=gazette,
@@ -49,18 +54,19 @@ def save_legacy_gazette(item):
             item["date"] = extracted_date
             notes = "Data extraída do título."
 
-    gazette, _ = Gazette.objects.get_or_create(
+    gazette, created = Gazette.objects.get_or_create(
         date=item["date"],
         power="executivo",
         crawled_from=item["crawled_from"],
-        file_url=item["file_urls"][0],
         is_legacy=True,
-        defaults={
-            "crawled_at": make_aware(item["crawled_at"]),
-            "file_content": item.get("file_content"),
-            "notes": notes,
-        },
+        defaults={"crawled_at": make_aware(item["crawled_at"]), "notes": notes},
     )
+
+    if created and item.get("files"):
+        content_type = get_content_type_for_model(gazette)
+        for file_ in item["files"]:
+            save_file(file_["url"], content_type, gazette.pk, file_["checksum"])
+
     GazetteEvent.objects.create(
         gazette=gazette,
         title=item["title"],

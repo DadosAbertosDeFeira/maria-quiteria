@@ -1,7 +1,19 @@
+import logging
 import os
 
 import dj_database_url
+import sentry_sdk
 from configurations import Configuration, values
+from sentry_dramatiq import DramatiqIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
+
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"),
+    integrations=[DjangoIntegration(), DramatiqIntegration()],
+)
+
+logging.getLogger("pika").setLevel(logging.WARNING)
+logging.getLogger("botocore").setLevel(logging.WARNING)
 
 
 class Common(Configuration):
@@ -50,9 +62,9 @@ class Common(Configuration):
                     "django.template.context_processors.request",
                     "django.contrib.auth.context_processors.auth",
                     "django.contrib.messages.context_processors.messages",
-                ],
+                ]
             },
-        },
+        }
     ]
 
     WSGI_APPLICATION = "core.wsgi.application"
@@ -85,10 +97,19 @@ class Common(Configuration):
     STATICFILES_DIRS = ()
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+    ASYNC_FILE_PROCESSING = values.Value(default=True, environ_prefix=None)
+
+    AWS_ACCESS_KEY_ID = values.Value(environ_prefix=None)
+    AWS_SECRET_ACCESS_KEY = values.Value(environ_prefix=None)
+    AWS_S3_BUCKET = values.Value(environ_prefix=None)
+    AWS_S3_BUCKET_FOLDER = values.Value(environ_prefix=None)
+    AWS_S3_REGION = values.Value(environ_prefix=None)
+
 
 class Dev(Common):
     DEBUG = True
     ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "0.0.0.0"]
+    CLOUDAMQP_URL = "amqp://localhost:5672"
 
     INSTALLED_APPS = Common.INSTALLED_APPS + ["debug_toolbar"]
 
@@ -100,3 +121,6 @@ class Dev(Common):
 class Prod(Common):
     SECRET_KEY = values.SecretValue()
     ALLOWED_HOSTS = values.ListValue()
+    CLOUDAMQP_URL = values.Value(environ_prefix=None)
+
+    DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=True)}

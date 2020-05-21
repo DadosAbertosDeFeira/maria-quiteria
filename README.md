@@ -103,6 +103,11 @@ scrapy crawl cityhall_payments -o pagamentos.json
 
 Você pode substituir `json` por outros formatos como `csv`.
 
+#### Extraindo o conteúdo dos arquivos ao rodar os spiders
+
+Para incluir o conteúdo dos arquivos nos itens raspados
+você deve configurar a variável de ambiente `EXTRACT_FILE_CONTENT_FROM_PIPELINE`
+como `True`.
 
 ### Salvando dados da coleta no banco de dados
 
@@ -112,5 +117,43 @@ Para executar os _spiders_ e salvar os itens no banco de dados, execute:
 python manage.py crawl
 ```
 
-Nota: estamos migrando do comando `runner.py` para `crawl`, então pode acontecer
-de nem todos os _spiders_ estarem disponíveis no comando novo.
+#### Serviço de fila e processamento assíncrono
+
+Você pode utilizar ou não um serviço de fila para processamento assíncrono. Isso
+é **totalmente** opcional. Essa funcionalidade pode ser utilizada para
+extraírmos o conteúdo de PDFs para texto, com o Tika, de maneira assíncrona à
+raspagem de dados. Por padrão, essa funcionalidade está ativada, seguindo
+a configuração do ambiente de produção.
+
+Para utilizá-la, basta instalar o RabbitMQ. Para essa última parte, temos duas
+formas de te ajudar. Basta seguir para a próxima seção.
+
+Caso queira desativar essa funcionalidade, você vai precisar configurar a variável
+de ambiente `ASYNC_FILE_PROCESSING` para `False`.
+
+##### Utilizando o Docker para subir o RabbitMQ
+
+Se você não quiser instalar o RabbitMQ, a forma mais prática de ter uma
+instância dele rodando é com o [Docker](https://docs.docker.com/install/):
+
+```
+docker run -p 5672:5672 rabbitmq
+```
+
+Deixe esse processo rodando em uma janela do terminal.
+Em outra janela, execute o `dramatiq`:
+
+```
+dramatiq datasets.tasks -p3 -v
+```
+
+##### Instalando o RabbitMQ localmente
+
+Caso prefira, você pode
+[baixar e instalar](https://www.rabbitmq.com/download.html) o RabbitMQ do site
+oficial. Feito isso, inicie o serviço em uma janela do terminal e mantenha essa
+janela aberta:
+
+```
+rabbitmq-server
+```

@@ -2,7 +2,6 @@ import re
 
 import pytest
 from datasets.management.commands.searchvector import Command
-from django.db import connection
 from model_bakery import baker
 
 
@@ -19,28 +18,16 @@ class TestCommandHandler:
         ],
     )
     def test_handler(self, text, answer, capsys):
+        gazette = baker.make("datasets.File", content=text)
+        assert not gazette.search_vector
 
-        with connection.cursor() as cursor:
-            cursor.execute(
-                'ALTER TABLE "datasets_gazette" DISABLE TRIGGER search_vector_update;'
-            )
+        command = Command()
+        command.handle()
 
-            gazette = baker.make_recipe(
-                "datasets.Gazette", file_content=text, _refresh_after_create=True
-            )
-            assert not gazette.search_vector
+        gazette.refresh_from_db()
 
-            command = Command()
-            command.handle()
+        captured = capsys.readouterr()
+        assert re.search(r"Criando um vetor .* Total de itens: 1", captured.out)
+        assert "Pronto!" in captured.out
 
-            gazette.refresh_from_db()
-
-            captured = capsys.readouterr()
-            assert re.search(r"Creating search vector.*Total items: 1", captured.out)
-            assert "Done!" in captured.out
-
-            assert gazette.search_vector == answer
-
-            cursor.execute(
-                'ALTER TABLE "datasets_gazette" ENABLE TRIGGER search_vector_update;'
-            )
+        assert gazette.search_vector == answer

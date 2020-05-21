@@ -8,3 +8,4 @@ pre-commit
 pytest==5.4.1
 pytest-django==3.9.0
 pytest-dotenv==0.4.0
+pytest-mock==2.0.0

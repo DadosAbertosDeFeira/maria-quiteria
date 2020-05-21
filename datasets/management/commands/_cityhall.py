@@ -1,10 +1,12 @@
 from datasets.models import CityHallBid, CityHallBidEvent
+from django.contrib.admin.options import get_content_type_for_model
 from django.utils.timezone import make_aware
+
+from ._file import save_file
 
 
 def save_bid(item):
-    file_url = item["file_urls"][0] if item.get("file_urls") else None
-    bid, _ = CityHallBid.objects.update_or_create(
+    bid, created = CityHallBid.objects.update_or_create(
         session_at=item["session_at"],
         public_agency=item["public_agency"],
         codes=item["codes"],
@@ -13,17 +15,23 @@ def save_bid(item):
             "crawled_at": make_aware(item["crawled_at"]),
             "description": item["description"],
             "modality": item["modality"],
-            "file_url": file_url,
-            "file_content": item.get("file_content"),
         },
     )
+
+    if created and item.get("files"):
+        content_type = get_content_type_for_model(bid)
+        for file_ in item["files"]:
+            save_file(file_["url"], content_type, bid.pk, file_["checksum"])
+
+    content_type = get_content_type_for_model(CityHallBidEvent)
     for event in item["history"]:
-        CityHallBidEvent.objects.get_or_create(
+        event_obj, created = CityHallBidEvent.objects.get_or_create(
             crawled_from=item["crawled_from"],
             bid=bid,
             published_at=event["published_at"],
             summary=event["event"],
-            file_url=event.get("url"),
             defaults={"crawled_at": make_aware(item["crawled_at"])},
         )
+        if created and event.get("url"):
+            save_file(event.get("url"), content_type, event_obj.pk)
     return bid
