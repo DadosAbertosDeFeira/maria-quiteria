@@ -371,3 +371,28 @@ class CityHallBidEvent(DatasetMixin):
     @property
     def file_urls(self):
         return [file_.url for file_ in self.files.all()]
+
+
+class CityCouncilBid(DatasetMixin):
+    external_code = models.CharField("Código externo", max_length=10)
+    external_code_type = models.CharField(
+        "Código externo do tipo da licitação", max_length=10
+    )  # TODO solicitar tabela dos tipos
+    code = models.CharField("Código da licitação", max_length=15)
+    code_type = models.CharField("Código do tipo da licitação", max_length=15)
+    description = models.TextField("Descrição (objeto)")
+    session_at = models.DateTimeField("Sessão Data / Horário", null=True)
+    excluded = models.BooleanField("Excluído?", default=False)
+
+    class Meta:
+        verbose_name = "Câmara de Vereadores - Licitação"
+        verbose_name_plural = "Câmara de Vereadores - Licitações"
+        get_latest_by = "session_at"
+
+    def __repr__(self):
+        model_name = self._meta.verbose_name
+        return f"{model_name} {self.session_at} {self.code} {self.code_type}"
+
+    def __str__(self):
+        model_name = self._meta.verbose_name
+        return f"{model_name} {self.session_at} {self.code} {self.code_type}"
