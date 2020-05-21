@@ -1,8 +1,25 @@
-from django.test import TestCase
+import pytest
 
 
-class HomeTest(TestCase):
-    def test_append_google_analytics_key(self):
-        with self.settings(GOOGLE_ANALYTICS_KEY="UA-000000000-1"):
-            response = self.client.get("/")
-            self.assertContains(response, "ga('create', 'UA-000000000-1', 'auto')")
+@pytest.mark.django_db
+class TestHome:
+    def test_append_google_analytics_key(self, settings, client):
+        settings.GOOGLE_ANALYTICS_KEY = "UA-000000000-1"
+        response = client.get("/")
+        assert "UA-000000000-1" in str(response.content)
+
+
+@pytest.mark.django_db
+class TestAdmin:
+    def test_append_google_analytics_key(self, settings, admin_client):
+        settings.GOOGLE_ANALYTICS_KEY = "UA-000000000-1"
+        response = admin_client.get("/admin/")
+        assert "UA-000000000-1" in str(response.content)
+
+
+@pytest.mark.django_db
+class TestPanel:
+    def test_append_google_analytics_key(self, settings, admin_client):
+        settings.GOOGLE_ANALYTICS_KEY = "UA-000000000-1"
+        response = admin_client.get("/painel/")
+        assert "UA-000000000-1" in str(response.content)

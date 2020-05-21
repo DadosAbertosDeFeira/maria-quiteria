@@ -25,8 +25,8 @@ class Common(Configuration):
     DEBUG = False
 
     ALLOWED_HOSTS = []
-
     INSTALLED_APPS = [
+        "home",
         "public_admin",
         "django.contrib.admin",
         "django.contrib.auth",
@@ -35,7 +35,6 @@ class Common(Configuration):
         "django.contrib.messages",
         "django.contrib.staticfiles",
         "datasets.apps.DatasetsConfig",
-        "home",
     ]
 
     MIDDLEWARE = [
@@ -105,6 +104,7 @@ class Common(Configuration):
     AWS_S3_BUCKET = values.Value(environ_prefix=None)
     AWS_S3_BUCKET_FOLDER = values.Value(environ_prefix=None)
     AWS_S3_REGION = values.Value(environ_prefix=None)
+    GOOGLE_ANALYTICS_KEY = None
 
 
 class Dev(Common):
