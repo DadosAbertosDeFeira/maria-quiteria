@@ -289,7 +289,9 @@ class Gazette(DatasetMixin):
 
 
 class GazetteEvent(DatasetMixin):
-    gazette = models.ForeignKey(Gazette, on_delete=models.CASCADE)
+    gazette = models.ForeignKey(
+        Gazette, on_delete=models.CASCADE, related_name="events"
+    )
     title = models.CharField("Título", max_length=300, null=True, blank=True)
     secretariat = models.CharField("Secretaria", max_length=100, null=True, blank=True)
     summary = models.TextField("Sumário", null=True, blank=True)
