@@ -248,8 +248,6 @@ class CityCouncilMinute(DatasetMixin):
         blank=True,
     )
     files = GenericRelation(File)
-    file_url = models.URLField("Endereço (URL)", null=True, blank=True)
-    file_content = models.TextField("Conteúdo do arquivo", null=True, blank=True)
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Atas"
@@ -272,8 +270,6 @@ class Gazette(DatasetMixin):
     power = models.CharField("Poder", max_length=25, choices=POWER_TYPE)
     year_and_edition = models.CharField("Ano e edição", max_length=100)
     is_legacy = models.BooleanField("É do site antigo?", default=False)
-    file_url = models.URLField("Endereço (URL)", null=True, blank=True)
-    file_content = models.TextField("Conteúdo do arquivo", null=True, blank=True)
     files = GenericRelation(File)
     search_vector = SearchVectorField(null=True, editable=False)
 
@@ -318,8 +314,6 @@ class CityHallBid(DatasetMixin):
         "Modalidade", max_length=60, choices=BID_MODALITIES, null=True, blank=True
     )
     codes = models.CharField("Códigos", max_length=300)
-    file_url = models.URLField("Arquivo", null=True, blank=True)
-    file_content = models.TextField("Conteúdo", null=True, blank=True)
     files = GenericRelation(File)
 
     class Meta:
@@ -357,8 +351,6 @@ class CityHallBidEvent(DatasetMixin):
     published_at = models.DateTimeField("Publicado em", null=True)
     summary = models.TextField("Descrição", null=True, blank=True)
     files = GenericRelation(File)
-    file_url = models.URLField("Arquivo", null=True, blank=True)
-    file_content = models.TextField("Conteúdo", null=True, blank=True)
 
     class Meta:
         verbose_name = "Prefeitura - Licitação - Histórico"
