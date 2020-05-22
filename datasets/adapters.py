@@ -1,9 +1,11 @@
-from datasets.models import CityCouncilContract, CityCouncilExpense
+from datasets.models import CityCouncilBid, CityCouncilContract, CityCouncilExpense
 from datasets.parsers import (
     currency_to_float,
     from_str_to_date,
+    from_str_to_datetime,
     get_phase,
     lower,
+    modality_mapping_from_city_council_db,
     to_boolean,
 )
 
@@ -72,3 +74,22 @@ def to_contract(item):
     }
     new_item = map_to_fields(item, fields_mapping, functions)
     return CityCouncilContract(**new_item)
+
+
+def to_bid(item):
+    fields_mapping = {
+        "CODLIC": "external_code",
+        "CODTIPOLIC": "modality",
+        "NUMLIC": "code",
+        "NUMTIPOLIC": "code_type",
+        "OBJETOLIC": "description",
+        "DTLIC": "session_at",
+        "EXCLUIDO": "excluded",
+    }
+    functions = {
+        "excluded": to_boolean,
+        "session_at": from_str_to_datetime,
+        "modality": modality_mapping_from_city_council_db,
+    }
+    new_item = map_to_fields(item, fields_mapping, functions)
+    return CityCouncilBid(**new_item)
