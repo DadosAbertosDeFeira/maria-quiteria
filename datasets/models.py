@@ -271,15 +271,12 @@ class Gazette(DatasetMixin):
     year_and_edition = models.CharField("Ano e edição", max_length=100)
     is_legacy = models.BooleanField("É do site antigo?", default=False)
     files = GenericRelation(File)
-    search_vector = SearchVectorField(null=True, editable=False)
 
     class Meta:
         verbose_name = "Diário Oficial"
         verbose_name_plural = "Diários Oficiais"
         get_latest_by = "date"
         ordering = [F("date").desc(nulls_last=True)]
-
-        indexes = [GinIndex(fields=["search_vector"])]
 
     def __repr__(self):
         return f"{self.date} {self.power} {self.year_and_edition}"
