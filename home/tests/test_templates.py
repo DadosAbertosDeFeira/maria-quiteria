@@ -1,7 +1,6 @@
 import pytest
 
 
-@pytest.mark.django_db
 class TestHome:
     def test_append_google_analytics_key(self, settings, client):
         settings.GOOGLE_ANALYTICS_KEY = "UA-000000000-1"
@@ -19,7 +18,7 @@ class TestAdmin:
 
 @pytest.mark.django_db
 class TestPanel:
-    def test_append_google_analytics_key(self, settings, admin_client):
+    def test_append_google_analytics_key(self, settings, client):
         settings.GOOGLE_ANALYTICS_KEY = "UA-000000000-1"
-        response = admin_client.get("/painel/")
+        response = client.get("/painel/")
         assert "UA-000000000-1" in str(response.content)

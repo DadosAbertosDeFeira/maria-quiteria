@@ -106,8 +106,6 @@ class Common(Configuration):
     AWS_S3_BUCKET_FOLDER = values.Value(environ_prefix=None)
     AWS_S3_REGION = values.Value(environ_prefix=None)
 
-    GOOGLE_ANALYTICS_KEY = None
-
 
 class Dev(Common):
     DEBUG = True
