@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.contrib.postgres.search import SearchQuery, SearchRank
 from django.db.models import F
 from django.utils.safestring import mark_safe
@@ -11,6 +12,7 @@ from .models import (
     CityCouncilExpense,
     CityCouncilMinute,
     CityHallBid,
+    File,
     Gazette,
 )
 
@@ -42,9 +44,8 @@ class GazetteAdmin(PublicModelAdmin):
 
     @mark_safe
     def url(self, obj):
-        if obj.file_url:
-            return f"<a href={obj.file_url}>{obj.file_url}</a>"
-        return ""
+        file_ = obj.files.first()
+        return f"<a href={file_.url}>{file_.url}</a>"
 
     url.short_description = "Endereço (URL)"
 
@@ -146,18 +147,18 @@ class CityCouncilMinuteAdmin(PublicModelAdmin):
         "date",
         "title",
         "event_type",
-        "url",
+        "files",
         "crawled_at",
         "crawled_from",
     )
 
     @mark_safe
-    def url(self, obj):
-        if obj.file_url:
-            return f"<a href={obj.file_url}>{obj.file_url}</a>"
-        return ""
+    def files(self, obj):
+        return "<br>".join(
+            f"<a href={file_.url}>{file_.url}</a>" for file_ in obj.files.all()
+        )
 
-    url.short_description = "Endereço (URL)"
+    files.short_description = "Arquivos"
 
 
 class CityHallBidAdmin(PublicModelAdmin):
@@ -171,16 +172,16 @@ class CityHallBidAdmin(PublicModelAdmin):
         "modality",
         "description",
         "events",
-        "url",
+        "files",
     )
 
     @mark_safe
-    def url(self, obj):
-        if obj.file_url:
-            return f"<a href={obj.file_url}>{obj.file_url}</a>"
-        return ""
+    def files(self, obj):
+        return "<br>".join(
+            f"<a href={file_.url}>{file_.url}</a>" for file_ in obj.files.all()
+        )
 
-    url.short_description = "Arquivo"
+    files.short_description = "Arquivos"
 
     @mark_safe
     def events(self, obj):
@@ -195,6 +196,39 @@ class CityHallBidAdmin(PublicModelAdmin):
         return "<br><br>".join(formatted_events)
 
     events.short_description = "Histórico"
+
+
+@admin.register(File)
+class FileAdmin(admin.ModelAdmin):
+    ordering = ["-created_at"]
+    search_fields = ["search_vector", "content"]
+    list_filter = ["content_type"]
+    list_display = (
+        "created_at",
+        "updated_at",
+        "url",
+        "from_",
+    )
+
+    @mark_safe
+    def from_(self, obj):
+        return obj.content_object
+
+    from_.short_description = "Origem"
+
+    def get_search_results(self, request, queryset, search_term):
+        if not search_term:
+            return super().get_search_results(request, queryset, search_term)
+
+        query = SearchQuery(search_term, config="portuguese")
+        rank = SearchRank(F("search_vector"), query)
+        queryset = (
+            File.objects.annotate(rank=rank)
+            .filter(search_vector=query)
+            .order_by("-rank")
+        )
+
+        return queryset, False
 
 
 class MariaQuiteriaPublicAdminSite(PublicAdminSite):
@@ -215,5 +249,5 @@ models_and_admins = [
     (CityCouncilContract, CityCouncilContractAdmin),
 ]
 
-for model, admin in models_and_admins:
-    public_admin.register(model, admin)
+for model, admin_class in models_and_admins:
+    public_admin.register(model, admin_class)

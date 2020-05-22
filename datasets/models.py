@@ -1,5 +1,7 @@
 from datetime import date, datetime, timedelta
 
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models
@@ -38,6 +40,33 @@ EXPENSE_MODALITIES = (
 )
 
 
+class File(models.Model):
+    created_at = models.DateTimeField("Criado em", auto_now_add=True)
+    updated_at = models.DateTimeField("Atualizado em", auto_now=True)
+    url = models.URLField("Arquivo")
+    content = models.TextField("Conteúdo", null=True, blank=True)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+    checksum = models.CharField(max_length=128, null=True, blank=True)
+    s3_url = models.URLField("URL externa", null=True, blank=True)
+    s3_file_path = models.CharField(max_length=300, null=True, blank=True)
+
+    search_vector = SearchVectorField(null=True, editable=False)
+
+    class Meta:
+        verbose_name = "Arquivo"
+        verbose_name_plural = "Arquivos"
+        indexes = [GinIndex(fields=["search_vector"])]
+        unique_together = ("url", "content_type", "object_id")
+
+    def __repr__(self):
+        return f"[{self.content_type}] {self.url}"
+
+    def __str__(self):
+        return f"Arquivo ({self.pk}) de {self.content_type} ({self.object_id})"
+
+
 class DatasetMixin(models.Model):
     created_at = models.DateTimeField("Criado em", auto_now_add=True)
     updated_at = models.DateTimeField("Atualizado em", auto_now=True)
@@ -73,7 +102,11 @@ class CityCouncilAgenda(DatasetMixin):
     date = models.DateField("Data")
     details = models.TextField("Detalhes", null=True, blank=True)
     event_type = models.CharField(
-        "Tipo do evento", max_length=20, choices=CITY_COUNCIL_EVENT_TYPE
+        "Tipo do evento",
+        max_length=20,
+        choices=CITY_COUNCIL_EVENT_TYPE,
+        null=True,
+        blank=True,
     )
     title = models.CharField("Título", max_length=100, null=True, blank=True)
 
@@ -208,8 +241,13 @@ class CityCouncilMinute(DatasetMixin):
     date = models.DateField("Data")
     title = models.CharField("Título", max_length=300, null=True, blank=True)
     event_type = models.CharField(
-        "Tipo de evento", max_length=20, choices=CITY_COUNCIL_EVENT_TYPE
+        "Tipo de evento",
+        max_length=20,
+        choices=CITY_COUNCIL_EVENT_TYPE,
+        null=True,
+        blank=True,
     )
+    files = GenericRelation(File)
     file_url = models.URLField("Endereço (URL)", null=True, blank=True)
     file_content = models.TextField("Conteúdo do arquivo", null=True, blank=True)
 
@@ -219,7 +257,10 @@ class CityCouncilMinute(DatasetMixin):
         get_latest_by = "date"
 
     def __repr__(self):
-        return f"{self.date} {self.title} {self.file_url}"
+        return f"{self.date} {self.title}"
+
+    def __str__(self):
+        return f"{self.date} {self.title}"
 
 
 class Gazette(DatasetMixin):
@@ -233,7 +274,7 @@ class Gazette(DatasetMixin):
     is_legacy = models.BooleanField("É do site antigo?", default=False)
     file_url = models.URLField("Endereço (URL)", null=True, blank=True)
     file_content = models.TextField("Conteúdo do arquivo", null=True, blank=True)
-
+    files = GenericRelation(File)
     search_vector = SearchVectorField(null=True, editable=False)
 
     class Meta:
@@ -279,6 +320,7 @@ class CityHallBid(DatasetMixin):
     codes = models.CharField("Códigos", max_length=300)
     file_url = models.URLField("Arquivo", null=True, blank=True)
     file_content = models.TextField("Conteúdo", null=True, blank=True)
+    files = GenericRelation(File)
 
     class Meta:
         verbose_name = "Prefeitura - Licitação"
@@ -314,6 +356,7 @@ class CityHallBidEvent(DatasetMixin):
     )
     published_at = models.DateTimeField("Publicado em", null=True)
     summary = models.TextField("Descrição", null=True, blank=True)
+    files = GenericRelation(File)
     file_url = models.URLField("Arquivo", null=True, blank=True)
     file_content = models.TextField("Conteúdo", null=True, blank=True)
 
@@ -324,3 +367,7 @@ class CityHallBidEvent(DatasetMixin):
     def __repr__(self):
         bid_info = f"{self.bid.session_at} {self.bid.modality}"
         return f"[{bid_info}] {self.published_at} {self.summary}"
+
+    @property
+    def file_urls(self):
+        return [file_.url for file_ in self.files.all()]

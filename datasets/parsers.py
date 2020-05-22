@@ -25,13 +25,16 @@ def to_boolean(value):
 
 
 def from_str_to_datetime(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y"]):
-    if date_str is None:
-        return
-    for supported_format in supported_formats:
-        try:
-            return datetime.strptime(date_str, supported_format)
-        except ValueError:
-            pass
+    if date_str:
+        for supported_format in supported_formats:
+            try:
+                converted_date = datetime.strptime(date_str, supported_format)
+            except ValueError:
+                pass
+            else:
+                reference_date = datetime(1833, 9, 18)
+                if converted_date >= reference_date:
+                    return converted_date
 
 
 def from_str_to_date(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y"]):

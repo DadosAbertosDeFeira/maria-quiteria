@@ -6,7 +6,7 @@ from datasets.management.commands._cityhall import save_bid
 
 @pytest.mark.django_db
 class TestSaveBid:
-    def test_save_bid(self):
+    def test_save_bid(self, mock_save_file):
         item = {
             "crawled_at": datetime(2020, 3, 21, 7, 15, 17, 908831),
             "crawled_from": "http://www.feiradesantana.ba.gov.br/servicos.asp",
@@ -24,8 +24,13 @@ class TestSaveBid:
                 "Licita\u00e7\u00e3o 133-2018 / " "Preg\u00e3o Eletr\u00f4nico 047-2018"
             ),
             "modality": "pregao_eletronico",
-            "file_urls": ["http://www.feiradesantana.ba.gov.br/servicos.asp?id=2"],
-            "file_content": "Bla bla bla",
+            "files": [
+                {
+                    "url": "http://www.feiradesantana.ba.gov.br/servicos.asp?id=2",
+                    "checksum": "checksum",
+                    "content": None,
+                }
+            ],
         }
 
         bid = save_bid(item)
@@ -33,10 +38,9 @@ class TestSaveBid:
         assert bid.description == item["description"]
         assert bid.public_agency == item["public_agency"]
         assert bid.modality == item["modality"]
-        assert bid.file_url == item["file_urls"][0]
-        assert bid.file_content == item["file_content"]
+        assert bid.files
 
-    def test_save_history(self):
+    def test_save_history(self, mock_save_file):
         item = {
             "public_agency": "PMFS",
             "crawled_at": datetime(2020, 4, 4, 14, 29, 49, 261985),
@@ -67,9 +71,9 @@ class TestSaveBid:
 
         assert event.published_at is not None
         assert event.summary == item["history"][0]["event"]
-        assert event.file_url == item["history"][0]["url"]
+        assert event.files.count() == 1
 
-    def test_handle_with_existent_event(self):
+    def test_handle_with_existent_event(self, mock_save_file):
         item = {
             "public_agency": "PMFS",
             "crawled_at": datetime(2020, 4, 4, 14, 29, 49, 261985),
@@ -118,7 +122,7 @@ class TestSaveBid:
         save_bid(item)
         assert bid.events.count() == 3
 
-    def test_handle_with_updated_bid(self):
+    def test_handle_with_updated_bid(self, mock_save_file):
         item = {
             "crawled_at": datetime(2020, 3, 21, 7, 15, 17, 908831),
             "crawled_from": "http://www.feiradesantana.ba.gov.br/servicos.asp",
@@ -136,8 +140,13 @@ class TestSaveBid:
                 "Licita\u00e7\u00e3o 133-2018 / " "Preg\u00e3o Eletr\u00f4nico 047-2018"
             ),
             "modality": "pregao_eletronico",
-            "file_urls": ["http://www.feiradesantana.ba.gov.br/servicos.asp?id=2"],
-            "file_content": "Bla bla bla",
+            "files": [
+                {
+                    "url": "http://www.feiradesantana.ba.gov.br/servicos.asp?id=2",
+                    "checksum": "checksum",
+                    "content": None,
+                }
+            ],
         }
 
         bid = save_bid(item)
@@ -149,7 +158,7 @@ class TestSaveBid:
         assert bid.pk == updated_bid.pk
         assert bid.description != updated_bid.description
 
-    def test_create_different_bids_for_different_agency_modality(self):
+    def test_create_different_bids_for_different_agency_modality(self, mock_save_file):
         item = {
             "crawled_at": datetime(2020, 3, 21, 7, 15, 17, 908831),
             "crawled_from": "http://www.feiradesantana.ba.gov.br/servicos.asp",
@@ -167,8 +176,13 @@ class TestSaveBid:
                 "Licita\u00e7\u00e3o 133-2018 / " "Preg\u00e3o Eletr\u00f4nico 047-2018"
             ),
             "modality": "pregao_eletronico",
-            "file_urls": ["http://www.feiradesantana.ba.gov.br/servicos.asp?id=2"],
-            "file_content": "Bla bla bla",
+            "files": [
+                {
+                    "url": "http://www.feiradesantana.ba.gov.br/servicos.asp?id=2",
+                    "checksum": "checksum",
+                    "content": None,
+                }
+            ],
         }
 
         bid = save_bid(item)

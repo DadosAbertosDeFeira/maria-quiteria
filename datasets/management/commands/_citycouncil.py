@@ -1,9 +1,11 @@
+from datasets.management.commands._file import save_file
 from datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
     CityCouncilExpense,
     CityCouncilMinute,
 )
+from django.contrib.admin.options import get_content_type_for_model
 from django.utils.timezone import make_aware
 
 
@@ -62,10 +64,8 @@ def save_expense(item):
 
 
 def save_minute(item):
-    minute, _ = CityCouncilMinute.objects.get_or_create(
+    minute, created = CityCouncilMinute.objects.get_or_create(
         date=item["date"],
-        file_url=item["file_urls"][0],
-        file_content=item["file_content"],
         crawled_from=item["crawled_from"],
         defaults={
             "title": item["title"],
@@ -73,4 +73,8 @@ def save_minute(item):
             "crawled_at": make_aware(item["crawled_at"]),
         },
     )
+    if created and item.get("files"):
+        content_type = get_content_type_for_model(minute)
+        for file_ in item["files"]:
+            save_file(file_["url"], content_type, minute.pk, file_["checksum"])
     return minute
