@@ -8,6 +8,7 @@ from public_admin.sites import PublicAdminSite, PublicApp
 from .models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
+    CityCouncilBid,
     CityCouncilContract,
     CityCouncilExpense,
     CityCouncilMinute,
@@ -231,6 +232,25 @@ class FileAdmin(admin.ModelAdmin):
         return queryset, False
 
 
+class CityCouncilBidAdmin(PublicModelAdmin):
+    ordering = ["-session_at"]
+    search_fields = ["description", "code", "code_type"]
+    list_filter = ["session_at", "modality"]
+    list_display = (
+        "session_at",
+        "modality",
+        "code",
+        "code_type",
+        "description_html",
+    )
+
+    @mark_safe
+    def description_html(self, obj):
+        return obj.description
+
+    description_html.short_description = "Descrição"
+
+
 class MariaQuiteriaPublicAdminSite(PublicAdminSite):
     site_title = "Dados Abertos de Feira"
     site_header = "Dados Abertos de Feira"
@@ -242,11 +262,12 @@ public_admin = MariaQuiteriaPublicAdminSite(public_apps=public_app)
 models_and_admins = [
     (CityCouncilAgenda, CityCouncilAgendaAdmin),
     (CityCouncilAttendanceList, CityCouncilAttendanceListAdmin),
+    (CityCouncilBid, CityCouncilBidAdmin),
+    (CityCouncilContract, CityCouncilContractAdmin),
     (CityCouncilExpense, CityCouncilExpenseAdmin),
     (CityCouncilMinute, CityCouncilMinuteAdmin),
     (Gazette, GazetteAdmin),
     (CityHallBid, CityHallBidAdmin),
-    (CityCouncilContract, CityCouncilContractAdmin),
 ]
 
 for model, admin_class in models_and_admins:
