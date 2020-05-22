@@ -248,8 +248,6 @@ class CityCouncilMinute(DatasetMixin):
         blank=True,
     )
     files = GenericRelation(File)
-    file_url = models.URLField("Endereço (URL)", null=True, blank=True)
-    file_content = models.TextField("Conteúdo do arquivo", null=True, blank=True)
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Atas"
@@ -272,18 +270,13 @@ class Gazette(DatasetMixin):
     power = models.CharField("Poder", max_length=25, choices=POWER_TYPE)
     year_and_edition = models.CharField("Ano e edição", max_length=100)
     is_legacy = models.BooleanField("É do site antigo?", default=False)
-    file_url = models.URLField("Endereço (URL)", null=True, blank=True)
-    file_content = models.TextField("Conteúdo do arquivo", null=True, blank=True)
     files = GenericRelation(File)
-    search_vector = SearchVectorField(null=True, editable=False)
 
     class Meta:
         verbose_name = "Diário Oficial"
         verbose_name_plural = "Diários Oficiais"
         get_latest_by = "date"
         ordering = [F("date").desc(nulls_last=True)]
-
-        indexes = [GinIndex(fields=["search_vector"])]
 
     def __repr__(self):
         return f"{self.date} {self.power} {self.year_and_edition}"
@@ -293,7 +286,9 @@ class Gazette(DatasetMixin):
 
 
 class GazetteEvent(DatasetMixin):
-    gazette = models.ForeignKey(Gazette, on_delete=models.CASCADE)
+    gazette = models.ForeignKey(
+        Gazette, on_delete=models.CASCADE, related_name="events"
+    )
     title = models.CharField("Título", max_length=300, null=True, blank=True)
     secretariat = models.CharField("Secretaria", max_length=100, null=True, blank=True)
     summary = models.TextField("Sumário", null=True, blank=True)
@@ -318,8 +313,6 @@ class CityHallBid(DatasetMixin):
         "Modalidade", max_length=60, choices=BID_MODALITIES, null=True, blank=True
     )
     codes = models.CharField("Códigos", max_length=300)
-    file_url = models.URLField("Arquivo", null=True, blank=True)
-    file_content = models.TextField("Conteúdo", null=True, blank=True)
     files = GenericRelation(File)
 
     class Meta:
@@ -357,8 +350,6 @@ class CityHallBidEvent(DatasetMixin):
     published_at = models.DateTimeField("Publicado em", null=True)
     summary = models.TextField("Descrição", null=True, blank=True)
     files = GenericRelation(File)
-    file_url = models.URLField("Arquivo", null=True, blank=True)
-    file_content = models.TextField("Conteúdo", null=True, blank=True)
 
     class Meta:
         verbose_name = "Prefeitura - Licitação - Histórico"

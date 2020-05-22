@@ -41,7 +41,7 @@ class TestSaveGazette:
         assert gazette.crawled_from == item["crawled_from"]
         assert gazette.files.count() == 1
 
-        event = gazette.gazetteevent_set.first()
+        event = gazette.events.first()
         assert event.title == item["events"][0]["title"]
         assert event.secretariat == item["events"][0]["secretariat"]
         assert event.summary == item["events"][0]["summary"]
@@ -75,7 +75,7 @@ class TestSaveGazette:
         }
 
         gazette = save_gazette(item)
-        assert gazette.gazetteevent_set.count() == 2
+        assert gazette.events.count() == 2
 
 
 @pytest.mark.django_db
@@ -98,9 +98,9 @@ class TestSaveLegacyGazette:
         assert gazette.is_legacy is True
         assert gazette.crawled_at.replace(tzinfo=None) == legacy_item["crawled_at"]
         assert gazette.crawled_from == legacy_item["crawled_from"]
-        assert gazette.gazetteevent_set.count() == 1
+        assert gazette.events.count() == 1
 
-        event = gazette.gazetteevent_set.first()
+        event = gazette.events.first()
         assert event.title == legacy_item["title"]
         assert event.secretariat is None
         assert event.summary == legacy_item["details"]
@@ -154,7 +154,7 @@ class TestSaveLegacyGazette:
         gazettes = [save_legacy_gazette(legacy_item) for legacy_item in legacy_items]
 
         assert len(set([g.pk for g in gazettes])) == 1
-        assert gazettes[0].gazetteevent_set.count() == 3
+        assert gazettes[0].events.count() == 3
 
     def test_save_different_events_to_different_legacy_gazette(self, mock_save_file):
         legacy_items = [
