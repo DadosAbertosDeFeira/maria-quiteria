@@ -117,6 +117,13 @@ Para executar os _spiders_ e salvar os itens no banco de dados, execute:
 python manage.py crawl
 ```
 
+Caso queira passar alguma configuração extra para o Scrapy através
+do comando `crawl` você pode adicionar após o parâmetro `--scrapy-args`:
+
+```
+./manage.py crawl --scrapy-args '{"LOG_FILE": "test.log"}'
+```
+
 #### Serviço de fila e processamento assíncrono
 
 Você pode utilizar ou não um serviço de fila para processamento assíncrono. Isso
