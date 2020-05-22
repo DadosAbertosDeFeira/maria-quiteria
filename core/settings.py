@@ -25,8 +25,8 @@ class Common(Configuration):
     DEBUG = False
 
     ALLOWED_HOSTS = []
-
     INSTALLED_APPS = [
+        "home",
         "public_admin",
         "django.contrib.admin",
         "django.contrib.auth",
@@ -35,7 +35,6 @@ class Common(Configuration):
         "django.contrib.messages",
         "django.contrib.staticfiles",
         "datasets.apps.DatasetsConfig",
-        "home",
     ]
 
     MIDDLEWARE = [
@@ -62,7 +61,8 @@ class Common(Configuration):
                     "django.template.context_processors.request",
                     "django.contrib.auth.context_processors.auth",
                     "django.contrib.messages.context_processors.messages",
-                ]
+                    "home.context_processors.google_analytics_key",
+                ],
             },
         }
     ]
@@ -97,6 +97,7 @@ class Common(Configuration):
     STATICFILES_DIRS = ()
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+    GOOGLE_ANALYTICS_KEY = None
     ASYNC_FILE_PROCESSING = values.Value(default=True, environ_prefix=None)
 
     AWS_ACCESS_KEY_ID = values.Value(environ_prefix=None)
@@ -124,3 +125,4 @@ class Prod(Common):
     CLOUDAMQP_URL = values.Value(environ_prefix=None)
 
     DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=True)}
+    GOOGLE_ANALYTICS_KEY = values.Value()
