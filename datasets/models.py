@@ -178,6 +178,7 @@ class CityCouncilContract(DatasetMixin):
     start_date = models.DateField("Data de início")
     end_date = models.DateField("Data final")
     excluded = models.BooleanField("Excluído?", default=False)
+    files = GenericRelation(File)
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Contrato"

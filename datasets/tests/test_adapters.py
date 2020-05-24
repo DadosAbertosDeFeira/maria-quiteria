@@ -1,6 +1,8 @@
 from datetime import date, datetime
 
-from datasets.adapters import to_bid, to_contract, to_expense, to_revenue
+import pytest
+from model_bakery import baker
+from datasets.adapters import to_bid, to_contract, to_expense, to_revenue, to_contract_file
 
 
 def test_save_expense_from_csv():
@@ -185,3 +187,34 @@ def test_adapt_from_csv_data_to_revenue():
     assert revenue_obj.legal_status == expected_revenue["legal_status"]
     assert revenue_obj.destination == expected_revenue["destination"]
     assert revenue_obj.excluded == expected_revenue["excluded"]
+
+
+@pytest.mark.django_db
+def test_adapt_from_csv_data_to_contract_file(settings):
+    contract = baker.make("datasets.CityCouncilContract", external_code="45")
+    item = {
+        "CODARQCON": "39",
+        "CODCON": "45",
+        "CAMINHO": "contratos/Contrato N2 Soluções e Publicação.pdf",
+    }
+    expected_file = {
+        "url": "contratos/Contrato N2 Soluções e Publicação.pdf",
+    }
+
+    file_obj = to_contract_file(item)
+
+    assert file_obj.content_object == contract
+    assert file_obj.url == f"{settings.CITY_COUNCIL_WEBSERVICE}{expected_file['url']}"
+
+
+@pytest.mark.django_db
+def test_deal_with_contract_not_found_for_file(caplog):
+    item = {
+        "CODARQCON": "39",
+        "CODCON": "45",
+        "CAMINHO": "contratos/Contrato N2 Soluções e Publicação.pdf",
+    }
+    file_obj = to_contract_file(item)
+
+    assert file_obj is None
+    assert "Arquivo do contrato não encontrado" in caplog.text

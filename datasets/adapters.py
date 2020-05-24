@@ -1,8 +1,12 @@
+import logging
+
+from core import settings
 from datasets.models import (
     CityCouncilBid,
     CityCouncilContract,
     CityCouncilExpense,
     CityCouncilRevenue,
+    File,
 )
 from datasets.parsers import (
     city_council_revenue_type_mapping,
@@ -14,6 +18,9 @@ from datasets.parsers import (
     modality_mapping_from_city_council_db,
     to_boolean,
 )
+from django.contrib.admin.options import get_content_type_for_model
+
+logger = logging.getLogger(__name__)
 
 
 def map_to_fields(item, fields_mapping, functions):
@@ -129,3 +136,15 @@ def to_revenue(item):
     }
     new_item = map_to_fields(item, fields_mapping, functions)
     return CityCouncilRevenue(**new_item)
+
+
+def to_contract_file(item):
+    try:
+        contract = CityCouncilContract.objects.get(external_code=item["CODCON"])
+    except CityCouncilContract.DoesNotExist:
+        logger.error(f"Arquivo do contrato não encontrado: {item}")
+        return
+
+    content_type = get_content_type_for_model(contract)
+    url = f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHO']}"
+    return File(url=url, content_type=content_type, object_id=contract.pk)
