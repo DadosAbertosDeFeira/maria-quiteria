@@ -148,3 +148,15 @@ def to_contract_file(item):
     content_type = get_content_type_for_model(contract)
     url = f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHO']}"
     return File(url=url, content_type=content_type, object_id=contract.pk)
+
+
+def to_bid_file(item):
+    try:
+        bid = CityCouncilBid.objects.get(external_code=item["CODLIC"])
+    except CityCouncilBid.DoesNotExist:
+        logger.error(f"Arquivo da licitação não encontrado: {item}")
+        return
+
+    content_type = get_content_type_for_model(bid)
+    url = f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHOARQLIC']}"
+    return File(url=url, content_type=content_type, object_id=bid.pk)

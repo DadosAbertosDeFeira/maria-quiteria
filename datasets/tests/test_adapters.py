@@ -1,6 +1,7 @@
 from datetime import date, datetime
 
 import pytest
+from datasets.adapters import to_bid_file
 from model_bakery import baker
 from datasets.adapters import to_bid, to_contract, to_expense, to_revenue, to_contract_file
 
@@ -218,3 +219,34 @@ def test_deal_with_contract_not_found_for_file(caplog):
 
     assert file_obj is None
     assert "Arquivo do contrato não encontrado" in caplog.text
+
+
+@pytest.mark.django_db
+def test_adapt_from_csv_data_to_bid_file(settings):
+    bid = baker.make("datasets.CityCouncilBid", external_code="60")
+    item = {
+        "CODARQLIC": "113",
+        "CODLIC": "60",
+        "CAMINHOARQLIC": "upload/licitacao/Edital Pregao 01_2013.doc",
+    }
+    expected_file = {
+        "url": "upload/licitacao/Edital Pregao 01_2013.doc",
+    }
+
+    file_obj = to_bid_file(item)
+
+    assert file_obj.content_object == bid
+    assert file_obj.url == f"{settings.CITY_COUNCIL_WEBSERVICE}{expected_file['url']}"
+
+
+@pytest.mark.django_db
+def test_deal_with_bid_not_found_for_file(caplog):
+    item = {
+        "CODARQLIC": "113",
+        "CODLIC": "60",
+        "CAMINHOARQLIC": "upload/licitacao/Edital Pregao 01_2013.doc",
+    }
+    file_obj = to_bid_file(item)
+
+    assert file_obj is None
+    assert "Arquivo da licitação não encontrado" in caplog.text

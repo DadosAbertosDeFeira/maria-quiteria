@@ -4,7 +4,13 @@ from datetime import datetime
 from datasets.adapters import to_bid, to_contract, to_expense, to_revenue
 
 from core import settings
-from datasets.adapters import to_bid, to_contract, to_contract_file, to_expense
+from datasets.adapters import (
+    to_bid,
+    to_bid_file,
+    to_contract,
+    to_contract_file,
+    to_expense,
+)
 from datasets.models import (
     CityCouncilBid,
     CityCouncilContract,
@@ -20,6 +26,7 @@ mapping = {
     "citycouncil_bids": {"model": CityCouncilBid, "adapter": to_bid},
     "citycouncil_revenue": {"model": CityCouncilRevenue, "adapter": to_revenue},
     "citycouncil_contract_files": {"model": File, "adapter": to_contract_file},
+    "citycouncil_bid_files": {"model": File, "adapter": to_bid_file},
 }
 
 
@@ -58,7 +65,7 @@ class Command(BaseCommand):
 
             for row in reader:
                 item = adapter(row)
-                if options.get("source") not in ["citycouncil_contract_files"]:
+                if not options.get("source").endswith("_files"):
                     item.crawled_at = datetime.now()
                     item.crawled_from = settings.CITY_COUNCIL_WEBSERVICE
                 try:

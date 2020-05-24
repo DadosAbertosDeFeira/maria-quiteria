@@ -381,6 +381,7 @@ class CityCouncilBid(DatasetMixin):
     description = models.TextField("Descrição (objeto)")
     session_at = models.DateTimeField("Sessão Data / Horário", null=True)
     excluded = models.BooleanField("Excluído?", default=False)
+    files = GenericRelation(File)
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Licitação"
