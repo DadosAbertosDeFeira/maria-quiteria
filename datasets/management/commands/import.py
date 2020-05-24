@@ -2,14 +2,20 @@ import csv
 import os
 from datetime import datetime
 
-from datasets.adapters import to_contract, to_expense, to_bid
-from datasets.models import CityCouncilContract, CityCouncilExpense, CityCouncilBid
+from datasets.adapters import to_bid, to_contract, to_expense, to_revenue
+from datasets.models import (
+    CityCouncilBid,
+    CityCouncilContract,
+    CityCouncilExpense,
+    CityCouncilRevenue,
+)
 from django.core.management.base import BaseCommand
 
 mapping = {
     "citycouncil_expenses": {"model": CityCouncilExpense, "adapter": to_expense},
     "citycouncil_contracts": {"model": CityCouncilContract, "adapter": to_contract},
     "citycouncil_bids": {"model": CityCouncilBid, "adapter": to_bid},
+    "citycouncil_revenue": {"model": CityCouncilRevenue, "adapter": to_revenue},
 }
 
 

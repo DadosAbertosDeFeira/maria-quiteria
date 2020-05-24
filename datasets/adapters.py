@@ -1,5 +1,11 @@
-from datasets.models import CityCouncilBid, CityCouncilContract, CityCouncilExpense
+from datasets.models import (
+    CityCouncilBid,
+    CityCouncilContract,
+    CityCouncilExpense,
+    CityCouncilRevenue,
+)
 from datasets.parsers import (
+    city_council_revenue_type_mapping,
     currency_to_float,
     from_str_to_date,
     from_str_to_datetime,
@@ -93,3 +99,33 @@ def to_bid(item):
     }
     new_item = map_to_fields(item, fields_mapping, functions)
     return CityCouncilBid(**new_item)
+
+
+def to_revenue(item):
+    fields_mapping = {
+        "CODLINHA": "external_code",
+        "CODUNIDGESTORA": "budget_unit",
+        "DTPUBLICACAO": "published_at",
+        "DTREGISTRO": "registered_at",
+        "TIPOREC": "revenue_type",
+        "MODALIDADE": "modality",
+        "DSRECEITA": "description",
+        "VALOR": "value",
+        "FONTE": "resource",
+        "DSNATUREZA": "legal_status",
+        "DESTINACAO": "destination",
+        "EXCLUIDO": "excluded",
+    }
+    functions = {
+        "excluded": to_boolean,
+        "published_at": from_str_to_date,
+        "registered_at": from_str_to_date,
+        "value": currency_to_float,
+        "modality": lower,
+        "revenue_type": city_council_revenue_type_mapping,
+        "resource": lower,
+        "legal_status": lower,
+        "destination": lower,
+    }
+    new_item = map_to_fields(item, fields_mapping, functions)
+    return CityCouncilRevenue(**new_item)
