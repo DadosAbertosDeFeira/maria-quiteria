@@ -20,7 +20,7 @@ from .models import (
 
 class GazetteAdmin(PublicModelAdmin):
     ordering = ["-date"]
-    search_fields = ["year_and_edition", "files__content"]
+    search_fields = ["year_and_edition", "events__summary", "files__search_vector"]
     list_filter = ["power", "date"]
     list_display = (
         "date",
@@ -28,12 +28,27 @@ class GazetteAdmin(PublicModelAdmin):
         "year_and_edition",
         "events",
         "url",
-        "crawled_at",
         "crawled_from",
     )
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related("files", "events")
+
+    def get_search_results(self, request, queryset, search_term):
+        if not search_term:
+            return super().get_search_results(request, queryset, search_term)
+
+        # FIXME ordenação das colunas não funciona quando tem um search_term
+
+        query = SearchQuery(search_term, config="portuguese")
+        rank = SearchRank(F("files__search_vector"), query)
+        queryset = (
+            queryset.annotate(rank=rank)
+            .filter(files__search_vector=query)
+            .order_by("-rank")
+        )
+
+        return queryset, False
 
     @mark_safe
     def events(self, obj):
@@ -133,7 +148,7 @@ class CityCouncilExpenseAdmin(PublicModelAdmin):
 
 class CityCouncilMinuteAdmin(PublicModelAdmin):
     ordering = ["-date"]
-    search_fields = ["title", "files__content"]
+    search_fields = ["title", "files__search_vector"]
     list_filter = ["date", "event_type"]
     list_display = (
         "date",
@@ -147,6 +162,20 @@ class CityCouncilMinuteAdmin(PublicModelAdmin):
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related("files")
 
+    def get_search_results(self, request, queryset, search_term):
+        if not search_term:
+            return super().get_search_results(request, queryset, search_term)
+
+        query = SearchQuery(search_term, config="portuguese")
+        rank = SearchRank(F("files__search_vector"), query)
+        queryset = (
+            queryset.annotate(rank=rank)
+            .filter(files__search_vector=query)
+            .order_by("-rank")
+        )
+
+        return queryset, False
+
     @mark_safe
     def files(self, obj):
         return "<br>".join(
@@ -158,7 +187,7 @@ class CityCouncilMinuteAdmin(PublicModelAdmin):
 
 class CityHallBidAdmin(PublicModelAdmin):
     ordering = ["-session_at"]
-    search_fields = ["description", "codes", "files__content"]
+    search_fields = ["description", "codes", "files__search_vector"]
     list_filter = ["session_at", "public_agency", "modality"]
     list_display = (
         "session_at",
@@ -172,6 +201,20 @@ class CityHallBidAdmin(PublicModelAdmin):
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related("files", "events")
+
+    def get_search_results(self, request, queryset, search_term):
+        if not search_term:
+            return super().get_search_results(request, queryset, search_term)
+
+        query = SearchQuery(search_term, config="portuguese")
+        rank = SearchRank(F("files__search_vector"), query)
+        queryset = (
+            queryset.annotate(rank=rank)
+            .filter(files__search_vector=query)
+            .order_by("-rank")
+        )
+
+        return queryset, False
 
     @mark_safe
     def files(self, obj):
@@ -222,9 +265,7 @@ class FileAdmin(admin.ModelAdmin):
         query = SearchQuery(search_term, config="portuguese")
         rank = SearchRank(F("search_vector"), query)
         queryset = (
-            File.objects.annotate(rank=rank)
-            .filter(search_vector=query)
-            .order_by("-rank")
+            queryset.annotate(rank=rank).filter(search_vector=query).order_by("-rank")
         )
 
         return queryset, False
@@ -260,9 +301,9 @@ public_admin = MariaQuiteriaPublicAdminSite(public_apps=public_app)
 models_and_admins = [
     (CityCouncilAgenda, CityCouncilAgendaAdmin),
     (CityCouncilAttendanceList, CityCouncilAttendanceListAdmin),
-    (CityCouncilBid, CityCouncilBidAdmin),
-    (CityCouncilContract, CityCouncilContractAdmin),
-    (CityCouncilExpense, CityCouncilExpenseAdmin),
+    # (CityCouncilBid, CityCouncilBidAdmin),  # aguardando completar a migração com a Câmara
+    # (CityCouncilContract, CityCouncilContractAdmin),
+    # (CityCouncilExpense, CityCouncilExpenseAdmin),
     (CityCouncilMinute, CityCouncilMinuteAdmin),
     (Gazette, GazetteAdmin),
     (CityHallBid, CityHallBidAdmin),
