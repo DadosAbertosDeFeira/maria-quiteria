@@ -13,7 +13,7 @@ from datasets.parsers import (
 def map_to_fields(item, fields_mapping, functions):
     new_item = {}
     for key, value in item.items():
-        field = fields_mapping[key]
+        field = fields_mapping[key.upper()]
         if field:
             value = value.strip()
             new_item[field] = functions.get(field, lambda x: x)(value)
@@ -76,20 +76,22 @@ def to_contract(item):
     return CityCouncilContract(**new_item)
 
 
+CITYCOUNCIL_BID_FIELDS_MAPPING = {
+    "CODLIC": "external_code",
+    "CODTIPOLIC": "modality",
+    "NUMLIC": "code",
+    "NUMTIPOLIC": "code_type",
+    "OBJETOLIC": "description",
+    "DTLIC": "session_at",
+    "EXCLUIDO": "excluded",
+}
+
+
 def to_bid(item):
-    fields_mapping = {
-        "CODLIC": "external_code",
-        "CODTIPOLIC": "modality",
-        "NUMLIC": "code",
-        "NUMTIPOLIC": "code_type",
-        "OBJETOLIC": "description",
-        "DTLIC": "session_at",
-        "EXCLUIDO": "excluded",
-    }
     functions = {
         "excluded": to_boolean,
         "session_at": from_str_to_datetime,
         "modality": modality_mapping_from_city_council_db,
     }
-    new_item = map_to_fields(item, fields_mapping, functions)
+    new_item = map_to_fields(item, CITYCOUNCIL_BID_FIELDS_MAPPING, functions)
     return CityCouncilBid(**new_item)

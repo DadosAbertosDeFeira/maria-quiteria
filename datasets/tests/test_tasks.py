@@ -1,5 +1,14 @@
+from datetime import datetime
+
 import pytest
-from datasets.tasks import backup_file, content_from_file
+from datasets.models import CityCouncilBid
+from datasets.tasks import (
+    backup_file,
+    content_from_file,
+    get_city_council_updates,
+    update_city_council_objects,
+)
+from django.utils.timezone import make_aware
 from model_bakery import baker
 
 
@@ -83,3 +92,134 @@ def test_return_none_when_file_has_backup_already():
         s3_url="https://s3url.com",
     )
     assert backup_file(a_file.pk) is None
+
+
+def test_get_city_council_updates(mocker):
+    expected_payload = {
+        "inclusoesContrato": [],
+        "alteracoesContrato": [],
+        "exclusoesContrato": [],
+        "inclusoesLicitacao": [],
+        "alteracoesLicitacao": [
+            {
+                "codLic": "214",
+                "codTipoLic": "7",
+                "numLic": "004/2020",
+                "numTipoLic": "004/2020",
+                "objetoLic": "Contratação de pessoa jurídica",
+                "dtLic": "2020-03-26 09:00:00",
+            }
+        ],
+        "exclusoesLicitacao": [],
+        "inclusoesReceita": [],
+        "alteracoesReceita": [],
+        "exclusoesReceita": [],
+        "inclusoesDespesa": [],
+        "alteracoesDespesa": [],
+    }
+    post_mock = mocker.patch("datasets.tasks.requests.post")
+    post_mock.return_value.json.return_value = expected_payload
+
+    assert get_city_council_updates() == expected_payload
+
+
+@pytest.mark.django_db
+def test_update_city_council_objects():
+    bid = baker.make(
+        "datasets.CityCouncilBid",
+        external_code="214",
+        modality="pregao_presencial",
+        code="004/2020",
+        code_type="004/2020",
+        description="Contratação de pessoa física",
+        session_at=datetime(2020, 3, 26, 9, 0, 0),
+    )
+    payload = {
+        "inclusoesContrato": [],
+        "alteracoesContrato": [],
+        "exclusoesContrato": [],
+        "inclusoesLicitacao": [],
+        "alteracoesLicitacao": [
+            {
+                "codLic": "214",
+                "objetoLic": "Contratação de pessoa jurídica",
+                "dtLic": "2020-04-26 09:00:00",
+            }
+        ],
+        "exclusoesLicitacao": [],
+        "inclusoesReceita": [],
+        "alteracoesReceita": [],
+        "exclusoesReceita": [],
+        "inclusoesDespesa": [],
+        "alteracoesDespesa": [],
+    }
+    update_city_council_objects(payload)
+
+    bid.refresh_from_db()
+    assert bid.description == "Contratação de pessoa jurídica"
+    assert bid.session_at == make_aware(datetime(2020, 4, 26, 9, 0, 0))
+
+
+@pytest.mark.django_db
+def test_add_bid_on_update_city_council_objects():
+    payload = {
+        "inclusoesContrato": [],
+        "alteracoesContrato": [],
+        "exclusoesContrato": [],
+        "inclusoesLicitacao": [
+            {
+                "codLic": "214",
+                "codTipoLic": "7",
+                "numLic": "004/2020",
+                "numTipoLic": "004/2020",
+                "objetoLic": "Contratação de pessoa jurídica",
+                "dtLic": "2020-03-26 09:00:00",
+            }
+        ],
+        "alteracoesLicitacao": [],
+        "exclusoesLicitacao": [],
+        "inclusoesReceita": [],
+        "alteracoesReceita": [],
+        "exclusoesReceita": [],
+        "inclusoesDespesa": [],
+        "alteracoesDespesa": [],
+    }
+
+    assert CityCouncilBid.objects.count() == 0
+
+    update_city_council_objects(payload)
+
+    assert CityCouncilBid.objects.count() == 1
+    bid = CityCouncilBid.objects.first()
+
+    assert bid.external_code == "214"
+    assert bid.modality == "pregao_presencial"
+    assert bid.code == "004/2020"
+    assert bid.code_type == "004/2020"
+    assert bid.description == "Contratação de pessoa jurídica"
+    assert bid.session_at == make_aware(datetime(2020, 3, 26, 9, 0, 0))
+    assert bid.excluded is False
+
+
+@pytest.mark.django_db
+def test_remove_bid_on_update_city_council_objects():
+    payload = {
+        "inclusoesContrato": [],
+        "alteracoesContrato": [],
+        "exclusoesContrato": [],
+        "inclusoesLicitacao": [],
+        "alteracoesLicitacao": [],
+        "exclusoesLicitacao": [{"codLic": "214"}],
+        "inclusoesReceita": [],
+        "alteracoesReceita": [],
+        "exclusoesReceita": [],
+        "inclusoesDespesa": [],
+        "alteracoesDespesa": [],
+    }
+
+    bid = baker.make("datasets.CityCouncilBid", external_code="214")
+    assert bid.excluded is False
+
+    update_city_council_objects(payload)
+    bid.refresh_from_db()
+    assert bid.excluded is True

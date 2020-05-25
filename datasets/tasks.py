@@ -1,6 +1,14 @@
+from datetime import date, datetime, timedelta
 from logging import info
 from pathlib import Path
 
+import requests
+from datasets.adapters import CITYCOUNCIL_BID_FIELDS_MAPPING, map_to_fields
+from datasets.parsers import (
+    from_str_to_datetime,
+    modality_mapping_from_city_council_db,
+    to_boolean,
+)
 from datasets.services import get_s3_client
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -11,7 +19,7 @@ from tika import parser
 
 # Esse bloco (feio) faz com que esse módulo funcione dentro ou fora do Django
 try:
-    from datasets.models import File
+    from datasets.models import File, CityCouncilBid
 except ImproperlyConfigured:
     import configurations
     import os
@@ -82,3 +90,55 @@ def backup_file(file_id):
     file_obj.save()
 
     return s3_url
+
+
+@actor(max_retries=5)
+def get_city_council_updates():
+    """Solicita atualizações ao webservice da Câmara."""
+    yesterday = date.today() - timedelta(days=1)  # '2020-05-05'
+    response = requests.post(
+        settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT,
+        data={
+            "data": yesterday.strftime("%Y-%m-%d"),
+            "token": settings.CITY_COUNCIL_WEBSERVICE_TOKEN,
+        },
+    )
+    return response.json()
+
+
+def bid_update(record):
+    bid = CityCouncilBid.objects.get(external_code=record["codLic"])
+    for key, value in record.items():
+        field = CITYCOUNCIL_BID_FIELDS_MAPPING.get(key.upper())
+        setattr(bid, field, value)
+    bid.save()
+
+
+def add_bid(record):
+    functions = {
+        "excluded": to_boolean,
+        "session_at": from_str_to_datetime,
+        "modality": modality_mapping_from_city_council_db,
+    }
+    new_item = map_to_fields(record, CITYCOUNCIL_BID_FIELDS_MAPPING, functions)
+    new_item["crawled_at"] = datetime.now()
+    new_item["crawled_from"] = settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT
+    return CityCouncilBid.objects.create(**new_item)
+
+
+# TODO transformar em backgrounds tasks? verificar tb número de tentativas
+def remove_bid(record):
+    CityCouncilBid.objects.filter(external_code=record["codLic"]).update(excluded=True)
+
+
+@actor(max_retries=5)
+def update_city_council_objects(payload):
+    action_methods = {
+        "inclusoesLicitacao": add_bid,
+        "alteracoesLicitacao": bid_update,
+        "exclusoesLicitacao": remove_bid,
+    }
+    for action_name, records in payload.items():
+        method = action_methods.get(action_name)
+        for record in records:
+            method(record)
