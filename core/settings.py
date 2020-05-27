@@ -69,7 +69,7 @@ class Common(Configuration):
 
     WSGI_APPLICATION = "core.wsgi.application"
 
-    default_db = "sqlite:///" + os.path.join(BASE_DIR, "db.sqlite3")
+    default_db = "postgres://USER:PASSWORD@HOST:PORT/NAME"
     DATABASES = {"default": dj_database_url.config(default=default_db)}
 
     AUTH_PASSWORD_VALIDATORS = [
