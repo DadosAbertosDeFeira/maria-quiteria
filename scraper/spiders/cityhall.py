@@ -366,3 +366,98 @@ class PaymentsSpider(BaseSpider):
                 item[mapping[key]] = value
 
             yield item
+
+
+class COVID19ExpensesSpider(BaseSpider):
+    """Coleta pagamentos relacionados ao combate a pandemia.
+
+    Fonte:
+    http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=despesascovid
+    """
+
+    name = "cityhall_covid19expenses"
+    source = (
+        "http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=despesascovid"
+    )
+    url = (
+        "http://www.transparencia.feiradesantana.ba.gov.br/controller/despesaCovid.php"
+    )
+    data = {
+        "POST_PARAMETRO": "PesquisaDespesasCovid",
+        "POST_DATA": "",
+        "POST_NMCREDOR": "",
+        "POST_CPFCNPJ": "",
+        "POST_BEM": "",
+    }
+    initial_date = date(2010, 1, 1)
+
+    def start_requests(self):
+        for phase in ["PAG", "EMP", "LIQ"]:
+            data = self.data.copy()
+            data["POST_FASE"] = phase
+            yield scrapy.FormRequest(self.url, formdata=self.data, callback=self.parse)
+
+    def parse(self, response):
+        # ['��� Anterior', '1', '2', '33', 'Pr��ximo ���']
+        pages = response.css("div.pagination li a ::text").extract()
+        if pages:
+            last_page = int(pages[-2])
+
+            for page in range(1, last_page + 1):
+                data = dict(self.data)
+                data["POST_PAGINA"] = str(page)
+                data["POST_PAGINAS"] = str(last_page)
+                yield scrapy.FormRequest(
+                    self.url, formdata=data, callback=self.parse_page
+                )
+
+    def parse_page(self, response):
+        """Extrai informações sobre um pagamento.
+
+        Exemplo:
+        N°: 19000215/0004 	CPF/CNPJ: 90.180.605/0001-02 	\
+            Data: 22/10/2019 		N° do processo: 010-2019
+        Bem / Serviço Prestado: REFERENTE A DESPESA COM SEGURO DE VIDA.
+        Natureza: 339039999400 - Seguros em Geral
+        Ação: 2015 - Manutencao dos serv.tecnicos administrativos
+        Função: 04 - ADMINISTRACAO
+        Subfunção: 122 - ADMINISTRACAO GERAL
+        Processo Licitatório: PREGAO
+        Fonte de Recurso: 0000 - RECURSOS ORDINARIOS
+        """
+        headlines = response.css("#editable-sample tr.accordion-toggle")
+        details = response.css("#editable-sample div.accordion-inner")
+
+        for headline, raw_details in zip(headlines, details):
+            headline = [text.strip() for text in headline.css("td ::text").extract()]
+            item = CityHallPaymentsItem(
+                published_at=headline[0],
+                phase=headline[1],
+                company_or_person=headline[2],
+                value=headline[3],
+                crawled_at=datetime.now(),
+                crawled_from=self.source,
+            )
+            details = [
+                detail.strip() for detail in raw_details.css("td ::text").extract()
+            ]
+            mapping = {
+                "N°:": "number",
+                "CPF/CNPJ:": "document",
+                "Data:": "date",
+                "N° do processo:": "process_number",
+                "Bem / Serviço Prestado:": "summary",
+                "Natureza:": "group",
+                "Ação:": "action",
+                "Função:": "function",
+                "Subfunção:": "subfunction",
+                "Processo Licitatório:": "type_of_process",
+                "Fonte de Recurso:": "resource",
+            }
+            details_copy = details.copy()
+            while details_copy:
+                key = details_copy.pop(0)
+                value = details_copy.pop(0)
+                item[mapping[key]] = value
+
+            yield item
