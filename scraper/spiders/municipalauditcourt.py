@@ -1,10 +1,11 @@
 from datetime import date, datetime
 
 import scrapy
+from datasets.parsers import currency_to_float, from_str_to_datetime
 from scraper.items import EmployeeItem
 
 from . import BaseSpider
-from .utils import currency_from_str_to_float, from_str_to_datetime, months_and_years
+from .utils import months_and_years
 
 
 class EmployeesSpider(BaseSpider):
@@ -93,13 +94,9 @@ class EmployeesSpider(BaseSpider):
                     ).date()
                 else:
                     admission = extracted_data["ingresso_ou_admissao"]
-                base_salary = currency_from_str_to_float(extracted_data["salario_base"])
-                benefits_salary = currency_from_str_to_float(
-                    extracted_data["salario_vantagens"]
-                )
-                bonus_salary = currency_from_str_to_float(
-                    extracted_data["salario_gratificacao"]
-                )
+                base_salary = currency_to_float(extracted_data["salario_base"])
+                benefits_salary = currency_to_float(extracted_data["salario_vantagens"])
+                bonus_salary = currency_to_float(extracted_data["salario_gratificacao"])
 
                 yield EmployeeItem(
                     crawled_at=datetime.now(),

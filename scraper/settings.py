@@ -2,6 +2,8 @@ import os
 
 from .items import (
     CityCouncilAgendaItem,
+    CityCouncilAttendanceListItem,
+    CityCouncilMinuteItem,
     CityHallBidItem,
     CityHallContractItem,
     CityHallPaymentsItem,
@@ -29,6 +31,9 @@ ITEM_PIPELINES = {
 }
 FILES_STORE = f"{os.getcwd()}/data/"
 KEEP_FILES = os.getenv("KEEP_FILES", False)
+EXTRACT_FILE_CONTENT_FROM_PIPELINE = os.getenv(
+    "EXTRACT_FILE_CONTENT_FROM_PIPELINE", False
+)
 
 # http cache
 HTTPCACHE_ENABLED = True
@@ -36,14 +41,17 @@ HTTPCACHE_EXPIRATION_SECS = 86400  # 24 horas
 
 # testing
 SPIDERMON_ENABLED = True
+SPIDERMON_VALIDATION_ADD_ERRORS_TO_ITEMS = True
 SPIDERMON_VALIDATION_MODELS = {
     LegacyGazetteItem: "scraper.validators.LegacyGazetteItem",
     GazetteItem: "scraper.validators.GazetteItem",
     CityCouncilAgendaItem: "scraper.validators.CityCouncilAgendaItem",
+    CityCouncilMinuteItem: "scraper.validators.CityCouncilMinuteItem",
     CityHallContractItem: "scraper.validators.CityHallContractItem",
     CityHallBidItem: "scraper.validators.CityHallBidItem",
     CityHallPaymentsItem: "scraper.validators.CityHallPaymentsItem",
     EmployeeItem: "scraper.validators.EmployeeItem",
+    CityCouncilAttendanceListItem: "scraper.validators.CityCouncilAttendanceListItem",
 }
 
 # monitoring
@@ -61,6 +69,12 @@ SPIDERMON_SENTRY_ENVIRONMENT_TYPE = os.getenv(
     "SPIDERMON_SENTRY_ENVIRONMENT_TYPE", "Prod"
 )
 SPIDERMON_SENTRY_FAKE = os.getenv("SPIDERMON_SENTRY_FAKE", False)
+
+# throttling
+AUTOTHROTTLE_ENABLED = True
+
+if os.getenv("ENABLE_AUTOTHROTTLE_DEBUG", False):
+    AUTOTHROTTLE_DEBUG = True
 
 USER_AGENT = (
     "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:73.0) Gecko/20100101 Firefox/73.0"

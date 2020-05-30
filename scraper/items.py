@@ -7,9 +7,11 @@ class BaseItem(scrapy.Item):
 
     def __repr__(self):
         copy = self.deepcopy()
-        if copy.get("file_content"):
-            preview = copy["file_content"].strip()[:200]
-            copy["file_content"] = f"Preview: {preview}"
+        if copy.get("files"):
+            for file_ in copy["files"]:
+                if file_["content"]:
+                    preview = file_["content"].strip()[:200]
+                    file_["content"] = f"Preview: {preview}"
         return super(BaseItem, copy).__repr__()
 
 
@@ -19,7 +21,7 @@ class LegacyGazetteItem(BaseItem):
     date = scrapy.Field()
     details = scrapy.Field()
     file_urls = scrapy.Field()
-    file_content = scrapy.Field()
+    files = scrapy.Field()
 
 
 class GazetteItem(BaseItem):
@@ -28,7 +30,7 @@ class GazetteItem(BaseItem):
     year_and_edition = scrapy.Field()
     events = scrapy.Field()
     file_urls = scrapy.Field()
-    file_content = scrapy.Field()
+    files = scrapy.Field()
 
 
 class CityCouncilAgendaItem(BaseItem):
@@ -36,6 +38,21 @@ class CityCouncilAgendaItem(BaseItem):
     details = scrapy.Field()
     title = scrapy.Field()
     event_type = scrapy.Field()
+
+
+class CityCouncilAttendanceListItem(BaseItem):
+    date = scrapy.Field()
+    description = scrapy.Field()
+    council_member = scrapy.Field()
+    status = scrapy.Field()
+
+
+class CityCouncilMinuteItem(BaseItem):
+    date = scrapy.Field()
+    title = scrapy.Field()
+    event_type = scrapy.Field()
+    file_urls = scrapy.Field()
+    files = scrapy.Field()
 
 
 class CityHallContractItem(BaseItem):
@@ -47,19 +64,20 @@ class CityHallContractItem(BaseItem):
     value = scrapy.Field()
     ends_at = scrapy.Field()
     file_urls = scrapy.Field()
-    file_content = scrapy.Field()
+    files = scrapy.Field()
 
 
 class CityHallBidItem(BaseItem):
-    category = scrapy.Field()
+    public_agency = scrapy.Field()
     month = scrapy.Field()
     year = scrapy.Field()
     description = scrapy.Field()
     history = scrapy.Field()
+    codes = scrapy.Field()
     modality = scrapy.Field()
-    date = scrapy.Field()
+    session_at = scrapy.Field()
     file_urls = scrapy.Field()
-    file_content = scrapy.Field()
+    files = scrapy.Field()
 
 
 class CityHallPaymentsItem(BaseItem):

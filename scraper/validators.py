@@ -22,8 +22,7 @@ class LegacyGazetteItem(BaseModel):
     # important info but not available in years like 2010
     date = DateType(required=False)
     details = StringType(required=True)
-    file_urls = ListType(StringType)
-    file_content = StringType()
+    files = ListType(DictType(StringType))
 
 
 class GazetteItem(BaseModel):
@@ -31,8 +30,7 @@ class GazetteItem(BaseModel):
     power = StringType(required=True)
     year_and_edition = StringType(required=True)
     events = ListType(DictType(StringType), required=True)
-    file_urls = ListType(StringType, required=True)
-    file_content = StringType()
+    files = ListType(DictType(StringType))
 
 
 class CityCouncilAgendaItem(BaseModel):
@@ -40,6 +38,20 @@ class CityCouncilAgendaItem(BaseModel):
     details = StringType()
     title = StringType(required=True)
     event_type = StringType(required=True)
+
+
+class CityCouncilAttendanceListItem(BaseModel):
+    date = DateType()
+    description = StringType()
+    council_member = StringType(required=True)
+    status = StringType(required=True)
+
+
+class CityCouncilMinuteItem(BaseModel):
+    date = DateType()
+    title = StringType(required=True)
+    event_type = StringType(required=True)
+    files = ListType(DictType(StringType))
 
 
 class CityHallContractItem(BaseModel):
@@ -50,20 +62,19 @@ class CityHallContractItem(BaseModel):
     contractor_name = StringType()
     value = StringType()
     ends_at = DateType(formats=("%d/%m/%Y", "%d/%m/%y"))
-    file_urls = ListType(StringType)
-    file_content = StringType()
+    files = ListType(DictType(StringType))
 
 
 class CityHallBidItem(BaseModel):
-    category = StringType()
+    public_agency = StringType()
     month = IntType(min_value=1, max_value=12)
     year = IntType(min_value=1873)  # quando Feira virou cidade :)
     description = StringType()
     history = ListType(DictType(StringType))
+    codes = StringType()
     modality = StringType()
-    date = DateTimeType(formats=("%d/%m/%Y %Hh%M"))
-    file_urls = ListType(StringType)
-    file_content = StringType()
+    session_at = DateTimeType()
+    files = ListType(DictType(StringType))
 
 
 class CityHallPaymentsItem(BaseModel):

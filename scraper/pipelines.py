@@ -1,38 +1,54 @@
-import hashlib
-import os
+from hashlib import sha1
+from pathlib import Path
+from urllib.parse import urlparse
 
-from scraper.settings import FILES_STORE, KEEP_FILES
+from datasets.tasks import content_from_file
+from scraper.settings import EXTRACT_FILE_CONTENT_FROM_PIPELINE, FILES_STORE, KEEP_FILES
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.utils.python import to_bytes
-from six.moves.urllib.parse import urlparse
-from tika import parser
 
 
 class ExtractFileContentPipeline(FilesPipeline):
     def file_path(self, request, response=None, info=None):
-        """Retorna onde o arquivo foi baixado.
-
-        Copiado de https://github.com/okfn-brasil/diario-oficial/
-        Issue no scrapy: https://github.com/scrapy/scrapy/issues/4225
+        """Retorna um nome único para o arquivo baixado, removendo
+        parâmetros da URL. Por exemplo:
 
         de:
         8e61990b27c6158edaaa715ea76eca65459d92f4.asp?cat=PMFS&dt=03-2016
         para:
         8e61990b27c6158edaaa715ea76eca65459d92f4.asp
+
+        Issue no scrapy: https://github.com/scrapy/scrapy/issues/4225
         """
-        url = request.url
-        media_guid = hashlib.sha1(to_bytes(url)).hexdigest()
-        media_ext = os.path.splitext(url)[1]
-        if not media_ext.isalnum():
-            media_ext = os.path.splitext(urlparse(url).path)[1]
-        return "full/%s%s" % (media_guid, media_ext)
+        uid = sha1(to_bytes(request.url)).hexdigest()
+        extension = Path(urlparse(request.url).path).suffix
+        return f"full/{uid}{extension}"
 
     def item_completed(self, results, item, info):
-        if results and results[0][0]:
-            file_info = results[0][1]
-            file_path = f"{FILES_STORE}{file_info['path']}"
-            raw = parser.from_file(file_path)
-            item["file_content"] = raw["content"]
-            if KEEP_FILES is False:
-                os.remove(file_path)
+        if not results:
+            return item
+
+        files = []
+        for ok, file_info in results:
+            if not ok:
+                continue
+
+            if EXTRACT_FILE_CONTENT_FROM_PIPELINE:
+                kwargs = {
+                    "path": f"{FILES_STORE}{file_info['path']}",
+                    "keep_file": KEEP_FILES,
+                }
+                content = content_from_file(**kwargs)
+            else:
+                content = None
+            files.append(
+                {
+                    "url": file_info["url"],
+                    "checksum": file_info["checksum"],
+                    "content": content,
+                }
+            )
+        item["files"] = files
+        del item["file_urls"]
+
         return item

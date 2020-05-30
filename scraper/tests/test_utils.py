@@ -1,14 +1,15 @@
-from datetime import datetime
+from datetime import date, datetime
 
 import pytest
 
 from ..spiders.utils import (
-    currency_from_str_to_float,
+    extract_date,
     extract_param,
-    from_str_to_datetime,
     identify_contract_id,
+    is_url,
     months_and_years,
     replace_query_param,
+    strip_accents,
 )
 
 
@@ -84,51 +85,55 @@ def test_extract_param(url, param, value):
 
 
 @pytest.mark.parametrize(
-    "datetime_str,expected_obj",
+    "str_with_date,expected_obj",
     [
-        ("26/02/2020 19:28", datetime(2020, 2, 26, 19, 28)),
-        ("26/02/2020 19:28:00", None),
-        ("26/02/2020", None),
+        ("26/02/2020", date(2020, 2, 26)),
+        ("26/02/2020 19:28", date(2020, 2, 26)),
+        ("26/02/20", date(2020, 2, 26)),
         ("26.02.20", None),
-        (None, None),
-        ("", None),
+        ("Random", None),
     ],
 )
-def test_possible_datetime_formats(datetime_str, expected_obj):
-    formats = ["%d/%m/%Y %H:%M"]
-
-    assert from_str_to_datetime(datetime_str, formats) == expected_obj
+def test_extract_date(str_with_date, expected_obj):
+    assert extract_date(str_with_date) == expected_obj
 
 
 @pytest.mark.parametrize(
-    "datetime_str,expected_obj",
+    "original_value,expected_value",
     [
-        ("26/02/20", datetime(2020, 2, 26)),
-        ("26/02/2020", datetime(2020, 2, 26)),
-        ("26/02/2020 19:28", None),
-        ("26.02.20", None),
+        ("tomada", "tomada"),
+        ("pregão presencial", "pregao presencial"),
+        ("pregão eletrônico", "pregao eletronico"),
+        ("concorrência", "concorrencia"),
+        ("çãôéà", "caoea"),
         (None, None),
-        ("", None),
     ],
 )
-def test_possible_date_formats(datetime_str, expected_obj):
-    formats = ["%d/%m/%Y", "%d/%m/%y"]
-
-    assert from_str_to_datetime(datetime_str, formats) == expected_obj
+def test_strip_accents(original_value, expected_value):
+    assert strip_accents(original_value) == expected_value
 
 
 @pytest.mark.parametrize(
-    "currency_str,currency_float",
+    "original_value,expected_value",
     [
-        ("R$ 788,00", 788.00),
-        ("R$ 2.109,74", 2109.74),
-        ("0,00", 0.00),
-        ("R$ 2.009.109,74", 2009109.74),
-        ("R$          10,00", 10.00),
+        ("google.com", True),
+        ("www.google", True),
+        ("feiraeh.top", True),
+        ("http://feiradesantana.com.br", True),
+        ("https://feiradesantana.com.br", True),
+        ("https://feiradesantana.com.br", True),
+        ("http://www.feiradesantana.com.br", True),
+        ("https://www.feiradesantana.com.br", True),
+        ("https://monitor.dadosabertosdefeira.com.br", True),
+        ("http://www.feiradesantana.ba.gov.br/Word - Port20130001.pdf", True),
+        ("tel:42384248", False),
+        ("bobagem", False),
+        ("#", False),
+        (None, False),
     ],
 )
-def test_convert_currency_from_str_to_float(currency_str, currency_float):
-    assert currency_from_str_to_float(currency_str) == currency_float
+def test_is_url(original_value, expected_value):
+    assert is_url(original_value) is expected_value
 
 
 @pytest.mark.parametrize(
@@ -141,7 +146,6 @@ def test_convert_currency_from_str_to_float(currency_str, currency_float):
             [(11, 2019), (12, 2019), (1, 2020), (2, 2020), (3, 2020)],
         ),
         (datetime(2020, 2, 10), datetime(2020, 3, 1), [(3, 2020)]),
-        (datetime(2020, 3, 1), datetime(2020, 3, 1), []),
         (datetime(2020, 6, 1), datetime(2020, 3, 1), []),
         (
             datetime(2008, 10, 11),
@@ -150,6 +154,7 @@ def test_convert_currency_from_str_to_float(currency_str, currency_float):
             + [(m, y) for y in range(2009, 2012) for m in range(1, 13)]
             + [(1, 2012), (2, 2012), (3, 2012)],
         ),
+        (datetime(2020, 4, 14), datetime(2020, 4, 23), [(4, 2020)]),
     ],
 )
 def test_months_and_years(start_date, end_date, expected_month_and_year):

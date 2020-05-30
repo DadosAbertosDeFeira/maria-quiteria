@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {% load static %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dados Abertos de Feira</title>
+    <link rel="shortcut icon" href="{% static "home/favicon.ico" %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <!-- Bulma Version 0.8.x-->
+    <link rel="stylesheet" href="https://unpkg.com/bulma@0.8.0/css/bulma.min.css" />
+    <link rel="stylesheet" type="text/css" href="{% static "home/hero.css" %}">
+    <link rel="stylesheet" href="https://unpkg.com/bulma-modal-fx/dist/css/modal-fx.min.css" />
+
+    {% include 'snippets/google-analytics.html' %}
+</head>
+
+<body>
+    <section class="hero is-info is-medium is-bold">
+        <div class="hero-head">
+            <nav class="navbar">
+                <div class="container">
+                    <div class="navbar-brand">
+                        <a class="navbar-item" href="../">
+                            <img src="{% static "home/torre-do-tomba-sem-fundo.png" %}" alt="Logo">
+                        </a>
+                        <span class="navbar-burger burger" data-target="navbarMenu">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </span>
+                    </div>
+                    <div id="navbarMenu" class="navbar-menu">
+                        <div class="navbar-end">
+                            <a href="https://www.instagram.com/dadosabertosdefeira/" class="navbar-item"
+                                target="_blank">
+                                <span class="icon" title="Instagram">
+                                    <i class="fa fa-instagram"></i>
+                                </span>
+                            </a>
+                            <a href="https://www.facebook.com/dadosabertosdefeira" class="navbar-item" target="_blank"
+                                title="Facebook">
+                                <span class="icon">
+                                    <i class="fa fa-facebook"></i>
+                                </span>
+                            </a>
+                            <a href="https://twitter.com/dadosdefeira" class="navbar-item" target="_blank"
+                                title="Twitter">
+                                <span class="icon">
+                                    <i class="fa fa-twitter"></i>
+                                </span>
+                            </a>
+                            <a href="https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg" class="navbar-item" target="_blank"
+                                title="Telegram">
+                                <span class="icon">
+                                    <i class="fa fa-telegram"></i>
+                                </span>
+                            </a>
+                            <a href="https://chat.whatsapp.com/GH5ZWluVZxhDRDcJLAuF2w" class="navbar-item"
+                                target="_blank" title="Whatsapp">
+                                <span class="icon">
+                                    <i class="fa fa-whatsapp"></i>
+                                </span>
+                            </a>
+                            <span class="navbar-item">
+                                <a class="button is-white is-outlined" href="https://github.com/DadosAbertosDeFeira"
+                                    target="_blank" title="Github">
+                                    <span class="icon">
+                                        <i class="fa fa-github"></i>
+                                    </span>
+                                    <span title="Código fonte">Código fonte</span>
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <h1 class="title">
+                    Dados Abertos de Feira
+                </h1>
+                <h2 class="subtitle">
+                    Uma iniciativa para fomentar a <b>transparência</b> e os <b>dados abertos</b> no município de
+                    <a href="https://pt.wikipedia.org/wiki/Feira_de_Santana" target="_blank" rel="noopener noreferrer">
+                        Feira de Santana.
+                    </a>
+                </h2>
+            </div>
+        </div>
+    </section>
+    <div class="box cta">
+        <p class="has-text-centered">
+            <span class="tag is-danger">COVID-19 em Feira</span> Acompanhe nosso gráfico sobre os casos na cidade
+            <a href="https://datastudio.google.com/u/0/reporting/cd9d3ac4-299b-46b4-bdab-8e9c081f5071?s=s8-Q-jNGhZg"
+                target="_blank" rel="noopener noreferrer">
+                aqui.
+            </a>
+        </p>
+    </div>
+    <section class="container">
+        <div class="columns features">
+            <div class="column is-4">
+                <div class="card is-shady">
+                    <div class="card-image has-text-centered">
+                        <i class="fa fa-tachometer"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="content">
+                            <h4>Dashboard</h4>
+                            <p>
+                                Estamos coletando os dados abertos do município para que
+                                fique mais fácil para você fazer buscas e baixá-los.
+                            </p>
+                            <p><a href="#">Em breve!</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-4">
+                <div class="card is-shady">
+                    <div class="card-image has-text-centered">
+                        <i class="fa fa-medium"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="content">
+                            <h4>Blog</h4>
+                            <p>
+                                Acompanhe o que temos feito, análises de dados da cidade e
+                                mais conteúdo sobre dados abertos e transparência em Feira!
+                            </p>
+                            <p><a href="https://medium.com/@dadosabertosdefeira" target="_blank">Ir para o blog</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-4">
+                <div class="card is-shady">
+                    <div class="card-image has-text-centered">
+                        <i class="fa fa-github"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="content">
+                            <h4>Contribua</h4>
+                            <p>
+                                Essa é uma iniciativa voluntária, feita a muitas mãos, e
+                                qualquer pessoa interessada pode fazer parte!
+                            </p>
+
+                            <p>
+                                <a href="mailto:dadosabertosdefeira+site@gmail.com" target="_blank">
+                                    Envie um e-mail para a gente
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-3 is-offset-2">
+                    <h2><strong>Portais da Transparência</strong></h2>
+                    <ul>
+                        <li><a href="http://www.transparencia.feiradesantana.ba.gov.br/">Portal da Prefeitura</a></li>
+                        <li><a href="https://www.transparencia.feiradesantana.ba.leg.br/">Portal da Câmara</a></li>
+                    </ul>
+                </div>
+                <div class="column is-3">
+                    <h2><strong>Lei de Acesso à Informação</strong></h2>
+                    <ul>
+                        <li><a
+                                href="https://escoladedados.org/tutoriais/solicitando-dados-via-lei-de-acesso-a-informacao/">Como
+                                fazer um pedido de informação</a></li>
+                        <li><a href="http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=contato">Faça um
+                                pedido para a Prefeitura</a></li>
+                        <li><a href="https://www.transparencia.feiradesantana.ba.leg.br/index.php?view=contato">Faça um
+                                pedido para a Câmara</a></li>
+                        <li><a href="https://www.politize.com.br/artigo-5/livre-acesso-a-informacao/">O que é a Lei de
+                                Acesso à Informação</a></li>
+                        <li><a href="https://www.gov.br/acessoainformacao/pt-br">LAI no Governo Federal</a></li>
+                    </ul>
+                </div>
+                <div class="column is-4">
+                    <h2><strong>Nossas redes sociais</strong></h2>
+                    <ul>
+                        <li><a href="https://fb.me/dadosabertosdefeira">Facebook</a></li>
+                        <li><a href="https://twitter.com/dadosdefeira">Twitter</a></li>
+                        <li><a href="https://www.instagram.com/dadosabertosdefeira/">Instagram</a></li>
+                        <li><a href="https://medium.com/@dadosabertosdefeira">Blog</a></li>
+                        <li><a href="https://github.com/DadosAbertosDeFeira/">Github</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="content has-text-centered">
+                <div class="control level-item">
+                    <a href="https://github.com/BulmaTemplates/bulma-templates" target="_blank">
+                        <div class="tags has-addons">
+                            <span class="tag is-dark">Bulma Templates</span>
+                            <span class="tag is-info">MIT license</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <script src="{% static "home/bulma.js" %}"></script>
+    </footer>
+</body>
+
+</html>
