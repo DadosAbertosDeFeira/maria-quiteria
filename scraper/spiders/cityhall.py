@@ -375,17 +375,26 @@ class COVID19ExpensesSpider(BaseSpider):
     """
 
     name = "covid19_expenses"
-    url = "http://www.transparencia.feiradesantana.ba.gov.br/controller/covid19.php"
+    source = (
+        "http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=despesascovid"
+    )
+    url = (
+        "http://www.transparencia.feiradesantana.ba.gov.br/controller/despesaCovid.php"
+    )
     data = {
-        "POST_PARAMETRO": "PesquisaCovid19",
-        "POST_TIPO": "D",
-        "POST_FASE": "PAG",
+        "POST_PARAMETRO": "PesquisaDespesasCovid",
         "POST_DATA": "",
+        "POST_NMCREDOR": "",
+        "POST_CPFCNPJ": "",
+        "POST_BEM": "",
     }
     initial_date = date(2010, 1, 1)
 
     def start_requests(self):
-        yield scrapy.FormRequest(self.url, formdata=self.data, callback=self.parse)
+        for phase in ["PAG", "EMP", "LIQ"]:
+            data = self.data.copy()
+            data["POST_FASE"] = phase
+            yield scrapy.FormRequest(self.url, formdata=self.data, callback=self.parse)
 
     def parse(self, response):
         # ['��� Anterior', '1', '2', '33', 'Pr��ximo ���']
@@ -418,9 +427,6 @@ class COVID19ExpensesSpider(BaseSpider):
         headlines = response.css("#editable-sample tr.accordion-toggle")
         details = response.css("#editable-sample div.accordion-inner")
 
-        print(headlines)
-        print
-
         for headline, raw_details in zip(headlines, details):
             headline = [text.strip() for text in headline.css("td ::text").extract()]
             item = CityHallPaymentsItem(
@@ -429,7 +435,7 @@ class COVID19ExpensesSpider(BaseSpider):
                 company_or_person=headline[2],
                 value=headline[3],
                 crawled_at=datetime.now(),
-                crawled_from=response.url,
+                crawled_from=self.source,
             )
             details = [
                 detail.strip() for detail in raw_details.css("td ::text").extract()
