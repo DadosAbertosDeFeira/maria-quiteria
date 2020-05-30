@@ -95,7 +95,7 @@ class CityHallPaymentsItem(BaseModel):
     resource = StringType()
 
 
-class EmployeeItem(BaseModel):
+class PaycheckItem(BaseModel):
     agency = StringType(required=True)
     month = IntType(required=True)
     year = IntType(required=True)

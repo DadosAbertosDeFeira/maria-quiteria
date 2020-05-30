@@ -7,9 +7,9 @@ from .items import (
     CityHallBidItem,
     CityHallContractItem,
     CityHallPaymentsItem,
-    EmployeeItem,
     GazetteItem,
     LegacyGazetteItem,
+    PaycheckItem,
 )
 
 # general
@@ -50,7 +50,7 @@ SPIDERMON_VALIDATION_MODELS = {
     CityHallContractItem: "scraper.validators.CityHallContractItem",
     CityHallBidItem: "scraper.validators.CityHallBidItem",
     CityHallPaymentsItem: "scraper.validators.CityHallPaymentsItem",
-    EmployeeItem: "scraper.validators.EmployeeItem",
+    PaycheckItem: "scraper.validators.PaycheckItem",
     CityCouncilAttendanceListItem: "scraper.validators.CityCouncilAttendanceListItem",
 }
 

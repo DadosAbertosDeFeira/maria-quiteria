@@ -98,7 +98,7 @@ class CityHallPaymentsItem(BaseItem):
     resource = scrapy.Field()
 
 
-class EmployeeItem(BaseItem):
+class PaycheckItem(BaseItem):
     agency = scrapy.Field()
     month = scrapy.Field()
     year = scrapy.Field()

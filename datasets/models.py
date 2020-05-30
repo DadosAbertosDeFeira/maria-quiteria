@@ -276,7 +276,7 @@ class CityCouncilMinute(DatasetMixin):
         return f"{self.date} {self.title}"
 
 
-class Employee(DatasetMixin):
+class Paycheck(DatasetMixin):
     agency = models.CharField(max_length=200)
     month = models.IntegerField(choices=Month.choices)
     year = models.IntegerField()

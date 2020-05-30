@@ -2,13 +2,13 @@ from datetime import date, datetime
 
 import scrapy
 from datasets.parsers import currency_to_float, from_str_to_datetime
-from scraper.items import EmployeeItem
+from scraper.items import PaycheckItem
 
 from . import BaseSpider
 from .utils import months_and_years
 
 
-class EmployeesSpider(BaseSpider):
+class PaychecksSpider(BaseSpider):
     """Coleta dos pagamentos feitos a servidores municipais.
 
     Fonte: Tribunal de Contas do Município
@@ -17,7 +17,7 @@ class EmployeesSpider(BaseSpider):
     Entidades foram consultadas em 01/03/2020
     """
 
-    name = "municipalauditcourt_employees"
+    name = "municipalauditcourt_paychecks"
     url = "https://webservice.tcm.ba.gov.br/exportar/pessoal"
     data = {
         "tipo": "pdf",
@@ -98,7 +98,7 @@ class EmployeesSpider(BaseSpider):
                 benefits_salary = currency_to_float(extracted_data["salario_vantagens"])
                 bonus_salary = currency_to_float(extracted_data["salario_gratificacao"])
 
-                yield EmployeeItem(
+                yield PaycheckItem(
                     crawled_at=datetime.now(),
                     crawled_from=response.url,
                     agency=extracted_data["orgao"],

@@ -6,9 +6,9 @@ from datasets.models import (
     CityCouncilExpense,
     CityCouncilMinute,
     CityHallBid,
-    Employee,
     Gazette,
     GazetteEvent,
+    Paycheck,
 )
 from model_bakery.recipe import Recipe, foreign_key
 
@@ -45,4 +45,4 @@ GazetteEvent = Recipe(GazetteEvent, gazette=foreign_key(Gazette))
 CityHallBid = Recipe(CityHallBid)
 
 
-Employee = Recipe(Employee)
+Paycheck = Recipe(Paycheck)

@@ -6,10 +6,10 @@ from datasets.models import (
     CityCouncilAttendanceList,
     CityCouncilMinute,
     CityHallBid,
-    Employee,
     File,
     Gazette,
     GazetteEvent,
+    Paycheck,
 )
 from django.core.management.base import BaseCommand
 from scraper.items import (
@@ -17,9 +17,9 @@ from scraper.items import (
     CityCouncilAttendanceListItem,
     CityCouncilMinuteItem,
     CityHallBidItem,
-    EmployeeItem,
     GazetteItem,
     LegacyGazetteItem,
+    PaycheckItem,
 )
 from scraper.spiders.citycouncil import AgendaSpider, AttendanceListSpider, MinuteSpider
 from scraper.spiders.cityhall import BidsSpider
@@ -27,7 +27,7 @@ from scraper.spiders.gazette import (
     ExecutiveAndLegislativeGazetteSpider,
     LegacyGazetteSpider,
 )
-from scraper.spiders.municipalauditcourt import EmployeesSpider
+from scraper.spiders.municipalauditcourt import PaychecksSpider
 from scrapy import signals
 from scrapy.crawler import CrawlerProcess
 from scrapy.signalmanager import dispatcher
@@ -68,8 +68,8 @@ class Command(BaseCommand):
             save_legacy_gazette(item)
         if isinstance(item, GazetteItem):
             save_gazette(item)
-        if isinstance(item, EmployeeItem):
-            Employee.objects.update_or_create(**item)
+        if isinstance(item, PaycheckItem):
+            Paycheck.objects.update_or_create(**item)
 
     def handle(self, *args, **options):
         if options.get("drop_all"):
@@ -81,7 +81,7 @@ class Command(BaseCommand):
             Gazette.objects.all().delete()
             GazetteEvent.objects.all().delete()
             File.objects.all().delete()
-            Employee.objects.all().delete()
+            Paycheck.objects.all().delete()
 
         dispatcher.connect(self.save, signal=signals.item_passed)
         os.environ["SCRAPY_SETTINGS_MODULE"] = "scraper.settings"
@@ -106,7 +106,7 @@ class Command(BaseCommand):
             BidsSpider, start_from_date=CityHallBid.last_collected_item_date()
         )
         process.crawl(
-            EmployeesSpider, start_from_date=Employee.last_collected_item_date()
+            PaychecksSpider, start_from_date=Paycheck.last_collected_item_date()
         )
 
         last_collected_gazette = Gazette.last_collected_item_date()

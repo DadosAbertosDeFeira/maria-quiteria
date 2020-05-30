@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 
 import pytest
-from datasets.models import Employee
+from datasets.models import Paycheck
 from model_bakery import baker
 
 
@@ -87,15 +87,15 @@ class TestCityHallBid:
 class TestPaycheck:
     @pytest.mark.django_db
     def test_show_when_last_collected_item(self):
-        newest_paycheck = baker.make("datasets.Employee", month=1, year=2020)
-        baker.make("datasets.Employee", month=10, year=2000)
-        baker.make("datasets.Employee", month=1, year=2019)
+        newest_paycheck = baker.make("datasets.Paycheck", month=1, year=2020)
+        baker.make("datasets.Paycheck", month=10, year=2000)
+        baker.make("datasets.Paycheck", month=1, year=2019)
 
         assert (
-            Employee.last_collected_item_date()
+            Paycheck.last_collected_item_date()
             == newest_paycheck.last_collected_item_date()
         )
 
     @pytest.mark.django_db
     def test_return_none_when_any_paychecks_were_collected(self):
-        assert Employee.last_collected_item_date() is None
+        assert Paycheck.last_collected_item_date() is None
