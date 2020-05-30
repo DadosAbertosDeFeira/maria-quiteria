@@ -369,12 +369,13 @@ class PaymentsSpider(BaseSpider):
 
 
 class COVID19ExpensesSpider(BaseSpider):
-    """Coleta pagamentos realizados.
+    """Coleta pagamentos relacionados ao combate a pandemia.
 
-    http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=despesa
+    Fonte:
+    http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=despesascovid
     """
 
-    name = "covid19_expenses"
+    name = "cityhall_covid19expenses"
     source = (
         "http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=despesascovid"
     )
