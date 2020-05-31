@@ -1,5 +1,3 @@
-import os
-
 from datasets.models import File
 from datasets.tasks import backup_file, content_from_file
 from django.conf import settings
@@ -12,15 +10,14 @@ def save_file(url, content_type, object_id, checksum=None):
     )
     if file_.s3_url is None or file_.content is None:
         if settings.ASYNC_FILE_PROCESSING:
-            if os.getenv("FEATURE_FLAG__DISABLE_TASKS_BY_NOW"):
-                pipeline(
-                    [
-                        backup_file.message(file_.pk),
-                        content_from_file.message_with_options(
-                            pipe_ignore=True, args=(file_.pk,)
-                        ),
-                    ]
-                ).run()
+            pipeline(
+                [
+                    backup_file.message(file_.pk),
+                    content_from_file.message_with_options(
+                        pipe_ignore=True, args=(file_.pk,)
+                    ),
+                ]
+            ).run()
         else:
             backup_file_url = backup_file(file_.pk)
             if backup_file_url:
