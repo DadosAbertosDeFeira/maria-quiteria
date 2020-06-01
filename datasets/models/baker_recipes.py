@@ -3,6 +3,7 @@ from datetime import date
 from datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
+    CityCouncilBid,
     CityCouncilExpense,
     CityCouncilMinute,
     CityHallBid,
@@ -27,6 +28,9 @@ CityCouncilAttendanceList = Recipe(
     council_member="Competente da Silva",
     status="presente",
 )
+
+
+CityCouncilBid = Recipe(CityCouncilBid)
 
 
 CityCouncilExpense = Recipe(CityCouncilExpense)

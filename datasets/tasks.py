@@ -1,14 +1,9 @@
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from logging import info
 from pathlib import Path
 
 import requests
-from datasets.adapters import CITYCOUNCIL_BID_FIELDS_MAPPING, map_to_fields
-from datasets.parsers import (
-    from_str_to_datetime,
-    modality_mapping_from_city_council_db,
-    to_boolean,
-)
+from datasets.models.bid import add_bid, bid_update, remove_bid
 from datasets.services import get_s3_client
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -104,31 +99,6 @@ def get_city_council_updates():
         },
     )
     return response.json()
-
-
-def bid_update(record):
-    bid = CityCouncilBid.objects.get(external_code=record["codLic"])
-    for key, value in record.items():
-        field = CITYCOUNCIL_BID_FIELDS_MAPPING.get(key.upper())
-        setattr(bid, field, value)
-    bid.save()
-
-
-def add_bid(record):
-    functions = {
-        "excluded": to_boolean,
-        "session_at": from_str_to_datetime,
-        "modality": modality_mapping_from_city_council_db,
-    }
-    new_item = map_to_fields(record, CITYCOUNCIL_BID_FIELDS_MAPPING, functions)
-    new_item["crawled_at"] = datetime.now()
-    new_item["crawled_from"] = settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT
-    return CityCouncilBid.objects.create(**new_item)
-
-
-# TODO transformar em backgrounds tasks? verificar tb número de tentativas
-def remove_bid(record):
-    CityCouncilBid.objects.filter(external_code=record["codLic"]).update(excluded=True)
 
 
 @actor(max_retries=5)

@@ -5,7 +5,7 @@ from django.utils.safestring import mark_safe
 from public_admin.admin import PublicModelAdmin
 from public_admin.sites import PublicAdminSite, PublicApp
 
-from .models import (
+from datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
     CityCouncilBid,
