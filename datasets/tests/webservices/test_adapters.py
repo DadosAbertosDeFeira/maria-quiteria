@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from datasets.adapters import to_bid, to_contract, to_expense
+from datasets.webservices.adapters import to_bid, to_contract, to_expense
 
 
 def test_save_expense_from_csv():

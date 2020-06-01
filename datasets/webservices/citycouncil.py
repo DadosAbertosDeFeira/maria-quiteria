@@ -1,12 +1,12 @@
 from datetime import datetime
 
-from datasets.adapters import CITYCOUNCIL_BID_FIELDS_MAPPING, map_to_fields
 from datasets.models import CityCouncilBid
 from datasets.parsers import (
     from_str_to_datetime,
     modality_mapping_from_city_council_db,
     to_boolean,
 )
+from datasets.webservices.adapters import CITYCOUNCIL_BID_FIELDS_MAPPING, map_to_fields
 from django.conf import settings
 
 FUNCTIONS = {
