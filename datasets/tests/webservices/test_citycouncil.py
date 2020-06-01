@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 from core import settings
 from datasets.models import CityCouncilBid
-from datasets.models.bid import add_bid, bid_update, remove_bid
+from datasets.webservices.citycouncil import add_bid, bid_update, remove_bid
 from model_bakery import baker
 
 

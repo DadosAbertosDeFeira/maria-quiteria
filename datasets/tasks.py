@@ -3,8 +3,8 @@ from logging import info
 from pathlib import Path
 
 import requests
-from datasets.models.bid import add_bid, bid_update, remove_bid
 from datasets.services import get_s3_client
+from datasets.webservices.citycouncil import add_bid, bid_update, remove_bid
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import find_dotenv, load_dotenv
@@ -14,7 +14,7 @@ from tika import parser
 
 # Esse bloco (feio) faz com que esse módulo funcione dentro ou fora do Django
 try:
-    from datasets.models import File, CityCouncilBid
+    from datasets.models import File
 except ImproperlyConfigured:
     import configurations
     import os
