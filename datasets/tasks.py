@@ -4,7 +4,14 @@ from pathlib import Path
 
 import requests
 from datasets.services import get_s3_client
-from datasets.webservices.citycouncil import add_bid, bid_update, remove_bid
+from datasets.webservices.citycouncil import (
+    add_bid,
+    add_contract,
+    remove_bid,
+    remove_contract,
+    update_bid,
+    update_contract,
+)
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import find_dotenv, load_dotenv
@@ -104,8 +111,11 @@ def get_city_council_updates():
 @actor(max_retries=5)
 def update_city_council_objects(payload):
     action_methods = {
+        "inclusoesContrato": add_contract,
+        "alteracoesContrato": update_contract,
+        "exclusoesContrato": remove_contract,
         "inclusoesLicitacao": add_bid,
-        "alteracoesLicitacao": bid_update,
+        "alteracoesLicitacao": update_bid,
         "exclusoesLicitacao": remove_bid,
     }
     for action_name, records in payload.items():

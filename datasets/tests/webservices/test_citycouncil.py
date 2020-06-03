@@ -6,9 +6,9 @@ from datasets.models import CityCouncilBid, CityCouncilContract
 from datasets.webservices.citycouncil import (
     add_bid,
     add_contract,
-    bid_update,
     remove_bid,
     remove_contract,
+    update_bid,
     update_contract,
 )
 from model_bakery import baker
@@ -49,7 +49,7 @@ class TestBid:
             "objetoLic": "Contratação de pessoa jurídica",
             "dtLic": "2020-03-26 09:00:00",
         }
-        updated_bid = bid_update(record)
+        updated_bid = update_bid(record)
         assert bid.pk == updated_bid.pk
         assert updated_bid.modality == "pregao_presencial"
         assert updated_bid.code == record["numLic"]

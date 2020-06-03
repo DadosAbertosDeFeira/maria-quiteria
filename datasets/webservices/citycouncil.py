@@ -20,7 +20,7 @@ def add_bid(record):
     return CityCouncilBid.objects.create(**new_item)
 
 
-def bid_update(record):
+def update_bid(record):
     bid = CityCouncilBid.objects.get(external_code=record["codLic"])
     updated_item = map_to_fields(
         record, CITYCOUNCIL_BID_FIELDS_MAPPING, CITYCOUNCIL_BID_FUNCTIONS
