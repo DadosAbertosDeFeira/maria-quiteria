@@ -9,6 +9,43 @@ from datasets.parsers import (
     to_boolean,
 )
 
+CITYCOUNCIL_BID_FIELDS_MAPPING = {
+    "CODLIC": "external_code",
+    "CODTIPOLIC": "modality",
+    "NUMLIC": "code",
+    "NUMTIPOLIC": "code_type",
+    "OBJETOLIC": "description",
+    "DTLIC": "session_at",
+    "EXCLUIDO": "excluded",
+}
+
+
+CITYCOUNCIL_BID_FUNCTIONS = {
+    "excluded": to_boolean,
+    "session_at": from_str_to_datetime,
+    "modality": modality_mapping_from_city_council_db,
+}
+
+
+CITYCOUNCIL_CONTRACT_FIELDS_MAPPING = {
+    "CODCON": "external_code",
+    "DSCON": "description",
+    "OBJETOCON": "details",
+    "CPFCNPJCON": "company_or_person_document",
+    "NMCON": "company_or_person",
+    "VALORCON": "value",
+    "DTCON": "start_date",
+    "DTCONFIM": "end_date",
+    "EXCLUIDO": "excluded",
+}
+
+CITYCOUNCIL_CONTRACT_FUNCTIONS = {
+    "value": currency_to_float,
+    "excluded": to_boolean,
+    "start_date": from_str_to_date,
+    "end_date": from_str_to_date,
+}
+
 
 def map_to_fields(item, fields_mapping, functions):
     new_item = {}
@@ -55,43 +92,14 @@ def to_expense(item):
 
 
 def to_contract(item):
-    fields_mapping = {
-        "CODCON": "external_code",
-        "DSCON": "description",
-        "OBJETOCON": "details",
-        "CPFCNPJCON": "company_or_person_document",
-        "NMCON": "company_or_person",
-        "VALORCON": "value",
-        "DTCON": "start_date",
-        "DTCONFIM": "end_date",
-        "EXCLUIDO": "excluded",
-    }
-    functions = {
-        "value": currency_to_float,
-        "excluded": to_boolean,
-        "start_date": from_str_to_date,
-        "end_date": from_str_to_date,
-    }
-    new_item = map_to_fields(item, fields_mapping, functions)
+    new_item = map_to_fields(
+        item, CITYCOUNCIL_CONTRACT_FIELDS_MAPPING, CITYCOUNCIL_CONTRACT_FUNCTIONS
+    )
     return CityCouncilContract(**new_item)
 
 
-CITYCOUNCIL_BID_FIELDS_MAPPING = {
-    "CODLIC": "external_code",
-    "CODTIPOLIC": "modality",
-    "NUMLIC": "code",
-    "NUMTIPOLIC": "code_type",
-    "OBJETOLIC": "description",
-    "DTLIC": "session_at",
-    "EXCLUIDO": "excluded",
-}
-
-
 def to_bid(item):
-    functions = {
-        "excluded": to_boolean,
-        "session_at": from_str_to_datetime,
-        "modality": modality_mapping_from_city_council_db,
-    }
-    new_item = map_to_fields(item, CITYCOUNCIL_BID_FIELDS_MAPPING, functions)
+    new_item = map_to_fields(
+        item, CITYCOUNCIL_BID_FIELDS_MAPPING, CITYCOUNCIL_BID_FUNCTIONS
+    )
     return CityCouncilBid(**new_item)

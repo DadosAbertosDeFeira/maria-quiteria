@@ -1,14 +1,21 @@
-from datetime import datetime
+from datetime import date, datetime
 
 import pytest
 from core import settings
-from datasets.models import CityCouncilBid
-from datasets.webservices.citycouncil import add_bid, bid_update, remove_bid
+from datasets.models import CityCouncilBid, CityCouncilContract
+from datasets.webservices.citycouncil import (
+    add_bid,
+    add_contract,
+    bid_update,
+    remove_bid,
+    remove_contract,
+    update_contract,
+)
 from model_bakery import baker
 
 
 @pytest.mark.django_db
-class TestAddBid:
+class TestBid:
     def test_add_bid(self):
         assert CityCouncilBid.objects.count() == 0
 
@@ -60,3 +67,76 @@ class TestAddBid:
 
         bid.refresh_from_db()
         assert bid.excluded is True
+
+
+@pytest.mark.django_db
+class TestContract:
+    def test_add_contract(self):
+        assert CityCouncilContract.objects.count() == 0
+        record = {
+            "codCon": "43",
+            "dsCon": "CONTRATO Nº 004/2014 - PRESTAÇÃO DE SERVIÇO",
+            "objetoCon": "Contratação conforme Licitação 01/2014, Pregão 01/2014.",
+            "cpfCnpjCon": "92.559.830/0001-71",
+            "nmCon": "GREEN CARD S/A REFEIÇÕES COMÉRCIO E SERVIÇOS",
+            "valorCon": "1157115,96",
+            "dtCon": "28/3/2014",
+            "dtConfim": "27/3/2015",
+            "excluido": "N",
+        }
+        contract_obj = add_contract(record)
+
+        expected_expense = {
+            "external_code": "43",
+            "description": "CONTRATO Nº 004/2014 - PRESTAÇÃO DE SERVIÇO",
+            "details": "Contratação conforme Licitação 01/2014, Pregão 01/2014.",
+            "company_or_person_document": "92.559.830/0001-71",
+            "company_or_person": "GREEN CARD S/A REFEIÇÕES COMÉRCIO E SERVIÇOS",
+            "value": 1157115.96,
+            "start_date": date(2014, 3, 28),
+            "end_date": date(2015, 3, 27),
+            "excluded": False,
+        }
+
+        assert CityCouncilContract.objects.count() == 1
+        assert contract_obj.external_code == expected_expense["external_code"]
+        assert contract_obj.description == expected_expense["description"]
+        assert contract_obj.details == expected_expense["details"]
+        assert (
+            contract_obj.company_or_person_document
+            == expected_expense["company_or_person_document"]
+        )
+        assert contract_obj.company_or_person == expected_expense["company_or_person"]
+        assert contract_obj.value == expected_expense["value"]
+        assert contract_obj.start_date == expected_expense["start_date"]
+        assert contract_obj.end_date == expected_expense["end_date"]
+        assert contract_obj.excluded == expected_expense["excluded"]
+
+    def test_update_contract(self):
+        contract = baker.make_recipe(
+            "datasets.models.CityCouncilContract", external_code="43"
+        )
+        record = {
+            "codCon": "43",
+            "dsCon": "CONTRATO Nº 004/2014 - PRESTAÇÃO DE SERVIÇO",
+            "objetoCon": "Contratação conforme Licitação 01/2014, Pregão 01/2014.",
+            "cpfCnpjCon": "92.559.830/0001-71",
+            "nmCon": "GREEN CARD S/A REFEIÇÕES COMÉRCIO E SERVIÇOS",
+            "valorCon": "1157115,96",
+            "dtCon": "28/3/2014",
+            "dtConfim": "27/3/2015",
+            "excluido": "N",
+        }
+        updated_contract = update_contract(record)
+
+        assert contract.pk == updated_contract.pk
+
+    def test_remove_contract(self):
+        contract = baker.make_recipe(
+            "datasets.models.CityCouncilContract", external_code="214", excluded=False
+        )
+        record = {"codCon": "214"}
+        remove_contract(record)
+
+        contract.refresh_from_db()
+        assert contract.excluded is True
