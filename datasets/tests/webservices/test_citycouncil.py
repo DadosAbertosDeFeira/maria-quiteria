@@ -2,14 +2,17 @@ from datetime import date, datetime
 
 import pytest
 from core import settings
-from datasets.models import CityCouncilBid, CityCouncilContract
+from datasets.models import CityCouncilBid, CityCouncilContract, CityCouncilExpense
 from datasets.webservices.citycouncil import (
     add_bid,
     add_contract,
+    add_expense,
     remove_bid,
     remove_contract,
+    remove_expense,
     update_bid,
     update_contract,
+    update_expense,
 )
 from model_bakery import baker
 
@@ -140,3 +143,123 @@ class TestContract:
 
         contract.refresh_from_db()
         assert contract.excluded is True
+
+
+@pytest.mark.django_db
+class TestExpenses:
+    def test_add_expense(self):
+        assert CityCouncilExpense.objects.count() == 0
+        record = {
+            "codArquivo": "253",
+            "codEtapa": "EMP",
+            "codLinha": "2",
+            "codUnidOrcam": "101",
+            "dsDespesa": "IMPORTE DESTINADO A PAGAMENTO DE SUBSIDIOS DURANTE O "
+            "PERIODO.                                         ",
+            "dsFonteRec": "0000 - " "TESOURO",
+            "dsFuncao": "01 - " "LEGISLATIVA",
+            "dsNatureza": "319011010000000000 - V.Vant.Fixas P.Civil(Ve.Base "
+            "Folha)                2003 - Administracao da acao "
+            "legislativa                          ",
+            "dsSubfuncao": "031 - " "ACAO",
+            "dtPublicacao": "2/1/2014",
+            "dtRegistro": "2/1/2014",
+            "excluido": "N",
+            "modalidade": "ISENTO        ",
+            "nmCredor": "VEREADORES      ",
+            "nuCpfCnpj": "14.488.415/0001-60",
+            "numEtapa": "14000001        ",
+            "numProcadm": "001/2014      ",
+            "numProclic": "              ",
+            "valor": "3790000,00",
+        }
+        expense_obj = add_expense(record)
+
+        expected_expense = {
+            "phase": "empenho",
+            "budget_unit": "101",
+            "summary": "IMPORTE DESTINADO A PAGAMENTO DE SUBSIDIOS DURANTE O PERIODO.",
+            "resource": "0000 - TESOURO",
+            "function": "01 - LEGISLATIVA",
+            "legal_status": "319011010000000000 - V.Vant.Fixas P.Civil(Ve.Base "
+            "Folha)                2003 - Administracao da acao "
+            "legislativa",
+            "subfunction": "031 - ACAO",
+            "published_at": date(2014, 1, 2),
+            "date": date(2014, 1, 2),
+            "excluded": False,
+            "modality": "isento",
+            "company_or_person": "VEREADORES",
+            "document": "14.488.415/0001-60",
+            "phase_code": "14000001",
+            "number": "001/2014",
+            "process_number": "",
+            "value": 3790000.00,
+            "external_file_code": "253",
+            "external_file_line": "2",
+        }
+
+        assert CityCouncilExpense.objects.count() == 1
+
+        assert expense_obj.phase == expected_expense["phase"]
+        assert expense_obj.budget_unit == expected_expense["budget_unit"]
+        assert expense_obj.resource == expected_expense["resource"]
+        assert expense_obj.function == expected_expense["function"]
+        assert expense_obj.legal_status == expected_expense["legal_status"]
+        assert expense_obj.subfunction == expected_expense["subfunction"]
+        assert expense_obj.published_at == expected_expense["published_at"]
+        assert expense_obj.excluded == expected_expense["excluded"]
+        assert expense_obj.modality == expected_expense["modality"]
+        assert expense_obj.company_or_person == expected_expense["company_or_person"]
+        assert expense_obj.document == expected_expense["document"]
+        assert expense_obj.phase_code == expected_expense["phase_code"]
+        assert expense_obj.number == expected_expense["number"]
+        assert expense_obj.process_number == expected_expense["process_number"]
+        assert expense_obj.value == expected_expense["value"]
+
+    def test_update_expense(self):
+        expense = baker.make_recipe(
+            "datasets.models.CityCouncilExpense",
+            external_file_code="253",
+            external_file_line="2",
+        )
+        record = {
+            "codArquivo": "253",
+            "codEtapa": "EMP",
+            "codLinha": "2",
+            "codUnidOrcam": "101",
+            "dsDespesa": "IMPORTE DESTINADO A PAGAMENTO DE SUBSIDIOS DURANTE O "
+            "PERIODO.                                         ",
+            "dsFonteRec": "0000 - " "TESOURO",
+            "dsFuncao": "01 - " "LEGISLATIVA",
+            "dsNatureza": "319011010000000000 - V.Vant.Fixas P.Civil(Ve.Base "
+            "Folha)                2003 - Administracao da acao "
+            "legislativa                          ",
+            "dsSubfuncao": "031 - " "ACAO",
+            "dtPublicacao": "2/1/2014",
+            "dtRegistro": "2/1/2014",
+            "excluido": "N",
+            "modalidade": "ISENTO        ",
+            "nmCredor": "VEREADORES      ",
+            "nuCpfCnpj": "14.488.415/0001-60",
+            "numEtapa": "14000001        ",
+            "numProcadm": "001/2014      ",
+            "numProclic": "              ",
+            "valor": "3790000,00",
+        }
+        updated_expense = update_expense(record)
+
+        assert expense.pk == updated_expense.pk
+
+    def test_remove_expense(self):
+        expense = baker.make_recipe(
+            "datasets.models.CityCouncilExpense",
+            external_file_code="253",
+            external_file_line="2",
+            excluded=False,
+        )
+        record = {"codArquivo": "253", "codLinha": "2"}
+        remove_expense(record)
+
+        expense.refresh_from_db()
+        assert expense.excluded is True

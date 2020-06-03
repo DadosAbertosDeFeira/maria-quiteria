@@ -47,6 +47,39 @@ CITYCOUNCIL_CONTRACT_FUNCTIONS = {
 }
 
 
+CITYCOUNCIL_EXPENSE_FIELDS_MAPPING = {
+    "CODARQUIVO": "external_file_code",
+    "CODLINHA": "external_file_line",
+    "CODUNIDORCAM": "budget_unit",
+    "DTPUBLICACAO": "published_at",
+    "DTREGISTRO": "date",
+    "CODETAPA": "phase",
+    "NUMPROCADM": "number",
+    "NUMPROCLIC": "process_number",
+    "DSDESPESA": "summary",
+    "NMCREDOR": "company_or_person",
+    "NUCPFCNPJ": "document",
+    "VALOR": "value",
+    "DSFUNCAO": "function",
+    "DSSUBFUNCAO": "subfunction",
+    "DSNATUREZA": "legal_status",  # TODO natureza do TCM-BA
+    "DSFONTEREC": "resource",
+    "NUMETAPA": "phase_code",
+    "MODALIDADE": "modality",
+    "EXCLUIDO": "excluded",
+}
+
+
+CITYCOUNCIL_EXPENSE_FUNCTIONS = {
+    "value": currency_to_float,
+    "excluded": to_boolean,
+    "published_at": from_str_to_date,
+    "date": from_str_to_date,
+    "phase": get_phase,
+    "modality": lower,
+}
+
+
 def map_to_fields(item, fields_mapping, functions):
     new_item = {}
     for key, value in item.items():
@@ -58,36 +91,9 @@ def map_to_fields(item, fields_mapping, functions):
 
 
 def to_expense(item):
-    fields_mapping = {
-        "CODARQUIVO": "external_file_code",
-        "CODLINHA": "external_file_line",
-        "CODUNIDORCAM": "budget_unit",
-        "DTPUBLICACAO": "published_at",
-        "DTREGISTRO": "date",
-        "CODETAPA": "phase",
-        "NUMPROCADM": "number",
-        "NUMPROCLIC": "process_number",
-        "DSDESPESA": "summary",
-        "NMCREDOR": "company_or_person",
-        "NUCPFCNPJ": "document",
-        "VALOR": "value",
-        "DSFUNCAO": "function",
-        "DSSUBFUNCAO": "subfunction",
-        "DSNATUREZA": "legal_status",  # TODO natureza do TCM-BA
-        "DSFONTEREC": "resource",
-        "NUMETAPA": "phase_code",
-        "MODALIDADE": "modality",
-        "EXCLUIDO": "excluded",
-    }
-    functions = {
-        "value": currency_to_float,
-        "excluded": to_boolean,
-        "published_at": from_str_to_date,
-        "date": from_str_to_date,
-        "phase": get_phase,
-        "modality": lower,
-    }
-    new_item = map_to_fields(item, fields_mapping, functions)
+    new_item = map_to_fields(
+        item, CITYCOUNCIL_EXPENSE_FIELDS_MAPPING, CITYCOUNCIL_EXPENSE_FUNCTIONS
+    )
     return CityCouncilExpense(**new_item)
 
 

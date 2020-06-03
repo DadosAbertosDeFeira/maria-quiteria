@@ -83,7 +83,7 @@ def test_save_contract_from_csv():
         "EXCLUIDO": "N",
     }
 
-    expected_expense = {
+    expected_contract = {
         "external_code": "43",
         "description": "CONTRATO Nº 004/2014 - PRESTAÇÃO DE SERVIÇO",
         "details": "Contratação conforme Licitação 01/2014, Pregão 01/2014.",
@@ -95,18 +95,18 @@ def test_save_contract_from_csv():
         "excluded": False,
     }
     contract_obj = to_contract(item)
-    assert contract_obj.external_code == expected_expense["external_code"]
-    assert contract_obj.description == expected_expense["description"]
-    assert contract_obj.details == expected_expense["details"]
+    assert contract_obj.external_code == expected_contract["external_code"]
+    assert contract_obj.description == expected_contract["description"]
+    assert contract_obj.details == expected_contract["details"]
     assert (
         contract_obj.company_or_person_document
-        == expected_expense["company_or_person_document"]
+        == expected_contract["company_or_person_document"]
     )
-    assert contract_obj.company_or_person == expected_expense["company_or_person"]
-    assert contract_obj.value == expected_expense["value"]
-    assert contract_obj.start_date == expected_expense["start_date"]
-    assert contract_obj.end_date == expected_expense["end_date"]
-    assert contract_obj.excluded == expected_expense["excluded"]
+    assert contract_obj.company_or_person == expected_contract["company_or_person"]
+    assert contract_obj.value == expected_contract["value"]
+    assert contract_obj.start_date == expected_contract["start_date"]
+    assert contract_obj.end_date == expected_contract["end_date"]
+    assert contract_obj.excluded == expected_contract["excluded"]
 
 
 def test_adapt_from_csv_data_to_bid():

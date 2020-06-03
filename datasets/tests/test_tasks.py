@@ -116,6 +116,7 @@ def test_get_city_council_updates(mocker):
         "exclusoesReceita": [],
         "inclusoesDespesa": [],
         "alteracoesDespesa": [],
+        "exclusoesDespesa": [],
     }
     post_mock = mocker.patch("datasets.tasks.requests.post")
     post_mock.return_value.json.return_value = expected_payload
@@ -152,6 +153,7 @@ def test_update_city_council_objects():
         "exclusoesReceita": [],
         "inclusoesDespesa": [],
         "alteracoesDespesa": [],
+        "exclusoesDespesa": [],
     }
     update_city_council_objects(payload)
 
@@ -183,6 +185,7 @@ def test_add_bid_on_update_city_council_objects():
         "exclusoesReceita": [],
         "inclusoesDespesa": [],
         "alteracoesDespesa": [],
+        "exclusoesDespesa": [],
     }
 
     assert CityCouncilBid.objects.count() == 0
@@ -215,6 +218,7 @@ def test_remove_bid_on_update_city_council_objects():
         "exclusoesReceita": [],
         "inclusoesDespesa": [],
         "alteracoesDespesa": [],
+        "exclusoesDespesa": [],
     }
 
     bid = baker.make("datasets.CityCouncilBid", external_code="214")

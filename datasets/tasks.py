@@ -7,10 +7,13 @@ from datasets.services import get_s3_client
 from datasets.webservices.citycouncil import (
     add_bid,
     add_contract,
+    add_expense,
     remove_bid,
     remove_contract,
+    remove_expense,
     update_bid,
     update_contract,
+    update_expense,
 )
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -117,6 +120,9 @@ def update_city_council_objects(payload):
         "inclusoesLicitacao": add_bid,
         "alteracoesLicitacao": update_bid,
         "exclusoesLicitacao": remove_bid,
+        "inclusoesDespesa": add_expense,
+        "alteracoesDespesa": update_expense,
+        "exclusoesDespesa": remove_expense,
     }
     for action_name, records in payload.items():
         method = action_methods.get(action_name)
