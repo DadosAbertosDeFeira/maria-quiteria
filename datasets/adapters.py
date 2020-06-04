@@ -12,6 +12,7 @@ from datasets.parsers import (
     get_phase,
     lower,
     modality_mapping_from_city_council_db,
+    strip_accents,
     to_boolean,
 )
 
@@ -121,7 +122,7 @@ def to_revenue(item):
         "published_at": from_str_to_date,
         "registered_at": from_str_to_date,
         "value": currency_to_float,
-        "modality": lower,
+        "modality": normalize_category,
         "revenue_type": city_council_revenue_type_mapping,
         "resource": lower,
         "legal_status": lower,
@@ -129,3 +130,9 @@ def to_revenue(item):
     }
     new_item = map_to_fields(item, fields_mapping, functions)
     return CityCouncilRevenue(**new_item)
+
+
+def normalize_category(string):
+    if string:
+        cleaned = string.strip().lower().replace(" ", "_")
+        return strip_accents(cleaned)

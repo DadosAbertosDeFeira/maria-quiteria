@@ -1,4 +1,5 @@
 import logging
+import unicodedata
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -90,3 +91,13 @@ def city_council_revenue_type_mapping(code):
         return found
     else:
         logger.warning(f"Código da tipo de receita não encontrado: {code}")
+
+
+def strip_accents(string):
+    if string is None:
+        return
+    return "".join(
+        char
+        for char in unicodedata.normalize("NFD", string)
+        if unicodedata.category(char) != "Mn"
+    )

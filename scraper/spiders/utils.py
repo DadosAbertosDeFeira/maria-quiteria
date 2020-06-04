@@ -1,6 +1,5 @@
 import logging
 import re
-import unicodedata
 from urllib.parse import parse_qs, urlparse
 
 from datasets.parsers import from_str_to_date
@@ -66,16 +65,6 @@ def extract_date(str_with_date):
     if result:
         return from_str_to_date(result.group(0))
     return
-
-
-def strip_accents(string):
-    if string is None:
-        return
-    return "".join(
-        char
-        for char in unicodedata.normalize("NFD", string)
-        if unicodedata.category(char) != "Mn"
-    )
 
 
 def is_url(url):
