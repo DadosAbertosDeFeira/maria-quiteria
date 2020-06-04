@@ -1,7 +1,6 @@
 from datetime import date, datetime
 
 import pytest
-from datasets.parsers import strip_accents
 
 from ..spiders.utils import (
     extract_date,
@@ -10,6 +9,7 @@ from ..spiders.utils import (
     is_url,
     months_and_years,
     replace_query_param,
+    strip_accents,
 )
 
 

@@ -1,5 +1,6 @@
 import logging
 import re
+import unicodedata
 from urllib.parse import parse_qs, urlparse
 
 from datasets.parsers import from_str_to_date
@@ -96,3 +97,13 @@ def is_url(url):
         return False
 
     return True
+
+
+def strip_accents(string):
+    if string is None:
+        return
+    return "".join(
+        char
+        for char in unicodedata.normalize("NFD", string)
+        if unicodedata.category(char) != "Mn"
+    )

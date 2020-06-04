@@ -2,11 +2,11 @@ import re
 from datetime import date, datetime, timedelta
 
 import scrapy
-from datasets.parsers import from_str_to_datetime, strip_accents
+from datasets.parsers import from_str_to_datetime
 from scraper.items import CityHallBidItem, CityHallContractItem, CityHallPaymentsItem
 
 from . import BaseSpider
-from .utils import extract_param, identify_contract_id, is_url
+from .utils import extract_param, identify_contract_id, is_url, strip_accents
 
 
 class BidsSpider(BaseSpider):

@@ -1,13 +1,6 @@
 from datetime import date, datetime
 
-import pytest
-from datasets.adapters import (
-    normalize_category,
-    to_bid,
-    to_contract,
-    to_expense,
-    to_revenue,
-)
+from datasets.adapters import to_bid, to_contract, to_expense, to_revenue
 
 
 def test_save_expense_from_csv():
@@ -169,7 +162,7 @@ def test_adapt_from_csv_data_to_revenue():
         "published_at": date(2014, 1, 1),
         "registered_at": date(2014, 1, 1),
         "revenue_type": "orcamentaria",
-        "modality": "repasse_a_prefeitura_indenizacao",
+        "modality": "repasse a prefeitura indenização",
         "description": "TESTE DE RECEITA",
         "value": 123131.00,
         "resource": "prefeitura",
@@ -192,17 +185,3 @@ def test_adapt_from_csv_data_to_revenue():
     assert revenue_obj.legal_status == expected_revenue["legal_status"]
     assert revenue_obj.destination == expected_revenue["destination"]
     assert revenue_obj.excluded == expected_revenue["excluded"]
-
-
-@pytest.mark.parametrize(
-    "string,expected_category",
-    [
-        ("Transferencia de Duodecimo", "transferencia_de_duodecimo"),
-        ("RECEBIMENTO", "recebimento"),
-        ("ORÇAMENTO", "orcamento"),
-        ("Repasse a Prefeitura indenização", "repasse_a_prefeitura_indenizacao"),
-        ("TRANSFERENCIA DUODECIMO", "transferencia_duodecimo"),
-    ],
-)
-def test_normalize_category(string, expected_category):
-    assert normalize_category(string) == expected_category
