@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from datasets.adapters import to_bid, to_contract, to_expense
+from datasets.adapters import to_bid, to_contract, to_expense, to_revenue
 
 
 def test_save_expense_from_csv():
@@ -138,3 +138,50 @@ def test_adapt_from_csv_data_to_bid():
     assert bid_obj.description == expected_bid["description"]
     assert bid_obj.session_at == expected_bid["session_at"]
     assert bid_obj.excluded == expected_bid["excluded"]
+
+
+def test_adapt_from_csv_data_to_revenue():
+    item = {
+        "CODLINHA": "27",
+        "CODUNIDGESTORA": "101",
+        "DTPUBLICACAO": "1/1/2014",
+        "DTREGISTRO": "1/1/2014",
+        "TIPOREC": "ORC",
+        "MODALIDADE": "Repasse a Prefeitura indenização",
+        "DSRECEITA": "TESTE DE RECEITA",
+        "VALOR": "123131,00",
+        "FONTE": "PREFEITURA",
+        "DSNATUREZA": "CONTRATO",
+        "DESTINACAO": "ORCAMENTO",
+        "EXCLUIDO": "S",
+    }
+
+    expected_revenue = {
+        "external_code": "27",
+        "budget_unit": "101",
+        "published_at": date(2014, 1, 1),
+        "registered_at": date(2014, 1, 1),
+        "revenue_type": "orcamentaria",
+        "modality": "repasse a prefeitura indenização",
+        "description": "TESTE DE RECEITA",
+        "value": 123131.00,
+        "resource": "prefeitura",
+        "legal_status": "contrato",
+        "destination": "orcamento",
+        "excluded": True,
+    }
+
+    revenue_obj = to_revenue(item)
+
+    assert revenue_obj.external_code == expected_revenue["external_code"]
+    assert revenue_obj.budget_unit == expected_revenue["budget_unit"]
+    assert revenue_obj.published_at == expected_revenue["published_at"]
+    assert revenue_obj.registered_at == expected_revenue["registered_at"]
+    assert revenue_obj.revenue_type == expected_revenue["revenue_type"]
+    assert revenue_obj.modality == expected_revenue["modality"]
+    assert revenue_obj.description == expected_revenue["description"]
+    assert revenue_obj.value == expected_revenue["value"]
+    assert revenue_obj.resource == expected_revenue["resource"]
+    assert revenue_obj.legal_status == expected_revenue["legal_status"]
+    assert revenue_obj.destination == expected_revenue["destination"]
+    assert revenue_obj.excluded == expected_revenue["excluded"]
