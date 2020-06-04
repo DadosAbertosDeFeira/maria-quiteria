@@ -161,7 +161,7 @@ def test_adapt_from_csv_data_to_revenue():
         "budget_unit": "101",
         "published_at": date(2014, 1, 1),
         "registered_at": date(2014, 1, 1),
-        "revenue_type": "orcamento",
+        "revenue_type": "orcamentaria",
         "modality": "recebimento",
         "description": "TESTE DE RECEITA",
         "value": 123131.00,

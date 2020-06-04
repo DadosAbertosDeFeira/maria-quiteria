@@ -81,7 +81,7 @@ def modality_mapping_from_city_council_db(code):
 
 def city_council_revenue_type_mapping(code):
     mapping = {
-        "ORC": "orcamento",
+        "ORC": "orcamentaria",
         "NORC": "nao_orcamentaria",
         "TRANSF": "transferencia",
     }

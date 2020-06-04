@@ -40,7 +40,7 @@ EXPENSE_MODALITIES = (
 )
 
 REVENUE_TYPES = (
-    ("orcamento", "Orçamento"),
+    ("orcamentaria", "Orçamentária"),
     ("nao_orcamentaria", "Não-orçamentária"),
     ("transferencia", "Transferência"),
 )
@@ -396,12 +396,12 @@ class CityCouncilBid(DatasetMixin):
 
 
 class CityCouncilRevenue(DatasetMixin):
-    external_code = models.CharField("Código externo", max_length=10)
+    external_code = models.CharField("Código externo", max_length=10, db_index=True)
     budget_unit = models.PositiveIntegerField("Unidade gestora", default=101)
-    published_at = models.DateField("Publicado em", null=True)
-    registered_at = models.DateField("Registrado em", null=True)
+    published_at = models.DateField("Publicado em", null=True, db_index=True)
+    registered_at = models.DateField("Registrado em", null=True, db_index=True)
     revenue_type = models.CharField(
-        "Tipo da receita", choices=REVENUE_TYPES, max_length=20
+        "Tipo da receita", choices=REVENUE_TYPES, max_length=20, db_index=True
     )
     modality = models.CharField("Modalidade", max_length=60, null=True, blank=True)
     description = models.TextField("Descrição")
@@ -410,8 +410,8 @@ class CityCouncilRevenue(DatasetMixin):
         "Fonte", max_length=200, null=True, blank=True, default="prefeitura"
     )
     legal_status = models.CharField(
-        "Natureza", max_length=200, null=True, blank=True
-    )  # TODO checar tipos
+        "Natureza", max_length=200, null=True, blank=True, db_index=True
+    )
     destination = models.CharField("Destinação", max_length=200, null=True, blank=True)
     excluded = models.BooleanField("Excluído?", default=False)
 
