@@ -1,9 +1,15 @@
 from datetime import date, datetime
 
 import pytest
-from datasets.adapters import to_bid_file
+from datasets.adapters import (
+    to_bid,
+    to_bid_file,
+    to_contract,
+    to_contract_file,
+    to_expense,
+    to_revenue,
+)
 from model_bakery import baker
-from datasets.adapters import to_bid, to_contract, to_expense, to_revenue, to_contract_file
 
 
 def test_save_expense_from_csv():
