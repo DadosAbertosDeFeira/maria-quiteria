@@ -1,8 +1,6 @@
 import csv
 from datetime import datetime
 
-from datasets.adapters import to_bid, to_contract, to_expense, to_revenue
-
 from core import settings
 from datasets.adapters import (
     to_bid,
@@ -10,6 +8,7 @@ from datasets.adapters import (
     to_contract,
     to_contract_file,
     to_expense,
+    to_revenue,
 )
 from datasets.models import (
     CityCouncilBid,
