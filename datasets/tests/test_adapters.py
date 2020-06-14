@@ -206,12 +206,14 @@ def test_adapt_from_csv_data_to_contract_file(settings):
     }
     expected_file = {
         "url": "contratos/Contrato N2 Soluções e Publicação.pdf",
+        "external_code": item["CODARQCON"],
     }
 
     file_obj = to_contract_file(item)
 
     assert file_obj.content_object == contract
     assert file_obj.url == f"{settings.CITY_COUNCIL_WEBSERVICE}{expected_file['url']}"
+    assert file_obj.external_code == expected_file["external_code"]
 
 
 @pytest.mark.django_db
@@ -237,12 +239,14 @@ def test_adapt_from_csv_data_to_bid_file(settings):
     }
     expected_file = {
         "url": "upload/licitacao/Edital Pregao 01_2013.doc",
+        "external_code": item["CODARQLIC"],
     }
 
     file_obj = to_bid_file(item)
 
     assert file_obj.content_object == bid
     assert file_obj.url == f"{settings.CITY_COUNCIL_WEBSERVICE}{expected_file['url']}"
+    assert file_obj.external_code == expected_file["external_code"]
 
 
 @pytest.mark.django_db

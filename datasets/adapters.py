@@ -147,7 +147,12 @@ def to_contract_file(item):
 
     content_type = get_content_type_for_model(contract)
     url = f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHO']}"
-    return File(url=url, content_type=content_type, object_id=contract.pk)
+    return File(
+        url=url,
+        content_type=content_type,
+        object_id=contract.pk,
+        external_code=item["CODARQCON"],
+    )
 
 
 def to_bid_file(item):
@@ -159,4 +164,9 @@ def to_bid_file(item):
 
     content_type = get_content_type_for_model(bid)
     url = f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHOARQLIC']}"
-    return File(url=url, content_type=content_type, object_id=bid.pk)
+    return File(
+        url=url,
+        content_type=content_type,
+        object_id=bid.pk,
+        external_code=item["CODARQLIC"],
+    )
