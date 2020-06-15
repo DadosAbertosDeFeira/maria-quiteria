@@ -17,6 +17,12 @@ html, body {
   line-height: 1.5;
 }
 
+.hero-bg {
+  background-image: url('./imagem-apresentacao-dadosdefeira.png'); background-size:100%; background-repeat: no-repeat; background-position: center; background-origin: padding-box; 
+  position: relative;
+  z-index: 99999999; 
+}
+
 .features {
   padding: 5rem 0;
 }
@@ -77,4 +83,8 @@ html, body {
 
 .is-shady:hover {
   box-shadow: 0 10px 16px rgba(0, 0, 0, .13), 0 6px 6px rgba(0, 0, 0, .19);
+}
+
+.hide {
+  display: none;
 }
