@@ -55,7 +55,9 @@ class Command(BaseCommand):
         model = source_map["model"]
 
         if options.get("drop_all"):
-            model.objects.all().delete()
+            confirmation = input("Tem certeza? s/n")
+            if confirmation.lower() in ["s", "y"]:
+                model.objects.all().delete()
 
         saved = 0
         errors = 0
