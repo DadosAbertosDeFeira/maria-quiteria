@@ -1,13 +1,21 @@
 import csv
-import os
 from datetime import datetime
 
-from datasets.adapters import to_bid, to_contract, to_expense, to_revenue
+from core import settings
+from datasets.adapters import (
+    to_bid,
+    to_bid_file,
+    to_contract,
+    to_contract_file,
+    to_expense,
+    to_revenue,
+)
 from datasets.models import (
     CityCouncilBid,
     CityCouncilContract,
     CityCouncilExpense,
     CityCouncilRevenue,
+    File,
 )
 from django.core.management.base import BaseCommand
 
@@ -16,6 +24,8 @@ mapping = {
     "citycouncil_contracts": {"model": CityCouncilContract, "adapter": to_contract},
     "citycouncil_bids": {"model": CityCouncilBid, "adapter": to_bid},
     "citycouncil_revenue": {"model": CityCouncilRevenue, "adapter": to_revenue},
+    "citycouncil_contract_files": {"model": File, "adapter": to_contract_file},
+    "citycouncil_bid_files": {"model": File, "adapter": to_bid_file},
 }
 
 
@@ -45,18 +55,25 @@ class Command(BaseCommand):
         model = source_map["model"]
 
         if options.get("drop_all"):
-            model.objects.all().delete()
+            confirmation = input("Tem certeza? s/n")
+            if confirmation.lower() in ["s", "y"]:
+                model.objects.all().delete()
 
+        saved = 0
+        errors = 0
         with open(options.get("file"), newline="") as csv_file:
             reader = csv.DictReader(csv_file)
 
             for row in reader:
                 item = adapter(row)
-                item.crawled_at = datetime.now()
-                item.crawled_from = os.getenv("CITY_COUNCIL_WEBSERVICE")
+                if not options.get("source").endswith("_files"):
+                    item.crawled_at = datetime.now()
+                    item.crawled_from = settings.CITY_COUNCIL_WEBSERVICE
                 try:
                     item.save()
+                    saved += 1
                 except Exception as e:
+                    errors += 1
                     self.warn(f"{e}\n{str(row)}")
 
-        self.success("Concluído!")
+        self.success(f"Concluído!\nSalvos: {saved} Erros: {errors}")

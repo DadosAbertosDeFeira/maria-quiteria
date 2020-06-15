@@ -106,6 +106,8 @@ class Common(Configuration):
     AWS_S3_BUCKET_FOLDER = values.Value(environ_prefix=None)
     AWS_S3_REGION = values.Value(environ_prefix=None)
 
+    CITY_COUNCIL_WEBSERVICE = "http://teste-transparencia.com.br/"
+
 
 class Dev(Common):
     DEBUG = True
@@ -123,6 +125,6 @@ class Prod(Common):
     SECRET_KEY = values.SecretValue()
     ALLOWED_HOSTS = values.ListValue()
     CLOUDAMQP_URL = values.Value(environ_prefix=None)
-
     DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=True)}
     GOOGLE_ANALYTICS_KEY = values.Value()
+    CITY_COUNCIL_WEBSERVICE = values.Value()

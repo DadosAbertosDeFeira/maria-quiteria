@@ -57,6 +57,9 @@ class File(models.Model):
     checksum = models.CharField(max_length=128, null=True, blank=True)
     s3_url = models.URLField("URL externa", null=True, blank=True)
     s3_file_path = models.CharField(max_length=300, null=True, blank=True)
+    external_code = models.CharField(
+        "Código externo", max_length=10, null=True, blank=True, db_index=True
+    )
 
     search_vector = SearchVectorField(null=True, editable=False)
 
@@ -178,6 +181,7 @@ class CityCouncilContract(DatasetMixin):
     start_date = models.DateField("Data de início")
     end_date = models.DateField("Data final")
     excluded = models.BooleanField("Excluído?", default=False)
+    files = GenericRelation(File)
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Contrato"
@@ -380,6 +384,7 @@ class CityCouncilBid(DatasetMixin):
     description = models.TextField("Descrição (objeto)")
     session_at = models.DateTimeField("Sessão Data / Horário", null=True)
     excluded = models.BooleanField("Excluído?", default=False)
+    files = GenericRelation(File)
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Licitação"
