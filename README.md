@@ -61,6 +61,54 @@ Depois basta aplicar as `migrations`:
 python manage.py migrate
 ```
 
+* Docker (alpha)
+
+Se você não quiser instalar todas as dependencias, você pode [instalar](https://docs.docker.com/install/) e usar o Docker.
+Para isso, você precisa criar um `.env` como abaixo:
+
+```
+KEEP_FILES=True
+SPIDERMON_TELEGRAM_FAKE=True
+SPIDERMON_SENTRY_FAKE=True
+DJANGO_SETTINGS_MODULE=core.settings
+DJANGO_CONFIGURATION=Prod
+DJANGO_SECRET_KEY=dont-tell-anybody
+```
+
+Depois (somente na primeira vez):
+
+`docker-compose build` para construir a imagem
+
+`docker-compose up` para executar a imagem
+
+`make migrate` para criar as tabelas no banco
+
+`make createsuperuser` para criar um usuario `admin`
+
+E por fim `make collectstatic` para processar e mover os arquivos estáticos.
+
+Reinicie os containers: `docker-compose restart`
+
+Nas próximas vezes, basta executar os containers: `docker-compose up` e acesse [localhost:8000/admin](http://localhost:8000/admin)
+
+
+Para a acessar o banco depois com seu cliente preferido, basta usar os seguintes dados:
+
+```
+User: postgres
+Password: a senha que você definiu
+Database: postgres
+Host: localhost
+```
+
+**IMPORTANTE**: o uso do Docker (ainda) não faz a instalação do Apache Tika
+
+#### Rodando os testes
+
+`make runtests`
+
+
+
 * Admin
 
 Para navegar na admin, primeiro crie um super administrador:
