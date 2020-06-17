@@ -2,6 +2,7 @@ from datetime import date, timedelta
 
 import pytest
 from model_bakery import baker
+from datasets.models import Gazette
 
 
 @pytest.mark.django_db
@@ -69,6 +70,17 @@ class TestGazette:
         expected_date = date(2019, 10, 1)
         gazette = baker.make_recipe("datasets.Gazette", date=expected_date,)
         assert gazette.last_collected_item_date() == expected_date
+
+    def test_undated_should_be_shown_last(self):
+        newer_date = date(2020, 5, 28)
+        older_date = date(2020, 3, 2)
+        baker.make_recipe("datasets.Gazette")
+        baker.make_recipe("datasets.Gazette", date=newer_date,)
+        baker.make_recipe("datasets.Gazette", date=older_date, )
+        gazettes = Gazette.objects.all()
+        assert gazettes[0].date == newer_date
+        assert gazettes[1].date == older_date
+        assert gazettes[2].date is None
 
 
 @pytest.mark.django_db
