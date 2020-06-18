@@ -7,18 +7,14 @@ services:
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: postgres
         ports:
-            - "5432:${POSTGRES_PORT:-5432}"
+            - "5432:5432"
 
     web:
         build: .
-        command: python manage.py runserver 0.0.0.0:8000
         volumes:
             - .:/code
         ports:
             - "8000:8000"
         env_file: .env
-        environment:
-            # Como eu uso o do settings.py aqui?
-            DATABASE_URL: "postgres://postgres:postgres@localhost:5432/mariaquiteria"
         depends_on:
             - db
