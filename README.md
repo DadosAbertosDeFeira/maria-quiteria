@@ -96,7 +96,7 @@ Para a acessar o banco depois com seu cliente preferido, basta usar os seguintes
 
 ```
 User: postgres
-Password: a senha que você definiu
+Password: postgres
 Database: postgres
 Host: localhost
 ```
