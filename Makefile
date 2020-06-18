@@ -1,11 +1,11 @@
 migrate:
-	docker-compose exec web ./manage.py migrate
+	docker-compose run -rm web ./manage.py migrate
 
 createsuperuser:
-	docker-compose exec web ./manage.py createsuperuser
+	docker-compose run -rm web ./manage.py createsuperuser
 
 collectstatic:
-	docker-compose exec web ./manage.py collectstatic
+	docker-compose run -rm web ./manage.py collectstatic
 
 runtests:
-	docker-compose exec web pytest
+	docker-compose run -rm web pytest
