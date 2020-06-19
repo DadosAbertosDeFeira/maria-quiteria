@@ -68,6 +68,7 @@ class File(models.Model):
         verbose_name_plural = "Arquivos"
         indexes = [GinIndex(fields=["search_vector"])]
         unique_together = ("url", "content_type", "object_id")
+        ordering = ["-created_at"]
 
     def __repr__(self):
         return f"[{self.content_type}] {self.url}"
@@ -122,6 +123,7 @@ class CityCouncilAgenda(DatasetMixin):
     class Meta:
         verbose_name = "Câmara de Vereadores - Agenda"
         verbose_name_plural = "Câmara de Vereadores - Agendas"
+        ordering = ["-date"]
         get_latest_by = "date"
 
     def __repr__(self):
@@ -154,6 +156,7 @@ class CityCouncilAttendanceList(DatasetMixin):
         verbose_name = "Câmara de Vereadores - Lista de Presença"
         verbose_name_plural = "Câmara de Vereadores - Listas de Presença"
         get_latest_by = "date"
+        ordering = ["-date"]
 
     def __repr__(self):
         return f"{self.date} {self.council_member} {self.status}"
@@ -187,6 +190,7 @@ class CityCouncilContract(DatasetMixin):
         verbose_name = "Câmara de Vereadores - Contrato"
         verbose_name_plural = "Câmara de Vereadores - Contratos"
         get_latest_by = "start_date"
+        ordering = ["-start_date"]
 
     def __repr__(self):
         interval = f"{self.start_date} {self.end_date}"
@@ -239,6 +243,7 @@ class CityCouncilExpense(DatasetMixin):
         verbose_name = "Câmara de Vereadores - Despesa"
         verbose_name_plural = "Câmara de Vereadores - Despesas"
         get_latest_by = "date"
+        ordering = ["-date"]
 
     def __repr__(self):
         return f"{self.date} {self.phase} {self.company_or_person} {self.value}"
@@ -263,6 +268,7 @@ class CityCouncilMinute(DatasetMixin):
         verbose_name = "Câmara de Vereadores - Atas"
         verbose_name_plural = "Câmara de Vereadores - Atas"
         get_latest_by = "date"
+        ordering = ["-date"]
 
     def __repr__(self):
         return f"{self.date} {self.title}"
@@ -329,6 +335,7 @@ class CityHallBid(DatasetMixin):
         verbose_name = "Prefeitura - Licitação"
         verbose_name_plural = "Prefeitura - Licitações"
         get_latest_by = "session_at"
+        ordering = [F("session_at").desc(nulls_last=True)]
 
     def __repr__(self):
         return f"{self.session_at} {self.modality} {self.public_agency}"
@@ -390,6 +397,7 @@ class CityCouncilBid(DatasetMixin):
         verbose_name = "Câmara de Vereadores - Licitação"
         verbose_name_plural = "Câmara de Vereadores - Licitações"
         get_latest_by = "session_at"
+        ordering = [F("session_at").desc(nulls_last=True)]
 
     def __repr__(self):
         model_name = self._meta.verbose_name
@@ -424,6 +432,7 @@ class CityCouncilRevenue(DatasetMixin):
         verbose_name = "Câmara de Vereadores - Receita"
         verbose_name_plural = "Câmara de Vereadores - Receitas"
         get_latest_by = "published_at"
+        ordering = [F("published_at").desc(nulls_last=True)]
 
     def __repr__(self):
         model_name = self._meta.verbose_name
