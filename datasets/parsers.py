@@ -24,7 +24,7 @@ def currency_to_float(value):
 
 
 def to_boolean(value):
-    return value.lower() in ["y", "S", 1]
+    return value.lower() in ["y", "s", 1]
 
 
 def from_str_to_datetime(date_str, supported_formats=None):
@@ -78,3 +78,16 @@ def modality_mapping_from_city_council_db(code):
         return found
     else:
         logger.warning(f"Código da modalidade não encontrado: {code}")
+
+
+def city_council_revenue_type_mapping(code):
+    mapping = {
+        "ORC": "orcamentaria",
+        "NORC": "nao_orcamentaria",
+        "TRANSF": "transferencia",
+    }
+    found = mapping.get(code)
+    if found:
+        return found
+    else:
+        logger.warning(f"Código da tipo de receita não encontrado: {code}")

@@ -68,16 +68,6 @@ def extract_date(str_with_date):
     return
 
 
-def strip_accents(string):
-    if string is None:
-        return
-    return "".join(
-        char
-        for char in unicodedata.normalize("NFD", string)
-        if unicodedata.category(char) != "Mn"
-    )
-
-
 def is_url(url):
     if not url:
         return False
@@ -107,3 +97,13 @@ def is_url(url):
         return False
 
     return True
+
+
+def strip_accents(string):
+    if string is None:
+        return
+    return "".join(
+        char
+        for char in unicodedata.normalize("NFD", string)
+        if unicodedata.category(char) != "Mn"
+    )

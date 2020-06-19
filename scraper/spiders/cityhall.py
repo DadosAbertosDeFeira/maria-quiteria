@@ -44,12 +44,19 @@ class BidsSpider(BaseSpider):
             return "chamada_publica"
 
     def follow_this_date(self, url):
-        month_year = extract_param(url, "dt")
-        month_year = datetime.strptime(month_year, "%m-%Y")
+        """Extrai data da URL e verifica se deve entrar na página ou não.
 
-        match_month = month_year.month >= self.start_date.month
-        match_year = month_year.year >= self.start_date.year
-        return match_month and match_year
+        Essa é uma maneira de evitar que todas as páginas sejam varridas.
+        Esse método coleta apenas da data inicial a página mais recente.
+
+        Formato da URL:
+        http://www.feiradesantana.ba.gov.br/seadm/licitacoes_pm.asp?cat=PMFS&dt=08-2020#links
+        """
+        month_year = extract_param(url, "dt")
+        month_year = month_year.split("-")  # 08-2020
+        month_year = date(int(month_year[1]), int(month_year[0]), 1)
+
+        return month_year >= self.start_date
 
     def parse(self, response):
         urls = response.xpath("//table/tbody/tr/td[1]/div/a//@href").extract()

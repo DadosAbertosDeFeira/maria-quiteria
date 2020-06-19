@@ -1,5 +1,14 @@
-from datasets.models import CityCouncilBid, CityCouncilContract, CityCouncilExpense
+import logging
+
+from datasets.models import (
+    CityCouncilBid,
+    CityCouncilContract,
+    CityCouncilExpense,
+    CityCouncilRevenue,
+    File,
+)
 from datasets.parsers import (
+    city_council_revenue_type_mapping,
     currency_to_float,
     from_str_to_date,
     from_str_to_datetime,
@@ -8,6 +17,10 @@ from datasets.parsers import (
     modality_mapping_from_city_council_db,
     to_boolean,
 )
+from django.conf import settings
+from django.contrib.admin.options import get_content_type_for_model
+
+logger = logging.getLogger(__name__)
 
 CITYCOUNCIL_BID_FIELDS_MAPPING = {
     "CODLIC": "external_code",
@@ -109,3 +122,67 @@ def to_bid(item):
         item, CITYCOUNCIL_BID_FIELDS_MAPPING, CITYCOUNCIL_BID_FUNCTIONS
     )
     return CityCouncilBid(**new_item)
+
+
+def to_revenue(item):
+    fields_mapping = {
+        "CODLINHA": "external_code",
+        "CODUNIDGESTORA": "budget_unit",
+        "DTPUBLICACAO": "published_at",
+        "DTREGISTRO": "registered_at",
+        "TIPOREC": "revenue_type",
+        "MODALIDADE": "modality",
+        "DSRECEITA": "description",
+        "VALOR": "value",
+        "FONTE": "resource",
+        "DSNATUREZA": "legal_status",
+        "DESTINACAO": "destination",
+        "EXCLUIDO": "excluded",
+    }
+    functions = {
+        "excluded": to_boolean,
+        "published_at": from_str_to_date,
+        "registered_at": from_str_to_date,
+        "value": currency_to_float,
+        "modality": lower,
+        "revenue_type": city_council_revenue_type_mapping,
+        "resource": lower,
+        "legal_status": lower,
+        "destination": lower,
+    }
+    new_item = map_to_fields(item, fields_mapping, functions)
+    return CityCouncilRevenue(**new_item)
+
+
+def to_contract_file(item):
+    try:
+        contract = CityCouncilContract.objects.get(external_code=item["CODCON"])
+    except CityCouncilContract.DoesNotExist:
+        logger.error(f"Arquivo do contrato não encontrado: {item}")
+        return
+
+    content_type = get_content_type_for_model(contract)
+    url = f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHO']}"
+    return File(
+        url=url,
+        content_type=content_type,
+        object_id=contract.pk,
+        external_code=item["CODARQCON"],
+    )
+
+
+def to_bid_file(item):
+    try:
+        bid = CityCouncilBid.objects.get(external_code=item["CODLIC"])
+    except CityCouncilBid.DoesNotExist:
+        logger.error(f"Arquivo da licitação não encontrado: {item}")
+        return
+
+    content_type = get_content_type_for_model(bid)
+    url = f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHOARQLIC']}"
+    return File(
+        url=url,
+        content_type=content_type,
+        object_id=bid.pk,
+        external_code=item["CODARQLIC"],
+    )

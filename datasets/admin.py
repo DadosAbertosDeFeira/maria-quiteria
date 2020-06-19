@@ -1,10 +1,3 @@
-from django.contrib import admin
-from django.contrib.postgres.search import SearchQuery, SearchRank
-from django.db.models import F
-from django.utils.safestring import mark_safe
-from public_admin.admin import PublicModelAdmin
-from public_admin.sites import PublicAdminSite, PublicApp
-
 from datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
@@ -12,10 +5,17 @@ from datasets.models import (
     CityCouncilContract,
     CityCouncilExpense,
     CityCouncilMinute,
+    CityCouncilRevenue,
     CityHallBid,
     File,
     Gazette,
 )
+from django.contrib import admin
+from django.contrib.postgres.search import SearchQuery, SearchRank
+from django.db.models import F
+from django.utils.safestring import mark_safe
+from public_admin.admin import PublicModelAdmin
+from public_admin.sites import PublicAdminSite, PublicApp
 
 
 class GazetteAdmin(PublicModelAdmin):
@@ -249,6 +249,27 @@ class CityCouncilBidAdmin(PublicModelAdmin):
     description_html.short_description = "Descrição"
 
 
+class CityCouncilRevenueAdmin(PublicModelAdmin):
+    ordering = ["-published_at"]
+    list_filter = [
+        "published_at",
+        "modality",
+        "revenue_type",
+        "resource",
+        "destination",
+    ]
+    list_display = (
+        "published_at",
+        "registered_at",
+        "revenue_type",
+        "modality",
+        "description",
+        "value",
+        "legal_status",
+        "destination",
+    )
+
+
 class MariaQuiteriaPublicAdminSite(PublicAdminSite):
     site_title = "Dados Abertos de Feira"
     site_header = "Dados Abertos de Feira"
@@ -264,6 +285,7 @@ models_and_admins = [
     (CityCouncilContract, CityCouncilContractAdmin),
     (CityCouncilExpense, CityCouncilExpenseAdmin),
     (CityCouncilMinute, CityCouncilMinuteAdmin),
+    (CityCouncilRevenue, CityCouncilRevenueAdmin),
     (Gazette, GazetteAdmin),
     (CityHallBid, CityHallBidAdmin),
 ]
