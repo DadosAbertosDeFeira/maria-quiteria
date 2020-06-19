@@ -37,9 +37,9 @@ class TestCityCouncilAgenda:
         baker.make_recipe(
             "datasets.CityCouncilAgenda", date=newer_date,
         )
-        cc_agendas = CityCouncilAgenda.objects.all()
-        assert cc_agendas.first().date == newer_date
-        assert cc_agendas.last().date == older_date
+        agendas = CityCouncilAgenda.objects.all()
+        assert agendas.first().date == newer_date
+        assert agendas.last().date == older_date
 
 
 @pytest.mark.django_db
@@ -65,9 +65,9 @@ class TestCityCouncilAttendanceList:
         baker.make_recipe(
             "datasets.CityCouncilAttendanceList", date=newer_date,
         )
-        cc_attendance_lists = CityCouncilAttendanceList.objects.all()
-        assert cc_attendance_lists.first().date == newer_date
-        assert cc_attendance_lists.last().date == older_date
+        attendance_lists = CityCouncilAttendanceList.objects.all()
+        assert attendance_lists.first().date == newer_date
+        assert attendance_lists.last().date == older_date
 
 
 @pytest.mark.django_db
@@ -82,10 +82,10 @@ class TestCityCouncilBid:
         baker.make_recipe(
             "datasets.CityCouncilBid", session_at=newer_datetime,
         )
-        cc_bids = CityCouncilBid.objects.all()
-        assert cc_bids.first().session_at == newer_datetime
-        assert cc_bids[1].session_at == older_datetime
-        assert cc_bids.last().session_at is None
+        bids = CityCouncilBid.objects.all()
+        assert bids.first().session_at == newer_datetime
+        assert bids[1].session_at == older_datetime
+        assert bids.last().session_at is None
 
 
 @pytest.mark.django_db
@@ -99,9 +99,9 @@ class TestCityCouncilContract:
         baker.make_recipe(
             "datasets.CityCouncilContract", start_date=newer_date,
         )
-        cc_minutes = CityCouncilContract.objects.all()
-        assert cc_minutes.first().start_date == newer_date
-        assert cc_minutes.last().start_date == older_date
+        contracts = CityCouncilContract.objects.all()
+        assert contracts.first().start_date == newer_date
+        assert contracts.last().start_date == older_date
 
 
 @pytest.mark.django_db
@@ -125,9 +125,9 @@ class TestCityCouncilExpense:
         baker.make_recipe(
             "datasets.CityCouncilExpense", date=newer_date,
         )
-        cc_expenses = CityCouncilExpense.objects.all()
-        assert cc_expenses.first().date == newer_date
-        assert cc_expenses.last().date == older_date
+        expenses = CityCouncilExpense.objects.all()
+        assert expenses.first().date == newer_date
+        assert expenses.last().date == older_date
 
 
 @pytest.mark.django_db
@@ -151,9 +151,9 @@ class TestCityCouncilMinute:
         baker.make_recipe(
             "datasets.CityCouncilMinute", date=newer_date,
         )
-        cc_minutes = CityCouncilMinute.objects.all()
-        assert cc_minutes.first().date == newer_date
-        assert cc_minutes.last().date == older_date
+        minutes = CityCouncilMinute.objects.all()
+        assert minutes.first().date == newer_date
+        assert minutes.last().date == older_date
 
 
 @pytest.mark.django_db
@@ -168,10 +168,10 @@ class TestCityCouncilRevenue:
         baker.make_recipe(
             "datasets.CityCouncilRevenue", published_at=newer_date,
         )
-        cc_revenues = CityCouncilRevenue.objects.all()
-        assert cc_revenues.first().published_at == newer_date
-        assert cc_revenues[1].published_at == older_date
-        assert cc_revenues.last().published_at is None
+        revenues = CityCouncilRevenue.objects.all()
+        assert revenues.first().published_at == newer_date
+        assert revenues[1].published_at == older_date
+        assert revenues.last().published_at is None
 
 
 @pytest.mark.django_db
@@ -223,7 +223,7 @@ class TestCityHallBid:
         baker.make_recipe(
             "datasets.CityHallBid", session_at=newer_datetime,
         )
-        ch_bids = CityHallBid.objects.all()
-        assert ch_bids.first().session_at == newer_datetime
-        assert ch_bids[1].session_at == older_datetime
-        assert ch_bids.last().session_at is None
+        bids = CityHallBid.objects.all()
+        assert bids.first().session_at == newer_datetime
+        assert bids[1].session_at == older_datetime
+        assert bids.last().session_at is None
