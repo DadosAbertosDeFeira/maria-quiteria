@@ -75,5 +75,6 @@ class Command(BaseCommand):
                 except Exception as e:
                     errors += 1
                     self.warn(f"{e}\n{str(row)}")
+            # FIXME arquivos precisam ter backups e conteúdos extraídos
 
         self.success(f"Concluído!\nSalvos: {saved} Erros: {errors}")

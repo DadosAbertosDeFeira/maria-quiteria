@@ -30,6 +30,7 @@ CITYCOUNCIL_BID_FIELDS_MAPPING = {
     "OBJETOLIC": "description",
     "DTLIC": "session_at",
     "EXCLUIDO": "excluded",
+    "ARQUIVOS": None,
 }
 
 

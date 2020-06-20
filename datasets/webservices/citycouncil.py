@@ -18,6 +18,19 @@ from datasets.webservices.adapters import (
     map_to_fields,
 )
 from django.conf import settings
+from django.contrib.admin.options import get_content_type_for_model
+
+
+def save_files(files, object, url_key):
+    if not files:
+        return
+    content_type = get_content_type_for_model(object)
+    from datasets.management.commands._file import save_file
+
+    if files:
+        for file_ in files:
+            url = f"{settings.CITY_COUNCIL_WEBSERVICE}{file_[url_key]}"
+            save_file(url, content_type, object.pk)
 
 
 def add_bid(record):
@@ -26,7 +39,10 @@ def add_bid(record):
     )
     new_item["crawled_at"] = datetime.now()
     new_item["crawled_from"] = settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT
-    return CityCouncilBid.objects.create(**new_item)
+    bid = CityCouncilBid.objects.create(**new_item)
+    save_files(record.get("arquivos"), bid, "caminhoArqLic")
+
+    return bid
 
 
 def update_bid(record):
@@ -37,6 +53,8 @@ def update_bid(record):
     for key, value in updated_item.items():
         setattr(bid, key, value)
     bid.save()
+    save_files(record.get("arquivos"), bid, "caminhoArqLic")
+
     return bid
 
 
@@ -106,7 +124,6 @@ def add_expense(record):
 
 
 def update_expense(record):
-    # TODO verificar chave "primária"
     expense = CityCouncilExpense.objects.get(
         external_file_code=record["codArquivo"], external_file_line=record["codLinha"],
     )

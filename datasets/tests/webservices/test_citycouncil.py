@@ -37,6 +37,7 @@ class TestBid:
             "numTipoLic": "004/2020",
             "objetoLic": "Contratação de pessoa jurídica",
             "dtLic": "2020-03-26 09:00:00",
+            "arquivos": [],
         }
         bid = add_bid(record)
         assert CityCouncilBid.objects.count() == 1
@@ -49,6 +50,36 @@ class TestBid:
         assert bid.description == record["objetoLic"]
         assert bid.session_at == datetime(2020, 3, 26, 9, 0, 0)
         assert bid.excluded is False
+        assert bid.files.count() == 0
+
+    def test_add_bid_with_files(self, mock_save_file):
+        assert CityCouncilBid.objects.count() == 0
+
+        record = {
+            "codLic": "214",
+            "codTipoLic": "7",
+            "numLic": "004/2020",
+            "numTipoLic": "004/2020",
+            "objetoLic": "Contratação de pessoa jurídica",
+            "dtLic": "2020-03-26 09:00:00",
+            "arquivos": [
+                {
+                    "codArqLic": "1396",
+                    "codLic": "214",
+                    "dsArqLic": "publicacao.doc",
+                    "caminhoArqLic": "upload/licitacao/publicacao.doc",
+                },
+                {
+                    "codArqLic": "1397",
+                    "codLic": "214",
+                    "dsArqLic": "publicacao2.doc",
+                    "caminhoArqLic": "upload/licitacao/publicacao2.doc",
+                },
+            ],
+        }
+        bid = add_bid(record)
+        assert CityCouncilBid.objects.count() == 1
+        assert bid.files.count() == 2
 
     def test_bid_update(self):
         bid = baker.make_recipe("datasets.models.CityCouncilBid", external_code="214")
@@ -78,6 +109,25 @@ class TestBid:
 
         bid.refresh_from_db()
         assert bid.excluded is True
+
+    def test_update_files(self, mock_save_file):
+        bid = baker.make_recipe("datasets.models.CityCouncilBid", external_code="214")
+        assert bid.files.count() == 0
+
+        record = {
+            "codLic": "214",
+            "arquivos": [
+                {
+                    "codArqLic": "1396",
+                    "codLic": "215",
+                    "dsArqLic": "publicacao.doc",
+                    "caminhoArqLic": "upload/licitacao/publicacao.doc",
+                }
+            ],
+        }
+        updated_bid = update_bid(record)
+        assert bid.pk == updated_bid.pk
+        assert bid.files.count() == 1
 
 
 @pytest.mark.django_db
