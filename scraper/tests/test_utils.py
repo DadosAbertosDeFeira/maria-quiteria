@@ -71,7 +71,7 @@ def test_identify_contract_ids(text, expected_contract_id):
     "url, param, value",
     [
         (
-            f"http://www.feiradesantana.ba.gov.br/seadm/servicos.asp?"
+            "http://www.feiradesantana.ba.gov.br/seadm/servicos.asp?"
             "id=2&s=a&link=seadm/licitacoes_pm.asp&cat=PMFS&dt=01-2019#links",
             "dt",
             "01-2019",

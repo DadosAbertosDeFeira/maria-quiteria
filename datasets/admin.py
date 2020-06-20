@@ -12,6 +12,7 @@ from .models import (
     CityCouncilContract,
     CityCouncilExpense,
     CityCouncilMinute,
+    CityCouncilRevenue,
     CityHallBid,
     File,
     Gazette,
@@ -28,6 +29,7 @@ class GazetteAdmin(PublicModelAdmin):
         "year_and_edition",
         "events",
         "url",
+        "crawled_at",
         "crawled_from",
     )
 
@@ -72,7 +74,6 @@ class GazetteAdmin(PublicModelAdmin):
 
 
 class CityCouncilAgendaAdmin(PublicModelAdmin):
-    ordering = ["-date"]
     search_fields = ["title", "details"]
     list_filter = ["date", "event_type"]
     list_display = (
@@ -86,7 +87,6 @@ class CityCouncilAgendaAdmin(PublicModelAdmin):
 
 
 class CityCouncilAttendanceListAdmin(PublicModelAdmin):
-    ordering = ["-date"]
     list_filter = ["date", "status", "council_member"]
     list_display = (
         "date",
@@ -99,7 +99,6 @@ class CityCouncilAttendanceListAdmin(PublicModelAdmin):
 
 
 class CityCouncilContractAdmin(PublicModelAdmin):
-    ordering = ["-start_date"]
     search_fields = ["details", "description", "company_or_person"]
     list_filter = [
         "start_date",
@@ -124,7 +123,6 @@ class CityCouncilContractAdmin(PublicModelAdmin):
 
 
 class CityCouncilExpenseAdmin(PublicModelAdmin):
-    ordering = ["-date"]
     search_fields = ["summary", "document", "number", "process_number"]
     list_filter = [
         "date",
@@ -147,7 +145,6 @@ class CityCouncilExpenseAdmin(PublicModelAdmin):
 
 
 class CityCouncilMinuteAdmin(PublicModelAdmin):
-    ordering = ["-date"]
     search_fields = ["title", "files__search_vector"]
     list_filter = ["date", "event_type"]
     list_display = (
@@ -186,7 +183,6 @@ class CityCouncilMinuteAdmin(PublicModelAdmin):
 
 
 class CityHallBidAdmin(PublicModelAdmin):
-    ordering = ["-session_at"]
     search_fields = ["description", "codes", "files__search_vector"]
     list_filter = ["session_at", "public_agency", "modality"]
     list_display = (
@@ -242,7 +238,6 @@ class CityHallBidAdmin(PublicModelAdmin):
 
 @admin.register(File)
 class FileAdmin(admin.ModelAdmin):
-    ordering = ["-created_at"]
     search_fields = ["search_vector"]
     list_filter = ["content_type"]
     list_display = (
@@ -272,7 +267,6 @@ class FileAdmin(admin.ModelAdmin):
 
 
 class CityCouncilBidAdmin(PublicModelAdmin):
-    ordering = ["-session_at"]
     search_fields = ["description", "code", "code_type"]
     list_filter = ["session_at", "modality"]
     list_display = (
@@ -290,6 +284,26 @@ class CityCouncilBidAdmin(PublicModelAdmin):
     description_html.short_description = "Descrição"
 
 
+class CityCouncilRevenueAdmin(PublicModelAdmin):
+    list_filter = [
+        "published_at",
+        "modality",
+        "revenue_type",
+        "resource",
+        "destination",
+    ]
+    list_display = (
+        "published_at",
+        "registered_at",
+        "revenue_type",
+        "modality",
+        "description",
+        "value",
+        "legal_status",
+        "destination",
+    )
+
+
 class MariaQuiteriaPublicAdminSite(PublicAdminSite):
     site_title = "Dados Abertos de Feira"
     site_header = "Dados Abertos de Feira"
@@ -305,6 +319,7 @@ models_and_admins = [
     # (CityCouncilContract, CityCouncilContractAdmin),
     # (CityCouncilExpense, CityCouncilExpenseAdmin),
     (CityCouncilMinute, CityCouncilMinuteAdmin),
+    (CityCouncilRevenue, CityCouncilRevenueAdmin),
     (Gazette, GazetteAdmin),
     (CityHallBid, CityHallBidAdmin),
 ]

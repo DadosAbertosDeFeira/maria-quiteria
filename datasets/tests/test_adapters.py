@@ -1,6 +1,15 @@
 from datetime import date, datetime
 
-from datasets.adapters import to_bid, to_contract, to_expense
+import pytest
+from datasets.adapters import (
+    to_bid,
+    to_bid_file,
+    to_contract,
+    to_contract_file,
+    to_expense,
+    to_revenue,
+)
+from model_bakery import baker
 
 
 def test_save_expense_from_csv():
@@ -138,3 +147,108 @@ def test_adapt_from_csv_data_to_bid():
     assert bid_obj.description == expected_bid["description"]
     assert bid_obj.session_at == expected_bid["session_at"]
     assert bid_obj.excluded == expected_bid["excluded"]
+
+
+def test_adapt_from_csv_data_to_revenue():
+    item = {
+        "CODLINHA": "27",
+        "CODUNIDGESTORA": "101",
+        "DTPUBLICACAO": "1/1/2014",
+        "DTREGISTRO": "1/1/2014",
+        "TIPOREC": "ORC",
+        "MODALIDADE": "Repasse a Prefeitura indenização",
+        "DSRECEITA": "TESTE DE RECEITA",
+        "VALOR": "123131,00",
+        "FONTE": "PREFEITURA",
+        "DSNATUREZA": "CONTRATO",
+        "DESTINACAO": "ORCAMENTO",
+        "EXCLUIDO": "S",
+    }
+
+    expected_revenue = {
+        "external_code": "27",
+        "budget_unit": "101",
+        "published_at": date(2014, 1, 1),
+        "registered_at": date(2014, 1, 1),
+        "revenue_type": "orcamentaria",
+        "modality": "repasse a prefeitura indenização",
+        "description": "TESTE DE RECEITA",
+        "value": 123131.00,
+        "resource": "prefeitura",
+        "legal_status": "contrato",
+        "destination": "orcamento",
+        "excluded": True,
+    }
+
+    revenue_obj = to_revenue(item)
+
+    assert revenue_obj.external_code == expected_revenue["external_code"]
+    assert revenue_obj.budget_unit == expected_revenue["budget_unit"]
+    assert revenue_obj.published_at == expected_revenue["published_at"]
+    assert revenue_obj.registered_at == expected_revenue["registered_at"]
+    assert revenue_obj.revenue_type == expected_revenue["revenue_type"]
+    assert revenue_obj.modality == expected_revenue["modality"]
+    assert revenue_obj.description == expected_revenue["description"]
+    assert revenue_obj.value == expected_revenue["value"]
+    assert revenue_obj.resource == expected_revenue["resource"]
+    assert revenue_obj.legal_status == expected_revenue["legal_status"]
+    assert revenue_obj.destination == expected_revenue["destination"]
+    assert revenue_obj.excluded == expected_revenue["excluded"]
+
+
+@pytest.mark.django_db
+def test_adapt_from_csv_data_to_contract_file(settings):
+    contract = baker.make("datasets.CityCouncilContract", external_code="45")
+    item = {
+        "CODARQCON": "39",
+        "CODCON": "45",
+        "CAMINHO": "contratos/Contrato N2 Soluções e Publicação.pdf",
+    }
+
+    file_obj = to_contract_file(item)
+
+    assert file_obj.content_object == contract
+    assert file_obj.url == f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHO']}"
+    assert file_obj.external_code == item["CODARQCON"]
+
+
+@pytest.mark.django_db
+def test_deal_with_contract_not_found_for_file(caplog):
+    item = {
+        "CODARQCON": "39",
+        "CODCON": "45",
+        "CAMINHO": "contratos/Contrato N2 Soluções e Publicação.pdf",
+    }
+    file_obj = to_contract_file(item)
+
+    assert file_obj is None
+    assert "Arquivo do contrato não encontrado" in caplog.text
+
+
+@pytest.mark.django_db
+def test_adapt_from_csv_data_to_bid_file(settings):
+    bid = baker.make("datasets.CityCouncilBid", external_code="60")
+    item = {
+        "CODARQLIC": "113",
+        "CODLIC": "60",
+        "CAMINHOARQLIC": "upload/licitacao/Edital Pregao 01_2013.doc",
+    }
+
+    file_obj = to_bid_file(item)
+
+    assert file_obj.content_object == bid
+    assert file_obj.url == f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHOARQLIC']}"
+    assert file_obj.external_code == item["CODARQLIC"]
+
+
+@pytest.mark.django_db
+def test_deal_with_bid_not_found_for_file(caplog):
+    item = {
+        "CODARQLIC": "113",
+        "CODLIC": "60",
+        "CAMINHOARQLIC": "upload/licitacao/Edital Pregao 01_2013.doc",
+    }
+    file_obj = to_bid_file(item)
+
+    assert file_obj is None
+    assert "Arquivo da licitação não encontrado" in caplog.text

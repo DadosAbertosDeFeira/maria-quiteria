@@ -39,6 +39,12 @@ EXPENSE_MODALITIES = (
     ("isento", "Isento"),
 )
 
+REVENUE_TYPES = (
+    ("orcamentaria", "Orçamentária"),
+    ("nao_orcamentaria", "Não-orçamentária"),
+    ("transferencia", "Transferência"),
+)
+
 
 class File(models.Model):
     created_at = models.DateTimeField("Criado em", auto_now_add=True)
@@ -51,6 +57,9 @@ class File(models.Model):
     checksum = models.CharField(max_length=128, null=True, blank=True)
     s3_url = models.URLField("URL externa", null=True, blank=True)
     s3_file_path = models.CharField(max_length=300, null=True, blank=True)
+    external_code = models.CharField(
+        "Código externo", max_length=10, null=True, blank=True, db_index=True
+    )
 
     search_vector = SearchVectorField(null=True, editable=False)
 
@@ -59,6 +68,7 @@ class File(models.Model):
         verbose_name_plural = "Arquivos"
         indexes = [GinIndex(fields=["search_vector"])]
         unique_together = ("url", "content_type", "object_id")
+        ordering = ["-created_at"]
 
     def __repr__(self):
         return f"[{self.content_type}] {self.url}"
@@ -114,6 +124,7 @@ class CityCouncilAgenda(DatasetMixin):
     class Meta:
         verbose_name = "Câmara de Vereadores - Agenda"
         verbose_name_plural = "Câmara de Vereadores - Agendas"
+        ordering = ["-date"]
         get_latest_by = "date"
 
     def __repr__(self):
@@ -146,6 +157,7 @@ class CityCouncilAttendanceList(DatasetMixin):
         verbose_name = "Câmara de Vereadores - Lista de Presença"
         verbose_name_plural = "Câmara de Vereadores - Listas de Presença"
         get_latest_by = "date"
+        ordering = ["-date"]
 
     def __repr__(self):
         return f"{self.date} {self.council_member} {self.status}"
@@ -177,11 +189,13 @@ class CityCouncilContract(DatasetMixin):
     start_date = models.DateField("Data de início", db_index=True)
     end_date = models.DateField("Data final", db_index=True)
     excluded = models.BooleanField("Excluído?", default=False)
+    files = GenericRelation(File)
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Contrato"
         verbose_name_plural = "Câmara de Vereadores - Contratos"
         get_latest_by = "start_date"
+        ordering = ["-start_date"]
 
     def __repr__(self):
         interval = f"{self.start_date} {self.end_date}"
@@ -267,6 +281,7 @@ class CityCouncilExpense(DatasetMixin):
         verbose_name = "Câmara de Vereadores - Despesa"
         verbose_name_plural = "Câmara de Vereadores - Despesas"
         get_latest_by = "date"
+        ordering = ["-date"]
 
     def __repr__(self):
         return f"{self.date} {self.phase} {self.company_or_person} {self.value}"
@@ -294,6 +309,7 @@ class CityCouncilMinute(DatasetMixin):
         verbose_name = "Câmara de Vereadores - Atas"
         verbose_name_plural = "Câmara de Vereadores - Atas"
         get_latest_by = "date"
+        ordering = ["-date"]
 
     def __repr__(self):
         return f"{self.date} {self.title}"
@@ -369,6 +385,7 @@ class CityHallBid(DatasetMixin):
         verbose_name = "Prefeitura - Licitação"
         verbose_name_plural = "Prefeitura - Licitações"
         get_latest_by = "session_at"
+        ordering = [F("session_at").desc(nulls_last=True)]
 
     def __repr__(self):
         return f"{self.session_at} {self.modality} {self.public_agency}"
@@ -431,11 +448,13 @@ class CityCouncilBid(DatasetMixin):
     description = models.TextField("Descrição (objeto)", db_index=True)
     session_at = models.DateTimeField("Sessão Data / Horário", null=True, db_index=True)
     excluded = models.BooleanField("Excluído?", default=False)
+    files = GenericRelation(File)
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Licitação"
         verbose_name_plural = "Câmara de Vereadores - Licitações"
         get_latest_by = "session_at"
+        ordering = [F("session_at").desc(nulls_last=True)]
 
     def __repr__(self):
         model_name = self._meta.verbose_name
@@ -444,3 +463,38 @@ class CityCouncilBid(DatasetMixin):
     def __str__(self):
         model_name = self._meta.verbose_name
         return f"{model_name} {self.session_at} {self.code} {self.code_type}"
+
+
+class CityCouncilRevenue(DatasetMixin):
+    external_code = models.CharField("Código externo", max_length=10, db_index=True)
+    budget_unit = models.PositiveIntegerField("Unidade gestora", default=101)
+    published_at = models.DateField("Publicado em", null=True, db_index=True)
+    registered_at = models.DateField("Registrado em", null=True, db_index=True)
+    revenue_type = models.CharField(
+        "Tipo da receita", choices=REVENUE_TYPES, max_length=20, db_index=True
+    )
+    modality = models.CharField("Modalidade", max_length=60, null=True, blank=True)
+    description = models.TextField("Descrição")
+    value = models.DecimalField("Valor", max_digits=10, decimal_places=2)
+    resource = models.CharField(
+        "Fonte", max_length=200, null=True, blank=True, default="prefeitura"
+    )
+    legal_status = models.CharField(
+        "Natureza", max_length=200, null=True, blank=True, db_index=True
+    )
+    destination = models.CharField("Destinação", max_length=200, null=True, blank=True)
+    excluded = models.BooleanField("Excluído?", default=False)
+
+    class Meta:
+        verbose_name = "Câmara de Vereadores - Receita"
+        verbose_name_plural = "Câmara de Vereadores - Receitas"
+        get_latest_by = "published_at"
+        ordering = [F("published_at").desc(nulls_last=True)]
+
+    def __repr__(self):
+        model_name = self._meta.verbose_name
+        return f"{model_name} {self.published_at} {self.modality} {self.value}"
+
+    def __str__(self):
+        model_name = self._meta.verbose_name
+        return f"{model_name} {self.published_at} {self.modality} {self.value}"

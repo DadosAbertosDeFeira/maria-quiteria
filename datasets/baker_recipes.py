@@ -3,8 +3,11 @@ from datetime import date
 from datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
+    CityCouncilBid,
+    CityCouncilContract,
     CityCouncilExpense,
     CityCouncilMinute,
+    CityCouncilRevenue,
     CityHallBid,
     Gazette,
     GazetteEvent,
@@ -29,16 +32,25 @@ CityCouncilAttendanceList = Recipe(
 )
 
 
+CityCouncilBid = Recipe(CityCouncilBid)
+
+
+CityCouncilContract = Recipe(CityCouncilContract)
+
+
 CityCouncilExpense = Recipe(CityCouncilExpense)
 
 
 CityCouncilMinute = Recipe(CityCouncilMinute)
 
 
+CityCouncilRevenue = Recipe(CityCouncilRevenue)
+
+
+CityHallBid = Recipe(CityHallBid)
+
+
 Gazette = Recipe(Gazette,)
 
 
 GazetteEvent = Recipe(GazetteEvent, gazette=foreign_key(Gazette))
-
-
-CityHallBid = Recipe(CityHallBid)
