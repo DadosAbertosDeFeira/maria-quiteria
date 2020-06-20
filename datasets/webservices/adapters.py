@@ -51,6 +51,7 @@ CITYCOUNCIL_CONTRACT_FIELDS_MAPPING = {
     "DTCON": "start_date",
     "DTCONFIM": "end_date",
     "EXCLUIDO": "excluded",
+    "ARQUIVOS": None,
 }
 
 

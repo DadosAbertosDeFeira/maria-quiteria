@@ -68,7 +68,10 @@ def add_contract(record):
     )
     new_item["crawled_at"] = datetime.now()
     new_item["crawled_from"] = settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT
-    return CityCouncilContract.objects.create(**new_item)
+    contract = CityCouncilContract.objects.create(**new_item)
+    save_files(record.get("arquivos"), contract, "caminho")
+
+    return contract
 
 
 def update_contract(record):
@@ -79,6 +82,8 @@ def update_contract(record):
     for key, value in updated_item.items():
         setattr(contract, key, value)
     contract.save()
+    save_files(record.get("arquivos"), contract, "caminho")
+
     return contract
 
 

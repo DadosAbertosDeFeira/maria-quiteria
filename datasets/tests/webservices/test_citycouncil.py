@@ -90,6 +90,7 @@ class TestBid:
             "numTipoLic": "004/2020",
             "objetoLic": "Contratação de pessoa jurídica",
             "dtLic": "2020-03-26 09:00:00",
+            "arquivos": [],
         }
         updated_bid = update_bid(record)
         assert bid.pk == updated_bid.pk
@@ -144,10 +145,11 @@ class TestContract:
             "dtCon": "28/3/2014",
             "dtConfim": "27/3/2015",
             "excluido": "N",
+            "arquivos": [],
         }
         contract_obj = add_contract(record)
 
-        expected_expense = {
+        expected_contract = {
             "external_code": "43",
             "description": "CONTRATO Nº 004/2014 - PRESTAÇÃO DE SERVIÇO",
             "details": "Contratação conforme Licitação 01/2014, Pregão 01/2014.",
@@ -160,18 +162,44 @@ class TestContract:
         }
 
         assert CityCouncilContract.objects.count() == 1
-        assert contract_obj.external_code == expected_expense["external_code"]
-        assert contract_obj.description == expected_expense["description"]
-        assert contract_obj.details == expected_expense["details"]
+        assert contract_obj.external_code == expected_contract["external_code"]
+        assert contract_obj.description == expected_contract["description"]
+        assert contract_obj.details == expected_contract["details"]
         assert (
             contract_obj.company_or_person_document
-            == expected_expense["company_or_person_document"]
+            == expected_contract["company_or_person_document"]
         )
-        assert contract_obj.company_or_person == expected_expense["company_or_person"]
-        assert contract_obj.value == expected_expense["value"]
-        assert contract_obj.start_date == expected_expense["start_date"]
-        assert contract_obj.end_date == expected_expense["end_date"]
-        assert contract_obj.excluded == expected_expense["excluded"]
+        assert contract_obj.company_or_person == expected_contract["company_or_person"]
+        assert contract_obj.value == expected_contract["value"]
+        assert contract_obj.start_date == expected_contract["start_date"]
+        assert contract_obj.end_date == expected_contract["end_date"]
+        assert contract_obj.excluded == expected_contract["excluded"]
+
+    def test_add_contract_with_files(self, mock_save_file):
+        assert CityCouncilContract.objects.count() == 0
+        record = {
+            "codCon": "43",
+            "dsCon": "CONTRATO Nº 004/2014 - PRESTAÇÃO DE SERVIÇO",
+            "objetoCon": "Contratação conforme Licitação 01/2014, Pregão 01/2014.",
+            "cpfCnpjCon": "92.559.830/0001-71",
+            "nmCon": "GREEN CARD S/A REFEIÇÕES COMÉRCIO E SERVIÇOS",
+            "valorCon": "1157115,96",
+            "dtCon": "28/3/2014",
+            "dtConfim": "27/3/2015",
+            "excluido": "N",
+            "arquivos": [
+                {
+                    "codArqCon": "1396",
+                    "codCon": "43",
+                    "dsArqCon": "publicacao.doc",
+                    "caminho": "upload/publicacao.doc",
+                }
+            ],
+        }
+        contract_obj = add_contract(record)
+
+        assert CityCouncilContract.objects.count() == 1
+        assert contract_obj.files.count() == 1
 
     def test_update_contract(self):
         contract = baker.make_recipe(
@@ -187,10 +215,32 @@ class TestContract:
             "dtCon": "28/3/2014",
             "dtConfim": "27/3/2015",
             "excluido": "N",
+            "arquivos": [],
         }
         updated_contract = update_contract(record)
 
         assert contract.pk == updated_contract.pk
+
+    def test_update_contract_with_files(self, mock_save_file):
+        contract = baker.make_recipe(
+            "datasets.models.CityCouncilContract", external_code="43"
+        )
+        assert contract.files.count() == 0
+        record = {
+            "codCon": "43",
+            "arquivos": [
+                {
+                    "codArqCon": "1396",
+                    "codCon": "43",
+                    "dsArqCon": "publicacao.doc",
+                    "caminho": "upload/publicacao.doc",
+                }
+            ],
+        }
+        updated_contract = update_contract(record)
+
+        assert contract.pk == updated_contract.pk
+        assert updated_contract.files.count() == 1
 
     def test_remove_contract(self):
         contract = baker.make_recipe(
