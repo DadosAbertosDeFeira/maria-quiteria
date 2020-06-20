@@ -4,17 +4,6 @@ from pathlib import Path
 
 import requests
 from datasets.services import get_s3_client
-from datasets.webservices.citycouncil import (
-    add_bid,
-    add_contract,
-    add_expense,
-    remove_bid,
-    remove_contract,
-    remove_expense,
-    update_bid,
-    update_contract,
-    update_expense,
-)
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import find_dotenv, load_dotenv
@@ -35,6 +24,19 @@ except ImproperlyConfigured:
     configurations.setup()
     from datasets.models import File
 
+# models precisam ser importados depois das configurações
+# para manter compatibilidade com o scraper
+from datasets.webservices.citycouncil import (  # noqa isort:skip
+    add_bid,
+    add_contract,
+    add_expense,
+    remove_bid,
+    remove_contract,
+    remove_expense,
+    update_bid,
+    update_contract,
+    update_expense,
+)
 
 rabbitmq_broker = RabbitmqBroker(url=settings.CLOUDAMQP_URL)
 rabbitmq_broker.add_middleware(middleware.Prometheus())
