@@ -100,21 +100,22 @@ def backup_file(file_id):
 
 
 @actor(max_retries=5)
-def get_city_council_updates():
+def retrieve_city_council_updates():
     """Solicita atualizações ao webservice da Câmara."""
-    yesterday = date.today() - timedelta(days=1)  # '2020-05-05'
+    yesterday = date.today() - timedelta(days=1)  # formato aaaa-mm-dd
     response = requests.post(
         settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT,
         data={
             "data": yesterday.strftime("%Y-%m-%d"),
             "token": settings.CITY_COUNCIL_WEBSERVICE_TOKEN,
         },
+        headers={"User-Agent": "Maria Quitéria"},
     )
     return response.json()
 
 
 @actor(max_retries=5)
-def update_city_council_objects(payload):
+def sync_city_council_objects(payload):
     action_methods = {
         "inclusoesContrato": add_contract,
         "alteracoesContrato": update_contract,

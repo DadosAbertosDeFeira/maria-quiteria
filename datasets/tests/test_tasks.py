@@ -5,8 +5,8 @@ from datasets.models import CityCouncilBid
 from datasets.tasks import (
     backup_file,
     content_from_file,
-    get_city_council_updates,
-    update_city_council_objects,
+    retrieve_city_council_updates,
+    sync_city_council_objects,
 )
 from django.utils.timezone import make_aware
 from model_bakery import baker
@@ -121,7 +121,7 @@ def test_get_city_council_updates(mocker):
     post_mock = mocker.patch("datasets.tasks.requests.post")
     post_mock.return_value.json.return_value = expected_payload
 
-    assert get_city_council_updates() == expected_payload
+    assert retrieve_city_council_updates() == expected_payload
 
 
 @pytest.mark.django_db
@@ -155,7 +155,7 @@ def test_update_city_council_objects():
         "alteracoesDespesa": [],
         "exclusoesDespesa": [],
     }
-    update_city_council_objects(payload)
+    sync_city_council_objects(payload)
 
     bid.refresh_from_db()
     assert bid.description == "Contratação de pessoa jurídica"
@@ -190,7 +190,7 @@ def test_add_bid_on_update_city_council_objects():
 
     assert CityCouncilBid.objects.count() == 0
 
-    update_city_council_objects(payload)
+    sync_city_council_objects(payload)
 
     assert CityCouncilBid.objects.count() == 1
     bid = CityCouncilBid.objects.first()
@@ -224,6 +224,6 @@ def test_remove_bid_on_update_city_council_objects():
     bid = baker.make("datasets.CityCouncilBid", external_code="214")
     assert bid.excluded is False
 
-    update_city_council_objects(payload)
+    sync_city_council_objects(payload)
     bid.refresh_from_db()
     assert bid.excluded is True
