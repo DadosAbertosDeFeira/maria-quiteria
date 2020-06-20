@@ -7,6 +7,7 @@ from datasets.models import (
     CityCouncilContract,
     CityCouncilExpense,
     CityCouncilMinute,
+    CityCouncilRevenue,
     CityHallBid,
     Gazette,
     GazetteEvent,
@@ -34,10 +35,16 @@ CityCouncilAttendanceList = Recipe(
 CityCouncilBid = Recipe(CityCouncilBid)
 
 
+CityCouncilContract = Recipe(CityCouncilContract)
+
+
 CityCouncilExpense = Recipe(CityCouncilExpense)
 
 
 CityCouncilMinute = Recipe(CityCouncilMinute)
+
+
+CityCouncilRevenue = Recipe(CityCouncilRevenue)
 
 
 Gazette = Recipe(Gazette,)
@@ -47,6 +54,3 @@ GazetteEvent = Recipe(GazetteEvent, gazette=foreign_key(Gazette))
 
 
 CityHallBid = Recipe(CityHallBid)
-
-
-CityCouncilContract = Recipe(CityCouncilContract)

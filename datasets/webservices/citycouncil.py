@@ -80,11 +80,20 @@ def add_revenue(record):
 
 
 def update_revenue(record):
-    pass
+    revenue = CityCouncilRevenue.objects.get(external_code=record["codLinha"])
+    updated_item = map_to_fields(
+        record, CITYCOUNCIL_REVENUE_FIELDS_MAPPING, CITYCOUNCIL_REVENUE_FUNCTIONS
+    )
+    for key, value in updated_item.items():
+        setattr(revenue, key, value)
+    revenue.save()
+    return revenue
 
 
 def remove_revenue(record):
-    pass
+    CityCouncilRevenue.objects.filter(external_code=record["codLinha"]).update(
+        excluded=True
+    )
 
 
 def add_expense(record):

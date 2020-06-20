@@ -16,9 +16,11 @@ from datasets.webservices.citycouncil import (
     remove_bid,
     remove_contract,
     remove_expense,
+    remove_revenue,
     update_bid,
     update_contract,
     update_expense,
+    update_revenue,
 )
 from model_bakery import baker
 
@@ -200,6 +202,38 @@ class TestRevenues:
         assert revenue_obj.legal_status == expected_revenue["legal_status"]
         assert revenue_obj.destination == expected_revenue["destination"]
         assert revenue_obj.excluded == expected_revenue["excluded"]
+
+    def test_update_revenue(self):
+        revenue = baker.make_recipe(
+            "datasets.models.CityCouncilRevenue", external_code="43"
+        )
+        record = {
+            "codLinha": "43",
+            "codUnidGestora": "101",
+            "dtPublicacao": "1/1/2014",
+            "dtRegistro": "1/1/2014",
+            "tipoRec": "ORC",
+            "modalidade": "RECEBIMENTO",
+            "dsReceita": "Repasse Efetuado Nesta Data",
+            "valor": "1262150,07",
+            "fonte": "PREFEITURA",
+            "dsNatureza": "1.7.1.3.01.00.00 - Transferências Correntes",
+            "destinacao": "1.7.1.3.01.00.00 - Transferências Correntes",
+            "excluido": "N",
+        }
+        updated_revenue = update_revenue(record)
+
+        assert revenue.pk == updated_revenue.pk
+
+    def test_remove_revenue(self):
+        revenue = baker.make_recipe(
+            "datasets.models.CityCouncilRevenue", external_code="214", excluded=False
+        )
+        record = {"codLinha": "214"}
+        remove_revenue(record)
+
+        revenue.refresh_from_db()
+        assert revenue.excluded is True
 
 
 @pytest.mark.django_db
