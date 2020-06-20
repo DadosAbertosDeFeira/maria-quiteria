@@ -34,10 +34,10 @@ class TestCityCouncilAgenda:
         newer_date = date(2020, 3, 18)
         older_date = date(2020, 2, 3)
         baker.make_recipe(
-            "datasets.CityCouncilAgenda", date=older_date,
+            "datasets.models.CityCouncilAgenda", date=older_date,
         )
         baker.make_recipe(
-            "datasets.CityCouncilAgenda", date=newer_date,
+            "datasets.models.CityCouncilAgenda", date=newer_date,
         )
         agendas = CityCouncilAgenda.objects.all()
         assert agendas.first().date == newer_date
@@ -64,10 +64,10 @@ class TestCityCouncilAttendanceList:
         newer_date = date(2020, 3, 18)
         older_date = date(2020, 2, 3)
         baker.make_recipe(
-            "datasets.CityCouncilAttendanceList", date=older_date,
+            "datasets.models.CityCouncilAttendanceList", date=older_date,
         )
         baker.make_recipe(
-            "datasets.CityCouncilAttendanceList", date=newer_date,
+            "datasets.models.CityCouncilAttendanceList", date=newer_date,
         )
         attendance_lists = CityCouncilAttendanceList.objects.all()
         assert attendance_lists.first().date == newer_date
@@ -79,12 +79,12 @@ class TestCityCouncilBid:
     def test_undated_should_be_shown_last(self):
         newer_datetime = make_aware(datetime(2020, 3, 18))
         older_datetime = make_aware(datetime(2020, 2, 3))
-        baker.make_recipe("datasets.CityCouncilBid")
+        baker.make_recipe("datasets.models.CityCouncilBid")
         baker.make_recipe(
-            "datasets.CityCouncilBid", session_at=older_datetime,
+            "datasets.models.CityCouncilBid", session_at=older_datetime,
         )
         baker.make_recipe(
-            "datasets.CityCouncilBid", session_at=newer_datetime,
+            "datasets.models.CityCouncilBid", session_at=newer_datetime,
         )
         bids = CityCouncilBid.objects.all()
         assert bids.first().session_at == newer_datetime
@@ -98,10 +98,10 @@ class TestCityCouncilContract:
         newer_date = date(2020, 3, 18)
         older_date = date(2020, 2, 3)
         baker.make_recipe(
-            "datasets.CityCouncilContract", start_date=older_date,
+            "datasets.models.CityCouncilContract", start_date=older_date,
         )
         baker.make_recipe(
-            "datasets.CityCouncilContract", start_date=newer_date,
+            "datasets.models.CityCouncilContract", start_date=newer_date,
         )
         contracts = CityCouncilContract.objects.all()
         assert contracts.first().start_date == newer_date
@@ -126,10 +126,10 @@ class TestCityCouncilExpense:
         newer_date = date(2020, 3, 18)
         older_date = date(2020, 2, 3)
         baker.make_recipe(
-            "datasets.CityCouncilExpense", date=older_date,
+            "datasets.models.CityCouncilExpense", date=older_date,
         )
         baker.make_recipe(
-            "datasets.CityCouncilExpense", date=newer_date,
+            "datasets.models.CityCouncilExpense", date=newer_date,
         )
         expenses = CityCouncilExpense.objects.all()
         assert expenses.first().date == newer_date
@@ -154,10 +154,10 @@ class TestCityCouncilMinute:
         newer_date = date(2020, 3, 18)
         older_date = date(2020, 2, 3)
         baker.make_recipe(
-            "datasets.CityCouncilMinute", date=older_date,
+            "datasets.models.CityCouncilMinute", date=older_date,
         )
         baker.make_recipe(
-            "datasets.CityCouncilMinute", date=newer_date,
+            "datasets.models.CityCouncilMinute", date=newer_date,
         )
         minutes = CityCouncilMinute.objects.all()
         assert minutes.first().date == newer_date
@@ -169,12 +169,12 @@ class TestCityCouncilRevenue:
     def test_undated_should_be_shown_last(self):
         newer_date = date(2020, 3, 18)
         older_date = date(2020, 2, 3)
-        baker.make_recipe("datasets.CityCouncilRevenue")
+        baker.make_recipe("datasets.models.CityCouncilRevenue")
         baker.make_recipe(
-            "datasets.CityCouncilRevenue", published_at=older_date,
+            "datasets.models.CityCouncilRevenue", published_at=older_date,
         )
         baker.make_recipe(
-            "datasets.CityCouncilRevenue", published_at=newer_date,
+            "datasets.models.CityCouncilRevenue", published_at=newer_date,
         )
         revenues = CityCouncilRevenue.objects.all()
         assert revenues.first().published_at == newer_date
@@ -197,12 +197,12 @@ class TestGazette:
     def test_undated_should_be_shown_last(self):
         newer_date = date(2020, 3, 18)
         older_date = date(2020, 2, 3)
-        baker.make_recipe("datasets.Gazette")
+        baker.make_recipe("datasets.models.Gazette")
         baker.make_recipe(
-            "datasets.Gazette", date=older_date,
+            "datasets.models.Gazette", date=older_date,
         )
         baker.make_recipe(
-            "datasets.Gazette", date=newer_date,
+            "datasets.models.Gazette", date=newer_date,
         )
         gazettes = Gazette.objects.all()
         assert gazettes.first().date == newer_date
@@ -224,12 +224,12 @@ class TestCityHallBid:
     def test_undated_should_be_shown_last(self):
         newer_datetime = make_aware(datetime(2020, 3, 18))
         older_datetime = make_aware(datetime(2020, 2, 3))
-        baker.make_recipe("datasets.CityHallBid")
+        baker.make_recipe("datasets.models.CityHallBid")
         baker.make_recipe(
-            "datasets.CityHallBid", session_at=older_datetime,
+            "datasets.models.CityHallBid", session_at=older_datetime,
         )
         baker.make_recipe(
-            "datasets.CityHallBid", session_at=newer_datetime,
+            "datasets.models.CityHallBid", session_at=newer_datetime,
         )
         bids = CityHallBid.objects.all()
         assert bids.first().session_at == newer_datetime
