@@ -1,6 +1,18 @@
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 import pytest
+from datasets.models import (
+    CityCouncilAgenda,
+    CityCouncilAttendanceList,
+    CityCouncilBid,
+    CityCouncilContract,
+    CityCouncilExpense,
+    CityCouncilMinute,
+    CityCouncilRevenue,
+    CityHallBid,
+    Gazette,
+)
+from django.utils.timezone import make_aware
 from model_bakery import baker
 
 
@@ -17,6 +29,19 @@ class TestCityCouncilAgenda:
             "datasets.models.CityCouncilAgenda", date=date(2020, 2, 2),
         )
         assert agenda.last_collected_item_date() == expected_date
+
+    def test_default_order_should_be_respected(self):
+        newer_date = date(2020, 3, 18)
+        older_date = date(2020, 2, 3)
+        baker.make_recipe(
+            "datasets.CityCouncilAgenda", date=older_date,
+        )
+        baker.make_recipe(
+            "datasets.CityCouncilAgenda", date=newer_date,
+        )
+        agendas = CityCouncilAgenda.objects.all()
+        assert agendas.first().date == newer_date
+        assert agendas.last().date == older_date
 
 
 @pytest.mark.django_db
@@ -35,6 +60,53 @@ class TestCityCouncilAttendanceList:
         )
         assert attendance_list.last_collected_item_date() == expected_date
 
+    def test_default_order_should_be_respected(self):
+        newer_date = date(2020, 3, 18)
+        older_date = date(2020, 2, 3)
+        baker.make_recipe(
+            "datasets.CityCouncilAttendanceList", date=older_date,
+        )
+        baker.make_recipe(
+            "datasets.CityCouncilAttendanceList", date=newer_date,
+        )
+        attendance_lists = CityCouncilAttendanceList.objects.all()
+        assert attendance_lists.first().date == newer_date
+        assert attendance_lists.last().date == older_date
+
+
+@pytest.mark.django_db
+class TestCityCouncilBid:
+    def test_undated_should_be_shown_last(self):
+        newer_datetime = make_aware(datetime(2020, 3, 18))
+        older_datetime = make_aware(datetime(2020, 2, 3))
+        baker.make_recipe("datasets.CityCouncilBid")
+        baker.make_recipe(
+            "datasets.CityCouncilBid", session_at=older_datetime,
+        )
+        baker.make_recipe(
+            "datasets.CityCouncilBid", session_at=newer_datetime,
+        )
+        bids = CityCouncilBid.objects.all()
+        assert bids.first().session_at == newer_datetime
+        assert bids[1].session_at == older_datetime
+        assert bids.last().session_at is None
+
+
+@pytest.mark.django_db
+class TestCityCouncilContract:
+    def test_default_order_should_be_respected(self):
+        newer_date = date(2020, 3, 18)
+        older_date = date(2020, 2, 3)
+        baker.make_recipe(
+            "datasets.CityCouncilContract", start_date=older_date,
+        )
+        baker.make_recipe(
+            "datasets.CityCouncilContract", start_date=newer_date,
+        )
+        contracts = CityCouncilContract.objects.all()
+        assert contracts.first().start_date == newer_date
+        assert contracts.last().start_date == older_date
+
 
 @pytest.mark.django_db
 class TestCityCouncilExpense:
@@ -49,6 +121,19 @@ class TestCityCouncilExpense:
             "datasets.models.CityCouncilExpense", date=expected_date,
         )
         assert expense.last_collected_item_date() == expected_date
+
+    def test_default_order_should_be_respected(self):
+        newer_date = date(2020, 3, 18)
+        older_date = date(2020, 2, 3)
+        baker.make_recipe(
+            "datasets.CityCouncilExpense", date=older_date,
+        )
+        baker.make_recipe(
+            "datasets.CityCouncilExpense", date=newer_date,
+        )
+        expenses = CityCouncilExpense.objects.all()
+        assert expenses.first().date == newer_date
+        assert expenses.last().date == older_date
 
 
 @pytest.mark.django_db
@@ -65,6 +150,37 @@ class TestCityCouncilMinute:
         )
         assert minute.last_collected_item_date() == expected_date
 
+    def test_default_order_should_be_respected(self):
+        newer_date = date(2020, 3, 18)
+        older_date = date(2020, 2, 3)
+        baker.make_recipe(
+            "datasets.CityCouncilMinute", date=older_date,
+        )
+        baker.make_recipe(
+            "datasets.CityCouncilMinute", date=newer_date,
+        )
+        minutes = CityCouncilMinute.objects.all()
+        assert minutes.first().date == newer_date
+        assert minutes.last().date == older_date
+
+
+@pytest.mark.django_db
+class TestCityCouncilRevenue:
+    def test_undated_should_be_shown_last(self):
+        newer_date = date(2020, 3, 18)
+        older_date = date(2020, 2, 3)
+        baker.make_recipe("datasets.CityCouncilRevenue")
+        baker.make_recipe(
+            "datasets.CityCouncilRevenue", published_at=older_date,
+        )
+        baker.make_recipe(
+            "datasets.CityCouncilRevenue", published_at=newer_date,
+        )
+        revenues = CityCouncilRevenue.objects.all()
+        assert revenues.first().published_at == newer_date
+        assert revenues[1].published_at == older_date
+        assert revenues.last().published_at is None
+
 
 @pytest.mark.django_db
 class TestGazette:
@@ -78,6 +194,21 @@ class TestGazette:
         gazette = baker.make_recipe("datasets.models.Gazette", date=expected_date,)
         assert gazette.last_collected_item_date() == expected_date
 
+    def test_undated_should_be_shown_last(self):
+        newer_date = date(2020, 3, 18)
+        older_date = date(2020, 2, 3)
+        baker.make_recipe("datasets.Gazette")
+        baker.make_recipe(
+            "datasets.Gazette", date=older_date,
+        )
+        baker.make_recipe(
+            "datasets.Gazette", date=newer_date,
+        )
+        gazettes = Gazette.objects.all()
+        assert gazettes.first().date == newer_date
+        assert gazettes[1].date == older_date
+        assert gazettes.last().date is None
+
 
 @pytest.mark.django_db
 class TestCityHallBid:
@@ -89,3 +220,18 @@ class TestCityHallBid:
         expected_date = date.today() - timedelta(days=180)
         bid = baker.make_recipe("datasets.models.CityHallBid")
         assert bid.last_collected_item_date() == expected_date
+
+    def test_undated_should_be_shown_last(self):
+        newer_datetime = make_aware(datetime(2020, 3, 18))
+        older_datetime = make_aware(datetime(2020, 2, 3))
+        baker.make_recipe("datasets.CityHallBid")
+        baker.make_recipe(
+            "datasets.CityHallBid", session_at=older_datetime,
+        )
+        baker.make_recipe(
+            "datasets.CityHallBid", session_at=newer_datetime,
+        )
+        bids = CityHallBid.objects.all()
+        assert bids.first().session_at == newer_datetime
+        assert bids[1].session_at == older_datetime
+        assert bids.last().session_at is None

@@ -19,7 +19,6 @@ from public_admin.sites import PublicAdminSite, PublicApp
 
 
 class GazetteAdmin(PublicModelAdmin):
-    ordering = ["-date"]
     search_fields = ["year_and_edition", "files__content"]
     list_filter = ["power", "date"]
     list_display = (
@@ -57,7 +56,6 @@ class GazetteAdmin(PublicModelAdmin):
 
 
 class CityCouncilAgendaAdmin(PublicModelAdmin):
-    ordering = ["-date"]
     search_fields = ["title", "details"]
     list_filter = ["date", "event_type"]
     list_display = (
@@ -71,7 +69,6 @@ class CityCouncilAgendaAdmin(PublicModelAdmin):
 
 
 class CityCouncilAttendanceListAdmin(PublicModelAdmin):
-    ordering = ["-date"]
     list_filter = ["date", "status", "council_member"]
     list_display = (
         "date",
@@ -84,7 +81,6 @@ class CityCouncilAttendanceListAdmin(PublicModelAdmin):
 
 
 class CityCouncilContractAdmin(PublicModelAdmin):
-    ordering = ["-start_date"]
     search_fields = ["details", "description", "company_or_person"]
     list_filter = [
         "start_date",
@@ -109,7 +105,6 @@ class CityCouncilContractAdmin(PublicModelAdmin):
 
 
 class CityCouncilExpenseAdmin(PublicModelAdmin):
-    ordering = ["-date"]
     search_fields = ["summary", "document", "number", "process_number"]
     list_filter = [
         "date",
@@ -132,7 +127,6 @@ class CityCouncilExpenseAdmin(PublicModelAdmin):
 
 
 class CityCouncilMinuteAdmin(PublicModelAdmin):
-    ordering = ["-date"]
     search_fields = ["title", "files__content"]
     list_filter = ["date", "event_type"]
     list_display = (
@@ -157,7 +151,6 @@ class CityCouncilMinuteAdmin(PublicModelAdmin):
 
 
 class CityHallBidAdmin(PublicModelAdmin):
-    ordering = ["-session_at"]
     search_fields = ["description", "codes", "files__content"]
     list_filter = ["session_at", "public_agency", "modality"]
     list_display = (
@@ -199,7 +192,6 @@ class CityHallBidAdmin(PublicModelAdmin):
 
 @admin.register(File)
 class FileAdmin(admin.ModelAdmin):
-    ordering = ["-created_at"]
     search_fields = ["search_vector"]
     list_filter = ["content_type"]
     list_display = (
@@ -231,7 +223,6 @@ class FileAdmin(admin.ModelAdmin):
 
 
 class CityCouncilBidAdmin(PublicModelAdmin):
-    ordering = ["-session_at"]
     search_fields = ["description", "code", "code_type"]
     list_filter = ["session_at", "modality"]
     list_display = (
@@ -250,7 +241,6 @@ class CityCouncilBidAdmin(PublicModelAdmin):
 
 
 class CityCouncilRevenueAdmin(PublicModelAdmin):
-    ordering = ["-published_at"]
     list_filter = [
         "published_at",
         "modality",
