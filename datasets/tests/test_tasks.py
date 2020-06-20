@@ -56,7 +56,7 @@ def test_content_from_files_not_saving_to_db(parser, path):
 
 @pytest.mark.django_db
 def test_backup_file():
-    url = "http://www.feiradesantana.ba.gov.br/licitacoes/4914pmfspp2182019.pdf"
+    url = "https://www.dadosabertosdefeira.com.br/fake_file.pdf"
     gazette = baker.make("datasets.Gazette")
     a_file = baker.make(
         "datasets.File", url=url, content_object=gazette, checksum="random"
@@ -64,7 +64,7 @@ def test_backup_file():
     expected_s3_file_path = (
         f"maria-quiteria-local/files/gazette/"
         f"{a_file.created_at.year}/{a_file.created_at.month}/"
-        f"{a_file.created_at.day}/random-4914pmfspp2182019.pdf"
+        f"{a_file.created_at.day}/random-fake_file.pdf"
     )
     expected_s3_url = f"https://teste.s3.brasil.amazonaws.com/{expected_s3_file_path}"
 
