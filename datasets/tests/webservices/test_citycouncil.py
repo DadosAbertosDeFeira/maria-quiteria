@@ -2,11 +2,17 @@ from datetime import date, datetime
 
 import pytest
 from core import settings
-from datasets.models import CityCouncilBid, CityCouncilContract, CityCouncilExpense
+from datasets.models import (
+    CityCouncilBid,
+    CityCouncilContract,
+    CityCouncilExpense,
+    CityCouncilRevenue,
+)
 from datasets.webservices.citycouncil import (
     add_bid,
     add_contract,
     add_expense,
+    add_revenue,
     remove_bid,
     remove_contract,
     remove_expense,
@@ -143,6 +149,57 @@ class TestContract:
 
         contract.refresh_from_db()
         assert contract.excluded is True
+
+
+@pytest.mark.django_db
+class TestRevenues:
+    def test_add_revenue(self):
+        assert CityCouncilRevenue.objects.count() == 0
+        record = {
+            "codLinha": "27",
+            "codUnidGestora": "101",
+            "dtPublicacao": "1/1/2014",
+            "dtRegistro": "1/1/2014",
+            "tipoRec": "ORC",
+            "modalidade": "RECEBIMENTO",
+            "dsReceita": "Repasse Efetuado Nesta Data",
+            "valor": "1262150,07",
+            "fonte": "PREFEITURA",
+            "dsNatureza": "1.7.1.3.01.00.00 - Transferências Correntes",
+            "destinacao": "1.7.1.3.01.00.00 - Transferências Correntes",
+            "excluido": "N",
+        }
+        revenue_obj = add_revenue(record)
+
+        expected_revenue = {
+            "external_code": "27",
+            "budget_unit": "101",
+            "published_at": date(2014, 1, 1),
+            "registered_at": date(2014, 1, 1),
+            "revenue_type": "orcamentaria",
+            "modality": "recebimento",
+            "description": "Repasse Efetuado Nesta Data",
+            "value": 1262150.07,
+            "resource": "prefeitura",
+            "legal_status": "1.7.1.3.01.00.00 - transferências correntes",
+            "destination": "1.7.1.3.01.00.00 - transferências correntes",
+            "excluded": False,
+        }
+
+        assert CityCouncilRevenue.objects.count() == 1
+
+        assert revenue_obj.external_code == expected_revenue["external_code"]
+        assert revenue_obj.budget_unit == expected_revenue["budget_unit"]
+        assert revenue_obj.published_at == expected_revenue["published_at"]
+        assert revenue_obj.registered_at == expected_revenue["registered_at"]
+        assert revenue_obj.revenue_type == expected_revenue["revenue_type"]
+        assert revenue_obj.modality == expected_revenue["modality"]
+        assert revenue_obj.description == expected_revenue["description"]
+        assert revenue_obj.value == expected_revenue["value"]
+        assert revenue_obj.resource == expected_revenue["resource"]
+        assert revenue_obj.legal_status == expected_revenue["legal_status"]
+        assert revenue_obj.destination == expected_revenue["destination"]
+        assert revenue_obj.excluded == expected_revenue["excluded"]
 
 
 @pytest.mark.django_db

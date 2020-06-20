@@ -52,11 +52,41 @@ CITYCOUNCIL_CONTRACT_FIELDS_MAPPING = {
     "EXCLUIDO": "excluded",
 }
 
+
 CITYCOUNCIL_CONTRACT_FUNCTIONS = {
     "value": currency_to_float,
     "excluded": to_boolean,
     "start_date": from_str_to_date,
     "end_date": from_str_to_date,
+}
+
+
+CITYCOUNCIL_REVENUE_FIELDS_MAPPING = {
+    "CODLINHA": "external_code",
+    "CODUNIDGESTORA": "budget_unit",
+    "DTPUBLICACAO": "published_at",
+    "DTREGISTRO": "registered_at",
+    "TIPOREC": "revenue_type",
+    "MODALIDADE": "modality",
+    "DSRECEITA": "description",
+    "VALOR": "value",
+    "FONTE": "resource",
+    "DSNATUREZA": "legal_status",  # TODO natureza do TCM-BA
+    "DESTINACAO": "destination",
+    "EXCLUIDO": "excluded",
+}
+
+
+CITYCOUNCIL_REVENUE_FUNCTIONS = {
+    "excluded": to_boolean,
+    "published_at": from_str_to_date,
+    "registered_at": from_str_to_date,
+    "value": currency_to_float,
+    "modality": lower,
+    "revenue_type": city_council_revenue_type_mapping,
+    "resource": lower,
+    "legal_status": lower,
+    "destination": lower,
 }
 
 
@@ -125,32 +155,9 @@ def to_bid(item):
 
 
 def to_revenue(item):
-    fields_mapping = {
-        "CODLINHA": "external_code",
-        "CODUNIDGESTORA": "budget_unit",
-        "DTPUBLICACAO": "published_at",
-        "DTREGISTRO": "registered_at",
-        "TIPOREC": "revenue_type",
-        "MODALIDADE": "modality",
-        "DSRECEITA": "description",
-        "VALOR": "value",
-        "FONTE": "resource",
-        "DSNATUREZA": "legal_status",
-        "DESTINACAO": "destination",
-        "EXCLUIDO": "excluded",
-    }
-    functions = {
-        "excluded": to_boolean,
-        "published_at": from_str_to_date,
-        "registered_at": from_str_to_date,
-        "value": currency_to_float,
-        "modality": lower,
-        "revenue_type": city_council_revenue_type_mapping,
-        "resource": lower,
-        "legal_status": lower,
-        "destination": lower,
-    }
-    new_item = map_to_fields(item, fields_mapping, functions)
+    new_item = map_to_fields(
+        item, CITYCOUNCIL_REVENUE_FIELDS_MAPPING, CITYCOUNCIL_REVENUE_FUNCTIONS
+    )
     return CityCouncilRevenue(**new_item)
 
 

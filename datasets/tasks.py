@@ -36,6 +36,9 @@ from datasets.webservices.citycouncil import (  # noqa isort:skip
     update_bid,
     update_contract,
     update_expense,
+    add_revenue,
+    update_revenue,
+    remove_revenue,
 )
 
 rabbitmq_broker = RabbitmqBroker(url=settings.CLOUDAMQP_URL)
@@ -123,6 +126,9 @@ def sync_city_council_objects(payload):
         "inclusoesLicitacao": add_bid,
         "alteracoesLicitacao": update_bid,
         "exclusoesLicitacao": remove_bid,
+        "inclusoesReceita": add_revenue,
+        "alteracoesReceita": update_revenue,
+        "exclusoesReceita": remove_revenue,
         "inclusoesDespesa": add_expense,
         "alteracoesDespesa": update_expense,
         "exclusoesDespesa": remove_expense,

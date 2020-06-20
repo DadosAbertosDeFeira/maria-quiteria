@@ -1,6 +1,11 @@
 from datetime import datetime
 
-from datasets.models import CityCouncilBid, CityCouncilContract, CityCouncilExpense
+from datasets.models import (
+    CityCouncilBid,
+    CityCouncilContract,
+    CityCouncilExpense,
+    CityCouncilRevenue,
+)
 from datasets.webservices.adapters import (
     CITYCOUNCIL_BID_FIELDS_MAPPING,
     CITYCOUNCIL_BID_FUNCTIONS,
@@ -8,6 +13,8 @@ from datasets.webservices.adapters import (
     CITYCOUNCIL_CONTRACT_FUNCTIONS,
     CITYCOUNCIL_EXPENSE_FIELDS_MAPPING,
     CITYCOUNCIL_EXPENSE_FUNCTIONS,
+    CITYCOUNCIL_REVENUE_FIELDS_MAPPING,
+    CITYCOUNCIL_REVENUE_FUNCTIONS,
     map_to_fields,
 )
 from django.conf import settings
@@ -61,6 +68,23 @@ def remove_contract(record):
     CityCouncilContract.objects.filter(external_code=record["codCon"]).update(
         excluded=True
     )
+
+
+def add_revenue(record):
+    new_item = map_to_fields(
+        record, CITYCOUNCIL_REVENUE_FIELDS_MAPPING, CITYCOUNCIL_REVENUE_FUNCTIONS
+    )
+    new_item["crawled_at"] = datetime.now()
+    new_item["crawled_from"] = settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT
+    return CityCouncilRevenue.objects.create(**new_item)
+
+
+def update_revenue(record):
+    pass
+
+
+def remove_revenue(record):
+    pass
 
 
 def add_expense(record):
