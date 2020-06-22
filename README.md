@@ -61,33 +61,49 @@ Depois basta aplicar as `migrations`:
 python manage.py migrate
 ```
 
-* Docker (alpha)
+* Usando Docker
 
-Se você não quiser instalar todas as dependencias, você pode [instalar](https://docs.docker.com/install/) e usar o Docker.
-Para isso, você precisa criar um `.env` como abaixo:
+Se você não quiser instalar todas as dependências, você pode instalar o [Docker](https://docs.docker.com/install/) em conjunto com o [Docker Compose](https://docs.docker.com/compose/install/).
+
+Para isso, você precisa criar um `.env` como no `.env.example` da raiz do projeto.
+
+* Executando o projeto no Docker:
+
+1. Iniciando o serviço:
 
 ```
-KEEP_FILES=True
-SPIDERMON_TELEGRAM_FAKE=True
-SPIDERMON_SENTRY_FAKE=True
-DJANGO_SETTINGS_MODULE=core.settings
-DJANGO_CONFIGURATION=Prod
-DJANGO_SECRET_KEY=dont-tell-anybody
+docker-compose build
 ```
 
-Depois (somente na primeira vez):
+2. Executando o serviço:
 
-`docker-compose build` para construir a imagem
+```
+docker-compose up -d
+```
 
-`docker-compose up` para executar a imagem
+3. Crie as tabelas no banco:
 
-`make migrate` para criar as tabelas no banco
+```
+make migrate
+```
 
-`make createsuperuser` para criar um usuario `admin`
+4. Crie um usuario `admin`:
 
-E por fim `make collectstatic` para processar e mover os arquivos estáticos.
+```
+make createsuperuser
+```
 
-Reinicie os containers: `docker-compose restart`
+4. Processe e move arquivos estáticos:
+
+```
+make collectstatic
+```
+
+5. Reinicie os containers:
+
+```
+docker-compose restart
+```
 
 Nas próximas vezes, basta executar os containers: `docker-compose up` e acesse [localhost:8000/admin](http://localhost:8000/admin)
 
@@ -101,13 +117,11 @@ Database: postgres
 Host: localhost
 ```
 
-**IMPORTANTE**: o uso do Docker (ainda) não faz a instalação do Apache Tika
+#### Executando os testes
 
-#### Rodando os testes
-
-`make runtests`
-
-
+```
+make runtests
+```
 
 * Admin
 
