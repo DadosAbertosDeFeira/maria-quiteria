@@ -4,10 +4,13 @@ services:
     db:
         image: postgres
         environment:
+            POSTGRES_DB: mariaquiteria
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: postgres
         ports:
             - "5432:5432"
+        volumes:
+            - ./db:/var/lib/postgresql
 
     web:
         build: .
