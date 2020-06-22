@@ -75,19 +75,13 @@ Para isso, você precisa criar um `.env` como no `.env.example` da raiz do proje
 docker-compose build
 ```
 
-2. Executando o serviço:
-
-```
-docker-compose up -d
-```
-
-3. Crie as tabelas no banco:
+2. Crie as tabelas no banco:
 
 ```
 make migrate
 ```
 
-4. Crie um usuario `admin`:
+3. Crie um usuario `admin`:
 
 ```
 make createsuperuser
@@ -99,10 +93,10 @@ make createsuperuser
 make collectstatic
 ```
 
-5. Reinicie os containers:
+5. Executando o serviço:
 
 ```
-docker-compose restart
+docker-compose up -d
 ```
 
 Nas próximas vezes, basta executar os containers: `docker-compose up` e acesse [localhost:8000/admin](http://localhost:8000/admin)
