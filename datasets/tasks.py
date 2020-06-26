@@ -125,8 +125,24 @@ def get_city_council_updates():
     return response
 
 
-@actor(max_retries=5)
-def sync_city_council_objects(payload):
+@actor(max_retries=3)
+def sync_data_from_webservice(action, record):
+    """Executa uma ação a partir de um método e um registro.
+
+    A ação pode ser a inclusão de um contrato, por exemplo, e
+    o registro são os dados de um contrato novo.
+    """
+    action(record)
+
+
+def distribute_city_council_objects_to_sync(payload):
+    """Recebe o payload e dispara uma task para cada registro.
+
+    O webservice da Câmara retorna uma lista de ações (inserção,
+    atualização e deleção) e os registros que sofreram cada uma
+    delas. Essa task executa cada uma de maneira separada para que,
+    caso tenham algum erro, possam ser tratados de maneira separada.
+    """
     action_methods = {
         "inclusoesContrato": add_contract,
         "alteracoesContrato": update_contract,
@@ -144,4 +160,4 @@ def sync_city_council_objects(payload):
     for action_name, records in payload.items():
         method = action_methods.get(action_name)
         for record in records:
-            method(record)
+            sync_data_from_webservice.send(method, record)

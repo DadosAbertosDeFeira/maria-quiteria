@@ -1,15 +1,11 @@
-from datetime import datetime
-
 import pytest
-from datasets.models import CityCouncilBid
 from datasets.tasks import (
     WebserviceException,
     backup_file,
     content_from_file,
+    distribute_city_council_objects_to_sync,
     get_city_council_updates,
-    sync_city_council_objects,
 )
-from django.utils.timezone import make_aware
 from model_bakery import baker
 
 
@@ -125,9 +121,7 @@ class TestGetCityCouncilUpdates:
 
         assert get_city_council_updates() == expected_payload
 
-    def test_handle_with_error_from_the_webservice_when_parameters_are_invalid(
-        self, mocker
-    ):
+    def test_handle_with_error_when_parameters_are_invalid(self, mocker):
         expected_payload = {"erro": "Os parametros enviados são inválidos."}
         post_mock = mocker.patch("datasets.tasks.requests.post")
         post_mock.return_value.json.return_value = expected_payload
@@ -136,30 +130,19 @@ class TestGetCityCouncilUpdates:
         assert "Parâmetros inválidos." in str(exception.value)
 
 
-@pytest.mark.django_db
-class TestSyncCityCouncilObjects:
-    def test_sync_city_council_objects(self):
-        bid = baker.make(
-            "datasets.CityCouncilBid",
-            external_code="214",
-            modality="pregao_presencial",
-            code="004/2020",
-            code_type="004/2020",
-            description="Contratação de pessoa física",
-            session_at=datetime(2020, 3, 26, 9, 0, 0),
-        )
+class TestDistributeCityCouncilObjectsToSync:
+    def test_distribute_city_council_objects_to_sync(self, mocker):
+        record_data = {
+            "codLic": "214",
+            "objetoLic": "Contratação de pessoa jurídica",
+            "dtLic": "2020-04-26 09:00:00",
+        }
         payload = {
             "inclusoesContrato": [],
             "alteracoesContrato": [],
             "exclusoesContrato": [],
             "inclusoesLicitacao": [],
-            "alteracoesLicitacao": [
-                {
-                    "codLic": "214",
-                    "objetoLic": "Contratação de pessoa jurídica",
-                    "dtLic": "2020-04-26 09:00:00",
-                }
-            ],
+            "alteracoesLicitacao": [record_data],
             "exclusoesLicitacao": [],
             "inclusoesReceita": [],
             "alteracoesReceita": [],
@@ -168,27 +151,21 @@ class TestSyncCityCouncilObjects:
             "alteracoesDespesa": [],
             "exclusoesDespesa": [],
         }
-        sync_city_council_objects(payload)
+        sync_data_task = mocker.patch("datasets.tasks.sync_data_from_webservice.send")
 
-        bid.refresh_from_db()
-        assert bid.description == "Contratação de pessoa jurídica"
-        assert bid.session_at == make_aware(datetime(2020, 4, 26, 9, 0, 0))
+        distribute_city_council_objects_to_sync(payload)
 
-    def test_add_bid_on_update_city_council_objects(self):
+        assert sync_data_task.called is True
+        assert sync_data_task.call_count == 1
+        assert sync_data_task.call_args_list[0][0][0].__name__ == "update_bid"
+        assert sync_data_task.call_args_list[0][0][1] == record_data
+
+    def test_do_not_call_task_if_there_is_no_records(self, mocker):
         payload = {
             "inclusoesContrato": [],
             "alteracoesContrato": [],
             "exclusoesContrato": [],
-            "inclusoesLicitacao": [
-                {
-                    "codLic": "214",
-                    "codTipoLic": "7",
-                    "numLic": "004/2020",
-                    "numTipoLic": "004/2020",
-                    "objetoLic": "Contratação de pessoa jurídica",
-                    "dtLic": "2020-03-26 09:00:00",
-                }
-            ],
+            "inclusoesLicitacao": [],
             "alteracoesLicitacao": [],
             "exclusoesLicitacao": [],
             "inclusoesReceita": [],
@@ -199,40 +176,7 @@ class TestSyncCityCouncilObjects:
             "exclusoesDespesa": [],
         }
 
-        assert CityCouncilBid.objects.count() == 0
+        sync_data_task = mocker.patch("datasets.tasks.sync_data_from_webservice")
+        distribute_city_council_objects_to_sync(payload)
 
-        sync_city_council_objects(payload)
-
-        assert CityCouncilBid.objects.count() == 1
-        bid = CityCouncilBid.objects.first()
-
-        assert bid.external_code == "214"
-        assert bid.modality == "pregao_presencial"
-        assert bid.code == "004/2020"
-        assert bid.code_type == "004/2020"
-        assert bid.description == "Contratação de pessoa jurídica"
-        assert bid.session_at == make_aware(datetime(2020, 3, 26, 9, 0, 0))
-        assert bid.excluded is False
-
-    def test_remove_bid_on_update_city_council_objects(self):
-        payload = {
-            "inclusoesContrato": [],
-            "alteracoesContrato": [],
-            "exclusoesContrato": [],
-            "inclusoesLicitacao": [],
-            "alteracoesLicitacao": [],
-            "exclusoesLicitacao": [{"codLic": "214"}],
-            "inclusoesReceita": [],
-            "alteracoesReceita": [],
-            "exclusoesReceita": [],
-            "inclusoesDespesa": [],
-            "alteracoesDespesa": [],
-            "exclusoesDespesa": [],
-        }
-
-        bid = baker.make("datasets.CityCouncilBid", external_code="214")
-        assert bid.excluded is False
-
-        sync_city_council_objects(payload)
-        bid.refresh_from_db()
-        assert bid.excluded is True
+        assert sync_data_task.called is False
