@@ -47,6 +47,10 @@ set_broker(rabbitmq_broker)
 client = get_s3_client(settings)
 
 
+class WebserviceException(Exception):
+    pass
+
+
 @actor(max_retries=5)
 def content_from_file(file_pk=None, path=None, keep_file=True):
     if not any([file_pk, path]):
@@ -100,10 +104,6 @@ def backup_file(file_id):
     file_obj.save()
 
     return s3_url
-
-
-class WebserviceException(Exception):
-    pass
 
 
 @actor(max_retries=5)
