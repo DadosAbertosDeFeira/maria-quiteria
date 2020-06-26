@@ -3,9 +3,10 @@ from datetime import datetime
 import pytest
 from datasets.models import CityCouncilBid
 from datasets.tasks import (
+    WebserviceException,
     backup_file,
     content_from_file,
-    retrieve_city_council_updates,
+    get_city_council_updates,
     sync_city_council_objects,
 )
 from django.utils.timezone import make_aware
@@ -121,7 +122,16 @@ def test_get_city_council_updates(mocker):
     post_mock = mocker.patch("datasets.tasks.requests.post")
     post_mock.return_value.json.return_value = expected_payload
 
-    assert retrieve_city_council_updates() == expected_payload
+    assert get_city_council_updates() == expected_payload
+
+
+def test_handle_with_error_from_the_webservice_when_parameters_are_invalid(mocker):
+    expected_payload = {"erro": "Os parametros enviados são inválidos."}
+    post_mock = mocker.patch("datasets.tasks.requests.post")
+    post_mock.return_value.json.return_value = expected_payload
+    with pytest.raises(WebserviceException) as exception:
+        get_city_council_updates()
+    assert "Parâmetros inválidos." in str(exception.value)
 
 
 @pytest.mark.django_db

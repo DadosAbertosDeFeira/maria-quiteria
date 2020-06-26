@@ -102,8 +102,12 @@ def backup_file(file_id):
     return s3_url
 
 
+class WebserviceException(Exception):
+    pass
+
+
 @actor(max_retries=5)
-def retrieve_city_council_updates():
+def get_city_council_updates():
     """Solicita atualizações ao webservice da Câmara."""
     yesterday = date.today() - timedelta(days=1)  # formato aaaa-mm-dd
     response = requests.post(
@@ -114,7 +118,11 @@ def retrieve_city_council_updates():
         },
         headers={"User-Agent": "Maria Quitéria"},
     )
-    return response.json()
+    response = response.json()
+    if response.get("erro"):
+        if response["erro"] == "Os parametros enviados são inválidos.":
+            raise WebserviceException("Parâmetros inválidos.")
+    return response
 
 
 @actor(max_retries=5)
