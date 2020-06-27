@@ -198,7 +198,7 @@ def test_adapt_from_csv_data_to_revenue():
 
 @pytest.mark.django_db
 def test_adapt_from_csv_data_to_contract_file(settings):
-    contract = baker.make("datasets.CityCouncilContract", external_code="45")
+    contract = baker.make("datasets.CityCouncilContract", external_code=45)
     item = {
         "CODARQCON": "39",
         "CODCON": "45",
@@ -227,7 +227,7 @@ def test_deal_with_contract_not_found_for_file(caplog):
 
 @pytest.mark.django_db
 def test_adapt_from_csv_data_to_bid_file(settings):
-    bid = baker.make("datasets.CityCouncilBid", external_code="60")
+    bid = baker.make("datasets.CityCouncilBid", external_code=60)
     item = {
         "CODARQLIC": "113",
         "CODLIC": "60",
