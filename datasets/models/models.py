@@ -173,7 +173,9 @@ class CityCouncilAttendanceList(DatasetMixin):
 
 
 class CityCouncilContract(DatasetMixin):
-    external_code = models.PositiveIntegerField("Código externo")
+    external_code = models.PositiveIntegerField(
+        "Código externo", unique=True, db_index=True
+    )
     description = models.TextField("Descrição", null=True, blank=True)
     details = models.TextField("Objeto do contrato", null=True, blank=True)
     company_or_person_document = models.CharField(
@@ -232,11 +234,11 @@ class CityCouncilExpense(DatasetMixin):
         "Modalidade", max_length=50, null=True, blank=True, choices=EXPENSE_MODALITIES
     )
     excluded = models.BooleanField("Excluído?", default=False)
-    external_file_code = models.CharField(
-        "Código do arquivo (externo)", max_length=50, null=True, blank=True
+    external_file_code = models.PositiveIntegerField(
+        "Código do arquivo (externo)", null=True, blank=True
     )
-    external_file_line = models.CharField(
-        "Linha do arquivo (externo)", max_length=50, null=True, blank=True
+    external_file_line = models.PositiveIntegerField(
+        "Linha do arquivo (externo)", null=True, blank=True
     )
 
     class Meta:
@@ -382,7 +384,9 @@ class CityHallBidEvent(DatasetMixin):
 
 
 class CityCouncilBid(DatasetMixin):
-    external_code = models.CharField("Código externo", max_length=10)
+    external_code = models.PositiveIntegerField(
+        "Código externo", unique=True, db_index=True
+    )
     modality = models.CharField(
         "Modalidade", max_length=60, choices=BID_MODALITIES, null=True, blank=True
     )
@@ -409,7 +413,9 @@ class CityCouncilBid(DatasetMixin):
 
 
 class CityCouncilRevenue(DatasetMixin):
-    external_code = models.CharField("Código externo", max_length=10, db_index=True)
+    external_code = models.PositiveIntegerField(
+        "Código externo", db_index=True, unique=True
+    )
     budget_unit = models.PositiveIntegerField("Unidade gestora", default=101)
     published_at = models.DateField("Publicado em", null=True, db_index=True)
     registered_at = models.DateField("Registrado em", null=True, db_index=True)
