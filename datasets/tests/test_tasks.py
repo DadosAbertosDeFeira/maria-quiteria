@@ -117,6 +117,7 @@ class TestGetCityCouncilUpdates:
             "exclusoesDespesa": [],
         }
         post_mock = mocker.patch("datasets.tasks.requests.post")
+        post_mock.return_value.status_code = 200
         post_mock.return_value.json.return_value = expected_payload
 
         assert get_city_council_updates() == expected_payload
@@ -127,7 +128,14 @@ class TestGetCityCouncilUpdates:
         post_mock.return_value.json.return_value = expected_payload
         with pytest.raises(WebserviceException) as exception:
             get_city_council_updates()
-        assert "Parâmetros inválidos." in str(exception.value)
+        assert "Os parametros enviados são inválidos." in str(exception.value)
+
+    @pytest.mark.parametrize("status_code", [400, 404, 500, 501, 503])
+    def test_raise_exception_if_request_is_not_successful(self, status_code, mocker):
+        post_mock = mocker.patch("datasets.tasks.requests.post")
+        post_mock.return_value.status_code = status_code
+        with pytest.raises(Exception):
+            get_city_council_updates()
 
 
 class TestDistributeCityCouncilObjectsToSync:

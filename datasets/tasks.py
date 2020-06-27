@@ -118,10 +118,10 @@ def get_city_council_updates():
         },
         headers={"User-Agent": "Maria Quitéria"},
     )
+    response.raise_for_status()
     response = response.json()
     if response.get("erro"):
-        if response["erro"] == "Os parametros enviados são inválidos.":
-            raise WebserviceException("Parâmetros inválidos.")
+        raise WebserviceException(response["erro"])
     return response
 
 

@@ -254,7 +254,7 @@ class TestContract:
 
 
 @pytest.mark.django_db
-class TestRevenues:
+class TestRevenue:
     def test_add_revenue(self):
         assert CityCouncilRevenue.objects.count() == 0
         record = {
@@ -337,7 +337,7 @@ class TestRevenues:
 
 
 @pytest.mark.django_db
-class TestExpenses:
+class TestExpense:
     def test_add_expense(self):
         assert CityCouncilExpense.objects.count() == 0
         record = {
