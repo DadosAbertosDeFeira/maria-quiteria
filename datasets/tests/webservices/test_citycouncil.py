@@ -82,7 +82,7 @@ class TestBid:
         assert bid.files.count() == 2
 
     def test_bid_update(self):
-        bid = baker.make_recipe("datasets.models.CityCouncilBid", external_code="214")
+        bid = baker.make_recipe("datasets.CityCouncilBid", external_code="214")
         record = {
             "codLic": "214",
             "codTipoLic": "7",
@@ -103,7 +103,7 @@ class TestBid:
 
     def test_remove_bid(self):
         bid = baker.make_recipe(
-            "datasets.models.CityCouncilBid", external_code="214", excluded=False
+            "datasets.CityCouncilBid", external_code="214", excluded=False
         )
         record = {"codLic": "214"}
         remove_bid(record)
@@ -112,7 +112,7 @@ class TestBid:
         assert bid.excluded is True
 
     def test_update_files(self, mock_save_file):
-        bid = baker.make_recipe("datasets.models.CityCouncilBid", external_code="214")
+        bid = baker.make_recipe("datasets.CityCouncilBid", external_code="214")
         assert bid.files.count() == 0
 
         record = {
@@ -202,9 +202,7 @@ class TestContract:
         assert contract_obj.files.count() == 1
 
     def test_update_contract(self):
-        contract = baker.make_recipe(
-            "datasets.models.CityCouncilContract", external_code="43"
-        )
+        contract = baker.make_recipe("datasets.CityCouncilContract", external_code="43")
         record = {
             "codCon": "43",
             "dsCon": "CONTRATO Nº 004/2014 - PRESTAÇÃO DE SERVIÇO",
@@ -222,9 +220,7 @@ class TestContract:
         assert contract.pk == updated_contract.pk
 
     def test_update_contract_with_files(self, mock_save_file):
-        contract = baker.make_recipe(
-            "datasets.models.CityCouncilContract", external_code="43"
-        )
+        contract = baker.make_recipe("datasets.CityCouncilContract", external_code="43")
         assert contract.files.count() == 0
         record = {
             "codCon": "43",
@@ -244,7 +240,7 @@ class TestContract:
 
     def test_remove_contract(self):
         contract = baker.make_recipe(
-            "datasets.models.CityCouncilContract", external_code="214", excluded=False
+            "datasets.CityCouncilContract", external_code="214", excluded=False
         )
         record = {"codCon": "214"}
         remove_contract(record)
@@ -304,9 +300,7 @@ class TestRevenue:
         assert revenue_obj.excluded == expected_revenue["excluded"]
 
     def test_update_revenue(self):
-        revenue = baker.make_recipe(
-            "datasets.models.CityCouncilRevenue", external_code="43"
-        )
+        revenue = baker.make_recipe("datasets.CityCouncilRevenue", external_code="43")
         record = {
             "codLinha": "43",
             "codUnidGestora": "101",
@@ -327,7 +321,7 @@ class TestRevenue:
 
     def test_remove_revenue(self):
         revenue = baker.make_recipe(
-            "datasets.models.CityCouncilRevenue", external_code="214", excluded=False
+            "datasets.CityCouncilRevenue", external_code="214", excluded=False
         )
         record = {"codLinha": "214"}
         remove_revenue(record)
@@ -410,7 +404,7 @@ class TestExpense:
 
     def test_update_expense(self):
         expense = baker.make_recipe(
-            "datasets.models.CityCouncilExpense",
+            "datasets.CityCouncilExpense",
             external_file_code="253",
             external_file_line="2",
         )
@@ -444,7 +438,7 @@ class TestExpense:
 
     def test_remove_expense(self):
         expense = baker.make_recipe(
-            "datasets.models.CityCouncilExpense",
+            "datasets.CityCouncilExpense",
             external_file_code="253",
             external_file_line="2",
             excluded=False,
