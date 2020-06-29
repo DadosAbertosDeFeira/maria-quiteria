@@ -8,9 +8,6 @@ from public_admin.sites import PublicAdminSite, PublicApp
 from .models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
-    CityCouncilBid,
-    CityCouncilContract,
-    CityCouncilExpense,
     CityCouncilMinute,
     CityCouncilRevenue,
     CityHallBid,
@@ -196,7 +193,11 @@ class CityHallBidAdmin(PublicModelAdmin):
     )
 
     def get_queryset(self, request):
-        return super().get_queryset(request).prefetch_related("files", "events")
+        return (
+            super()
+            .get_queryset(request)
+            .prefetch_related("files", "events", "events__files")
+        )
 
     def get_search_results(self, request, queryset, search_term):
         if not search_term:
