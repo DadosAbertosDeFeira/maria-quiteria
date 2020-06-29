@@ -316,7 +316,8 @@ public_admin = MariaQuiteriaPublicAdminSite(public_apps=public_app)
 models_and_admins = [
     (CityCouncilAgenda, CityCouncilAgendaAdmin),
     (CityCouncilAttendanceList, CityCouncilAttendanceListAdmin),
-    # (CityCouncilBid, CityCouncilBidAdmin),  # aguardando completar a migração com a Câmara
+    # aguardando completar a migração com a Câmara
+    # (CityCouncilBid, CityCouncilBidAdmin),
     # (CityCouncilContract, CityCouncilContractAdmin),
     # (CityCouncilExpense, CityCouncilExpenseAdmin),
     (CityCouncilMinute, CityCouncilMinuteAdmin),
