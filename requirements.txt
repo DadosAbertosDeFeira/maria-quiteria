@@ -11,7 +11,7 @@ python-dotenv==0.13.0
 schematics==2.1.0
 scrapy==2.1.0
 sentry-dramatiq==0.3.2
-sentry-sdk==0.14.4
+sentry-sdk==0.15.1
 spidermon==1.13.0
 tika==1.24
 whitenoise==5.1.0
