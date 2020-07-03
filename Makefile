@@ -6,3 +6,6 @@ createsuperuser:
 
 runtests:
 	docker-compose run --rm web pytest
+
+collectstatic:
+	docker-compose run --rm web python manage.py collectstatic
