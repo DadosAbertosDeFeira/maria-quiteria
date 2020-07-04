@@ -23,7 +23,8 @@ jobs:
         run: |
           black --check .
           flake8 .
-
+      - name: Check migrations
+        run: python manage.py makemigrations --check
       - name: Run Tests
         env:
           DJANGO_SETTINGS_MODULE: "core.settings"
