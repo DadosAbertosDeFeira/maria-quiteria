@@ -1,4 +1,4 @@
-version: "3"
+version: "3.4"
 
 services:
     db:
@@ -7,13 +7,13 @@ services:
             POSTGRES_DB: mariaquiteria
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: postgres
-        ports:
-            - "5432:5432"
         volumes:
             - ./db:/var/lib/postgresql
 
     web:
-        build: .
+        build: 
+            context: .
+            target: dev
         volumes:
             - .:/code
         ports:
