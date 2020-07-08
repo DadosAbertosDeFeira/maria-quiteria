@@ -7,7 +7,7 @@ dramatiq[rabbitmq,watch]==1.8.1
 gunicorn==20.0.4
 jinja2==2.11.2
 psycopg2-binary==2.8.5
-python-dotenv==0.13.0
+python-dotenv==0.14.0
 schematics==2.1.0
 scrapy==2.2.0
 sentry-dramatiq==0.3.2
