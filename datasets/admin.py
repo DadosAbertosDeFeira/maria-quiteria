@@ -154,7 +154,12 @@ class CityCouncilMinuteAdmin(PublicModelAdmin):
     )
 
     def get_queryset(self, request):
-        return super().get_queryset(request).prefetch_related("files")
+        return (
+            super()
+            .get_queryset(request)
+            .prefetch_related("files")
+            .defer("files__content")
+        )
 
     def get_search_results(self, request, queryset, search_term):
         if not search_term:
@@ -197,6 +202,7 @@ class CityHallBidAdmin(PublicModelAdmin):
             super()
             .get_queryset(request)
             .prefetch_related("files", "events", "events__files")
+            .defer("files__content", "events__files__content")
         )
 
     def get_search_results(self, request, queryset, search_term):
