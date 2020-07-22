@@ -1,6 +1,5 @@
 from django.contrib import admin
-from django.contrib.postgres.search import SearchQuery, SearchRank
-from django.db.models import F
+from django.contrib.postgres.search import SearchQuery
 from django.utils.safestring import mark_safe
 from public_admin.admin import PublicModelAdmin
 from public_admin.sites import PublicAdminSite, PublicApp
@@ -8,6 +7,9 @@ from public_admin.sites import PublicAdminSite, PublicApp
 from .models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
+    CityCouncilBid,
+    CityCouncilContract,
+    CityCouncilExpense,
     CityCouncilMinute,
     CityCouncilRevenue,
     CityHallBid,
@@ -17,7 +19,6 @@ from .models import (
 
 
 class GazetteAdmin(PublicModelAdmin):
-    ordering = ["-date"]
     search_fields = ["year_and_edition", "events__summary", "files__search_vector"]
     list_filter = ["power", "date"]
     list_display = (
@@ -31,21 +32,19 @@ class GazetteAdmin(PublicModelAdmin):
     )
 
     def get_queryset(self, request):
-        return super().get_queryset(request).prefetch_related("files", "events")
+        return (
+            super()
+            .get_queryset(request)
+            .prefetch_related("files", "events")
+            .defer("files__content")
+        )
 
     def get_search_results(self, request, queryset, search_term):
         if not search_term:
             return super().get_search_results(request, queryset, search_term)
 
-        # FIXME ordenação das colunas não funciona quando tem um search_term
-
         query = SearchQuery(search_term, config="portuguese")
-        rank = SearchRank(F("files__search_vector"), query)
-        queryset = (
-            queryset.annotate(rank=rank)
-            .filter(files__search_vector=query)
-            .order_by("-rank")
-        )
+        queryset = queryset.filter(files__search_vector=query)
 
         return queryset, False
 
@@ -166,12 +165,7 @@ class CityCouncilMinuteAdmin(PublicModelAdmin):
             return super().get_search_results(request, queryset, search_term)
 
         query = SearchQuery(search_term, config="portuguese")
-        rank = SearchRank(F("files__search_vector"), query)
-        queryset = (
-            queryset.annotate(rank=rank)
-            .filter(files__search_vector=query)
-            .order_by("-rank")
-        )
+        queryset = queryset.filter(files__search_vector=query)
 
         return queryset, False
 
@@ -210,12 +204,7 @@ class CityHallBidAdmin(PublicModelAdmin):
             return super().get_search_results(request, queryset, search_term)
 
         query = SearchQuery(search_term, config="portuguese")
-        rank = SearchRank(F("files__search_vector"), query)
-        queryset = (
-            queryset.annotate(rank=rank)
-            .filter(files__search_vector=query)
-            .order_by("-rank")
-        )
+        queryset = queryset.filter(files__search_vector=query)
 
         return queryset, False
 
@@ -265,10 +254,7 @@ class FileAdmin(admin.ModelAdmin):
             return super().get_search_results(request, queryset, search_term)
 
         query = SearchQuery(search_term, config="portuguese")
-        rank = SearchRank(F("search_vector"), query)
-        queryset = (
-            queryset.annotate(rank=rank).filter(search_vector=query).order_by("-rank")
-        )
+        queryset = queryset.filter(search_vector=query)
 
         return queryset, False
 
@@ -322,10 +308,9 @@ public_admin = MariaQuiteriaPublicAdminSite(public_apps=public_app)
 models_and_admins = [
     (CityCouncilAgenda, CityCouncilAgendaAdmin),
     (CityCouncilAttendanceList, CityCouncilAttendanceListAdmin),
-    # aguardando completar a migração com a Câmara
-    # (CityCouncilBid, CityCouncilBidAdmin),
-    # (CityCouncilContract, CityCouncilContractAdmin),
-    # (CityCouncilExpense, CityCouncilExpenseAdmin),
+    (CityCouncilBid, CityCouncilBidAdmin),
+    (CityCouncilContract, CityCouncilContractAdmin),
+    (CityCouncilExpense, CityCouncilExpenseAdmin),
     (CityCouncilMinute, CityCouncilMinuteAdmin),
     (CityCouncilRevenue, CityCouncilRevenueAdmin),
     (Gazette, GazetteAdmin),
