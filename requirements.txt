@@ -9,7 +9,7 @@ jinja2==2.11.2
 psycopg2-binary==2.8.5
 python-dotenv==0.14.0
 schematics==2.1.0
-scrapy==2.2.0
+scrapy==2.2.1
 sentry-dramatiq==0.3.2
 sentry-sdk==0.16.1
 spidermon==1.13.0
