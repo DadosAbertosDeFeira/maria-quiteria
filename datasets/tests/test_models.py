@@ -69,6 +69,32 @@ class TestCityCouncilAttendanceList:
         assert attendance_lists.first().date == newer_date
         assert attendance_lists.last().date == older_date
 
+    def test_save_should_create_historical_data(self):
+        attendance_list = baker.make_recipe(
+            "datasets.CityCouncilAttendanceList", status='presente'
+        )
+        assert attendance_list.history.count() == 1
+
+        attendance_list.status = 'falta_justificada'
+        attendance_list.save()
+
+        assert attendance_list.status == 'falta_justificada'
+        assert attendance_list.history.count() == 2
+        assert attendance_list.history.first().status == 'presente'
+
+    def test_save_should_create_historical_data_bulk_save(self):
+        attendance_lists = [baker.make_recipe(
+            "datasets.CityCouncilAttendanceList", status='presente'
+        ) for _ in range(5)]
+
+        for attendance_list in attendance_lists:
+            attendance_list.description = "foo bar"
+
+        CityCouncilAttendanceList.objects.bulk_update(attendance_lists, fields=["description"])
+
+        for attendance_list in attendance_lists:
+            attendance_list.history.count() == 2
+
 
 @pytest.mark.django_db
 class TestCityCouncilBid:
