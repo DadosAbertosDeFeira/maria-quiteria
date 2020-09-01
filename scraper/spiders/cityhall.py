@@ -2,9 +2,9 @@ import re
 from datetime import date, datetime, timedelta
 
 import scrapy
+
 from datasets.parsers import from_str_to_datetime
 from scraper.items import CityHallBidItem, CityHallContractItem, CityHallPaymentsItem
-
 from . import BaseSpider
 from .utils import extract_param, identify_contract_id, is_url, strip_accents
 
@@ -169,6 +169,50 @@ class BidsSpider(BaseSpider):
 
     def _parse_date(self, raw_date):
         return [date[1:] for date in raw_date]
+
+
+class ConstructionsSpider(BaseSpider):
+    # 2910800 é o código IBGE para cidade de Feira de Santana
+    url = "https://www.tcm.ba.gov.br/portal-da-cidadania/obras/?municipio=2910800"
+    # 129 é o código da Prefeitura Mun. de Feira de Santana - Outras entidades de FS ainda não retornam registros
+    # FIXME: Prever lançamentos em outras entidades
+    PUBLIC_AGENCY_CODE = "129"
+    # FIXME: Após testes, setar 2000 que é o primeiro ano listado na página
+    initial_year = 2020
+    current_year = date.today().year
+
+    def start_requests(self):
+        year = self.initial_year
+        while year <= self.current_year:
+            url = f"{self.url}&ano={year}&entidade={self.PUBLIC_AGENCY_CODE}&pesquisar=Pesquisar"
+            yield scrapy.Request(url, self.parse)
+            year = year + 1
+
+    def parse(self, response):
+        rows = response.css("table#tabelaResultado tbody tr")
+
+        for row in rows:
+            detail_url = (
+                row.css(".btn-acao::attr(onclick)")
+                .re_first(r"location.=\s*(.*)")
+                .replace("'", "")
+            )
+
+            company_content = row.css("a.btn-popover::attr(data-content)")
+
+            yield {
+                "Nº DA OBRA": row.xpath(".//td[1]/text()").get(),
+                "DESCRIÇÃO": row.xpath(".//td[2]/text()").get(),
+                "SITUAÇÃO": row.xpath(".//td[3]/text()").get(),
+                "TIPO": row.xpath(".//td[4]/text()").get(),
+                "VALOR OBRA/SERVIÇO": row.xpath(".//td[5]/text()").get(),
+                "VALOR PAGO": row.xpath(".//td[6]/text()").get(),
+                "VALOR RETIDO": row.xpath(".//td[7]/text()").get(),
+                "EMPRESA / EXECUTOR": {
+                    "NOME": company_content.re_first(r"<td>(\D+)</td>"),
+                    "CNPJ": company_content.re_first(r"<td>(\d+)</td>"),
+                },
+            }
 
 
 class ContractsSpider(BaseSpider):
