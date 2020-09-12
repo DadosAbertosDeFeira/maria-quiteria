@@ -2,9 +2,9 @@ import re
 from datetime import date, datetime, timedelta
 
 import scrapy
-
 from datasets.parsers import from_str_to_datetime
 from scraper.items import CityHallBidItem, CityHallContractItem, CityHallPaymentsItem
+
 from . import BaseSpider
 from .utils import extract_param, identify_contract_id, is_url, strip_accents
 
@@ -172,19 +172,18 @@ class BidsSpider(BaseSpider):
 
 
 class ConstructionsSpider(BaseSpider):
-    # 2910800 é o código IBGE para cidade de Feira de Santana
+    name = "cityhall_constructions"
     url = "https://www.tcm.ba.gov.br/portal-da-cidadania/obras/?municipio=2910800"
-    # 129 é o código da Prefeitura Mun. de Feira de Santana - Outras entidades de FS ainda não retornam registros
-    # FIXME: Prever lançamentos em outras entidades
-    PUBLIC_AGENCY_CODE = "129"
+    # 129 é o código de entidade da Prefeitura Mun. de Feira de Santana
+    # FIXME: Outras entidades de FS ainda não retornam registros, iremos consultar?
     # FIXME: Após testes, setar 2000 que é o primeiro ano listado na página
-    initial_year = 2020
+    initial_year = 2019
     current_year = date.today().year
 
     def start_requests(self):
         year = self.initial_year
         while year <= self.current_year:
-            url = f"{self.url}&ano={year}&entidade={self.PUBLIC_AGENCY_CODE}&pesquisar=Pesquisar"
+            url = f"{self.url}&ano={year}&entidade=129&pesquisar=Pesquisar"
             yield scrapy.Request(url, self.parse)
             year = year + 1
 
@@ -200,7 +199,7 @@ class ConstructionsSpider(BaseSpider):
 
             company_content = row.css("a.btn-popover::attr(data-content)")
 
-            yield {
+            item_content = {
                 "Nº DA OBRA": row.xpath(".//td[1]/text()").get(),
                 "DESCRIÇÃO": row.xpath(".//td[2]/text()").get(),
                 "SITUAÇÃO": row.xpath(".//td[3]/text()").get(),
@@ -213,6 +212,17 @@ class ConstructionsSpider(BaseSpider):
                     "CNPJ": company_content.re_first(r"<td>(\d+)</td>"),
                 },
             }
+
+            request = scrapy.Request(detail_url, callback=self.parse_details)
+            request.cb_kwargs["item"] = item_content
+            yield request
+
+    def parse_details(self, response, item):
+        labels = response.css(".form-group").xpath(".//label//text()").getall()
+        values = response.css(".form-group").xpath(".//span//text()").getall()
+        d = dict(zip(labels, values[1:]))
+        d.update(item)
+        yield d
 
 
 class ContractsSpider(BaseSpider):
