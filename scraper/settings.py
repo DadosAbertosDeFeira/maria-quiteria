@@ -15,6 +15,7 @@ from .items import (
 BOT_NAME = "maria-quiteria"
 SPIDER_MODULES = ["scraper.spiders"]
 NEWSPIDER_MODULE = "scraper.spiders"
+FEED_EXPORT_ENCODING = "utf-8"
 ROBOTSTXT_OBEY = True
 COOKIES_ENABLED = False
 EXTENSIONS = {

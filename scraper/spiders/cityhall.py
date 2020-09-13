@@ -220,9 +220,20 @@ class ConstructionsSpider(BaseSpider):
     def parse_details(self, response, item):
         labels = response.css(".form-group").xpath(".//label//text()").getall()
         values = response.css(".form-group").xpath(".//span//text()").getall()
-        d = dict(zip(labels, values[1:]))
-        d.update(item)
-        yield d
+        details = dict(zip(labels, values[1:]))
+        payments = self.get_payments(response)
+        details.update(item)
+        details.update(payments)
+        yield details
+
+    def get_payments(self, response):
+        payments = []
+        titles = response.css("table thead tr").xpath(".//th/text()").getall()
+        rows = response.css("table tbody tr")
+        for row in rows:
+            payment = dict(zip(titles, row.xpath(".//td/text()").getall()))
+            payments.append(payment)
+        return {"PAGAMENTOS": payments}
 
 
 class ContractsSpider(BaseSpider):
