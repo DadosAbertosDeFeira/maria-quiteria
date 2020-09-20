@@ -6,6 +6,7 @@ from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.db.models import F
+from simple_history.models import HistoricalRecords
 
 CITY_COUNCIL_EVENT_TYPE = (
     ("sessao_ordinaria", "Sessão Ordinária"),
@@ -91,9 +92,7 @@ class DatasetMixin(models.Model):
     def last_collected_item_date(cls):
         try:
             field = cls._meta.get_latest_by
-            kwargs = {
-                f"{field}__isnull": False,
-            }
+            kwargs = {f"{field}__isnull": False}
             found = cls.objects.filter(**kwargs).latest()
             if found:
                 value = getattr(found, field)
@@ -152,6 +151,7 @@ class CityCouncilAttendanceList(DatasetMixin):
     description = models.CharField("Descrição", max_length=200, null=True, blank=True)
     council_member = models.CharField("Vereador", max_length=200, db_index=True)
     status = models.CharField("Situação", max_length=20, choices=STATUS, db_index=True)
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Lista de Presença"
@@ -412,7 +412,7 @@ class CityHallBid(DatasetMixin):
 
 class CityHallBidEvent(DatasetMixin):
     bid = models.ForeignKey(
-        CityHallBid, on_delete=models.CASCADE, related_name="events",
+        CityHallBid, on_delete=models.CASCADE, related_name="events"
     )
     published_at = models.DateTimeField("Publicado em", null=True)
     summary = models.TextField("Descrição", null=True, blank=True, db_index=True)
