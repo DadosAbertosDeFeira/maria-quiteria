@@ -7,7 +7,7 @@ django-simple-history==2.11.0
 dramatiq[rabbitmq,watch]==1.9.0
 gunicorn==20.0.4
 jinja2==2.11.2
-psycopg2-binary==2.8.5
+psycopg2-binary==2.8.6
 python-dotenv==0.14.0
 schematics==2.1.0
 scrapy==2.3.0
