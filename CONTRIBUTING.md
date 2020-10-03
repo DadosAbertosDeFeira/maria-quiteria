@@ -3,8 +3,10 @@
 Ficamos muito felizes que você está lendo este guia de contribuição, sempre precisamos
 de pessoas voluntárias que acreditem na ideia e queiram contribuir com o projeto.
 
-Se você ainda não fez isso, junte-se também a nós [nosso grupo aberto do Telegram](https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg)
+Se você ainda não fez isso, junte-se também a nós nos nossos grupos abertos [do Telegram](https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg) ou [do Discord](https://discord.gg/F9RgD8k)
 e participe das discussões. Não hesite em nos procurar para tirar todas as suas dúvidas.
+
+[![Convite Discord](https://invidget.switchblade.xyz/F9RgD8k?language=pt)](https://discord.gg/F9RgD8k)
 
 ## Antes de começar
 
