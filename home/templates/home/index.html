@@ -14,11 +14,8 @@
     <link rel="stylesheet" href="https://unpkg.com/bulma@0.8.0/css/bulma.min.css" />
     <link rel="stylesheet" type="text/css" href="{% static "home/hero.css" %}">
     <link rel="stylesheet" href="https://unpkg.com/bulma-modal-fx/dist/css/modal-fx.min.css" />
-    <style>
-        footer a {
-            color: rgb(41, 92, 173) !important;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="style.css">
+
     {% include 'snippets/google-analytics.html' %}
 </head>
 
@@ -87,9 +84,7 @@
                 </h1>
                 <h2 class="content is-large">
                     Uma iniciativa para fomentar a <b>transparência</b> e os <b>dados abertos</b> no município de
-                    <!-- <a class="content href="https://pt.wikipedia.org/wiki/Feira_de_Santana" target="_blank" rel="noopener noreferrer"></a> -->
                     <b>Feira de Santana</b>
-                    <!-- </a> -->
                 </h2>
             </div>
         </div>
@@ -177,33 +172,40 @@
                 <div class="column is-3 is-offset-2">
                     <h2><strong>Portais da Transparência</strong></h2>
                     <ul class="content">
-                        <li><a href="http://www.transparencia.feiradesantana.ba.gov.br/">Portal da Prefeitura</a></li>
-                        <li><a href="https://www.transparencia.feiradesantana.ba.leg.br/">Portal da Câmara</a></li>
+                        <li><a class="footer-link" href="http://www.transparencia.feiradesantana.ba.gov.br/">Portal da
+                                Prefeitura</a></li>
+                        <li><a class="footer-link" href="https://www.transparencia.feiradesantana.ba.leg.br/">Portal da
+                                Câmara</a></li>
                     </ul>
                 </div>
                 <div class="column is-3">
                     <h2><strong>Lei de Acesso à Informação</strong></h2>
                     <ul class="content">
-                        <li><a
+                        <li><a class="footer-link"
                                 href="https://escoladedados.org/tutoriais/solicitando-dados-via-lei-de-acesso-a-informacao/">Como
                                 fazer um pedido de informação</a></li>
-                        <li><a href="http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=contato">Faça um
+                        <li><a class="footer-link"
+                                href="http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=contato">Faça um
                                 pedido para a Prefeitura</a></li>
-                        <li><a href="https://www.transparencia.feiradesantana.ba.leg.br/index.php?view=contato">Faça um
+                        <li><a class="footer-link"
+                                href="https://www.transparencia.feiradesantana.ba.leg.br/index.php?view=contato">Faça um
                                 pedido para a Câmara</a></li>
-                        <li><a href="https://www.politize.com.br/artigo-5/livre-acesso-a-informacao/">O que é a Lei de
+                        <li><a class="footer-link"
+                                href="https://www.politize.com.br/artigo-5/livre-acesso-a-informacao/">O que é a Lei de
                                 Acesso à Informação</a></li>
-                        <li><a href="https://www.gov.br/acessoainformacao/pt-br">LAI no Governo Federal</a></li>
+                        <li><a class="footer-link" href="https://www.gov.br/acessoainformacao/pt-br">LAI no Governo
+                                Federal</a></li>
                     </ul>
                 </div>
                 <div class="column is-4">
                     <h2><strong>Nossas Redes Sociais</strong></h2>
                     <ul class="content">
-                        <li><a href="https://fb.me/dadosabertosdefeira">Facebook</a></li>
-                        <li><a href="https://twitter.com/dadosdefeira">Twitter</a></li>
-                        <li><a href="https://www.instagram.com/dadosabertosdefeira/">Instagram</a></li>
-                        <li><a href="https://medium.com/@dadosabertosdefeira">Blog</a></li>
-                        <li><a href="https://github.com/DadosAbertosDeFeira/">Github</a></li>
+                        <li><a class="footer-link" href="https://fb.me/dadosabertosdefeira">Facebook</a></li>
+                        <li><a class="footer-link" href="https://twitter.com/dadosdefeira">Twitter</a></li>
+                        <li><a class="footer-link" href="https://www.instagram.com/dadosabertosdefeira/">Instagram</a>
+                        </li>
+                        <li><a class="footer-link" href="https://medium.com/@dadosabertosdefeira">Blog</a></li>
+                        <li><a class="footer-link" href="https://github.com/DadosAbertosDeFeira/">Github</a></li>
                     </ul>
                 </div>
             </div>
