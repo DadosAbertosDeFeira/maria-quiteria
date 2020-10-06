@@ -46,7 +46,9 @@ Caso seja algo novo, você tem duas alternativas:
 
 - Criar uma nova _issue_
 - Compartilhar a sua sugestão com outros participantes e mantenedores do projeto em nosso
-[grupo no Telegram](https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg)
+[grupo no Telegram](https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg) ou no nosso [Discord](https://discord.gg/BS4GNf)
+
+[![Convite Discord](https://invidget.switchblade.xyz/F9RgD8k?language=pt)](https://discord.gg/F9RgD8k)
 
 Em ambos, tente usar uma linguagem clara, e com o máximo de detalhes. Qual a motivação,
 qual problema resolveria e possíveis desafios, por exemplo, são importantes para entender
