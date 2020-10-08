@@ -1,11 +1,11 @@
 -r requirements.txt
 black==19.10b0
-django-debug-toolbar==2.2
+django-debug-toolbar==3.1.1
 flake8==3.8.3
 isort==5.5.4
 model-bakery==1.1.1
 pre-commit
-pytest==6.0.1
-pytest-django==3.9.0
+pytest==6.1.0
+pytest-django==3.10.0
 pytest-dotenv==0.5.2
 pytest-mock==3.3.1
