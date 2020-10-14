@@ -26,7 +26,7 @@ acompanhar o que a comunidade em geral vem trabalhando. Lá você encontrá cois
 fotografia até pedidos de acesso à informação.
 
 Os detalhes de como instalar e executar este projeto podem ser encontrados no
-[`README.md`](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/master/README.md).
+[`README.md`](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/main/README.md).
 
 ## Reportando bugs
 
@@ -85,7 +85,7 @@ revisões.
 * Use o tempo presente nas mensagens do _commit_. Exemplo: _"Adiciona funcionalidade"_
 e não _"Adicionada a funcionalidade"_.
 
-* Atualize o [README.md](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/master/README.md)
+* Atualize o [README.md](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/main/README.md)
 com os detalhes da mudança caso esta inclua uma nova base de dados ou um novo comando na CLI.
 
 * Embora o código esteja escrito em inglês, por convenção, as mensagens de _commit_,
