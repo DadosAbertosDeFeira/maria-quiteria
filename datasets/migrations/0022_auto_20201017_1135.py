@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('datasets', '0021_historicalcitycouncilattendancelist'),
+        ("datasets", "0021_historicalcitycouncilattendancelist"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='citycouncilrevenue',
-            name='external_code',
-            field=models.PositiveIntegerField(db_index=True, unique=True, verbose_name='Código externo'),
+            model_name="citycouncilrevenue",
+            name="external_code",
+            field=models.PositiveIntegerField(
+                db_index=True, unique=True, verbose_name="Código externo"
+            ),
         ),
     ]
