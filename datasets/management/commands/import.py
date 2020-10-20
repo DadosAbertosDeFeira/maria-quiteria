@@ -2,6 +2,14 @@ import csv
 from datetime import datetime
 
 from core import settings
+from datasets.adapters import (
+    to_citycouncil_bid,
+    to_citycouncil_bid_file,
+    to_citycouncil_contract,
+    to_citycouncil_contract_file,
+    to_citycouncil_expense,
+    to_citycouncil_revenue,
+)
 from datasets.models import (
     CityCouncilBid,
     CityCouncilContract,
@@ -9,23 +17,27 @@ from datasets.models import (
     CityCouncilRevenue,
     File,
 )
-from datasets.webservices.adapters import (
-    to_bid,
-    to_bid_file,
-    to_contract,
-    to_contract_file,
-    to_expense,
-    to_revenue,
-)
 from django.core.management.base import BaseCommand
 
 mapping = {
-    "citycouncil_expenses": {"model": CityCouncilExpense, "adapter": to_expense},
-    "citycouncil_contracts": {"model": CityCouncilContract, "adapter": to_contract},
-    "citycouncil_bids": {"model": CityCouncilBid, "adapter": to_bid},
-    "citycouncil_revenue": {"model": CityCouncilRevenue, "adapter": to_revenue},
-    "citycouncil_contract_files": {"model": File, "adapter": to_contract_file},
-    "citycouncil_bid_files": {"model": File, "adapter": to_bid_file},
+    "citycouncil_expenses": {
+        "model": CityCouncilExpense,
+        "adapter": to_citycouncil_expense,
+    },
+    "citycouncil_contracts": {
+        "model": CityCouncilContract,
+        "adapter": to_citycouncil_contract,
+    },
+    "citycouncil_bids": {"model": CityCouncilBid, "adapter": to_citycouncil_bid},
+    "citycouncil_revenue": {
+        "model": CityCouncilRevenue,
+        "adapter": to_citycouncil_revenue,
+    },
+    "citycouncil_contract_files": {
+        "model": File,
+        "adapter": to_citycouncil_contract_file,
+    },
+    "citycouncil_bid_files": {"model": File, "adapter": to_citycouncil_bid_file},
 }
 
 
@@ -55,7 +67,7 @@ class Command(BaseCommand):
         model = source_map["model"]
 
         if options.get("drop_all"):
-            confirmation = input("Tem certeza? s/n")
+            confirmation = input("Tem certeza? s/n ")
             if confirmation.lower() in ["s", "y"]:
                 model.objects.all().delete()
 
@@ -67,10 +79,10 @@ class Command(BaseCommand):
             for row in reader:
                 item = adapter(row)
                 if not options.get("source").endswith("_files"):
-                    item.crawled_at = datetime.now()
-                    item.crawled_from = settings.CITY_COUNCIL_WEBSERVICE
+                    item["crawled_at"] = datetime.now()
+                    item["crawled_from"] = settings.CITY_COUNCIL_WEBSERVICE
                 try:
-                    item.save()
+                    model.objects.create(**item)
                     saved += 1
                 except Exception as e:
                     errors += 1

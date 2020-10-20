@@ -1,18 +1,18 @@
 from datetime import date, datetime
 
 import pytest
-from datasets.webservices.adapters import (
-    to_bid,
-    to_bid_file,
-    to_contract,
-    to_contract_file,
-    to_expense,
-    to_revenue,
+from datasets.adapters import (
+    to_citycouncil_bid,
+    to_citycouncil_bid_file,
+    to_citycouncil_contract,
+    to_citycouncil_contract_file,
+    to_citycouncil_expense,
+    to_citycouncil_revenue,
 )
 from model_bakery import baker
 
 
-def test_save_expense_from_csv():
+def test_adapt_citycouncil_expense():
     item = {
         "CODARQUIVO": "253",
         "CODETAPA": "EMP",
@@ -61,25 +61,25 @@ def test_save_expense_from_csv():
         "external_file_code": "253",
         "external_file_line": "2",
     }
-    expense_obj = to_expense(item)
-    assert expense_obj.phase == expected_expense["phase"]
-    assert expense_obj.budget_unit == expected_expense["budget_unit"]
-    assert expense_obj.resource == expected_expense["resource"]
-    assert expense_obj.function == expected_expense["function"]
-    assert expense_obj.legal_status == expected_expense["legal_status"]
-    assert expense_obj.subfunction == expected_expense["subfunction"]
-    assert expense_obj.published_at == expected_expense["published_at"]
-    assert expense_obj.excluded == expected_expense["excluded"]
-    assert expense_obj.modality == expected_expense["modality"]
-    assert expense_obj.company_or_person == expected_expense["company_or_person"]
-    assert expense_obj.document == expected_expense["document"]
-    assert expense_obj.phase_code == expected_expense["phase_code"]
-    assert expense_obj.number == expected_expense["number"]
-    assert expense_obj.process_number == expected_expense["process_number"]
-    assert expense_obj.value == expected_expense["value"]
+    expense_obj = to_citycouncil_expense(item)
+    assert expense_obj["phase"] == expected_expense["phase"]
+    assert expense_obj["budget_unit"] == expected_expense["budget_unit"]
+    assert expense_obj["resource"] == expected_expense["resource"]
+    assert expense_obj["function"] == expected_expense["function"]
+    assert expense_obj["legal_status"] == expected_expense["legal_status"]
+    assert expense_obj["subfunction"] == expected_expense["subfunction"]
+    assert expense_obj["published_at"] == expected_expense["published_at"]
+    assert expense_obj["excluded"] == expected_expense["excluded"]
+    assert expense_obj["modality"] == expected_expense["modality"]
+    assert expense_obj["company_or_person"] == expected_expense["company_or_person"]
+    assert expense_obj["document"] == expected_expense["document"]
+    assert expense_obj["phase_code"] == expected_expense["phase_code"]
+    assert expense_obj["number"] == expected_expense["number"]
+    assert expense_obj["process_number"] == expected_expense["process_number"]
+    assert expense_obj["value"] == expected_expense["value"]
 
 
-def test_save_contract_from_csv():
+def test_adapt_citycouncil_contract():
     item = {
         "CODCON": "43",
         "DSCON": "CONTRATO Nº 004/2014 - PRESTAÇÃO DE SERVIÇO",
@@ -103,22 +103,22 @@ def test_save_contract_from_csv():
         "end_date": date(2015, 3, 27),
         "excluded": False,
     }
-    contract_obj = to_contract(item)
-    assert contract_obj.external_code == expected_contract["external_code"]
-    assert contract_obj.description == expected_contract["description"]
-    assert contract_obj.details == expected_contract["details"]
+    contract_obj = to_citycouncil_contract(item)
+    assert contract_obj["external_code"] == expected_contract["external_code"]
+    assert contract_obj["description"] == expected_contract["description"]
+    assert contract_obj["details"] == expected_contract["details"]
     assert (
-        contract_obj.company_or_person_document
+        contract_obj["company_or_person_document"]
         == expected_contract["company_or_person_document"]
     )
-    assert contract_obj.company_or_person == expected_contract["company_or_person"]
-    assert contract_obj.value == expected_contract["value"]
-    assert contract_obj.start_date == expected_contract["start_date"]
-    assert contract_obj.end_date == expected_contract["end_date"]
-    assert contract_obj.excluded == expected_contract["excluded"]
+    assert contract_obj["company_or_person"] == expected_contract["company_or_person"]
+    assert contract_obj["value"] == expected_contract["value"]
+    assert contract_obj["start_date"] == expected_contract["start_date"]
+    assert contract_obj["end_date"] == expected_contract["end_date"]
+    assert contract_obj["excluded"] == expected_contract["excluded"]
 
 
-def test_adapt_from_csv_data_to_bid():
+def test_adapt_citycouncil_bid():
     item = {
         "CODLIC": "42",
         "CODTIPOLIC": "7",
@@ -138,18 +138,18 @@ def test_adapt_from_csv_data_to_bid():
         "excluded": False,
     }
 
-    bid_obj = to_bid(item)
+    bid_obj = to_citycouncil_bid(item)
 
-    assert bid_obj.external_code == expected_bid["external_code"]
-    assert bid_obj.modality == expected_bid["modality"]
-    assert bid_obj.code == expected_bid["code"]
-    assert bid_obj.code_type == expected_bid["code_type"]
-    assert bid_obj.description == expected_bid["description"]
-    assert bid_obj.session_at == expected_bid["session_at"]
-    assert bid_obj.excluded == expected_bid["excluded"]
+    assert bid_obj["external_code"] == expected_bid["external_code"]
+    assert bid_obj["modality"] == expected_bid["modality"]
+    assert bid_obj["code"] == expected_bid["code"]
+    assert bid_obj["code_type"] == expected_bid["code_type"]
+    assert bid_obj["description"] == expected_bid["description"]
+    assert bid_obj["session_at"] == expected_bid["session_at"]
+    assert bid_obj["excluded"] == expected_bid["excluded"]
 
 
-def test_adapt_from_csv_data_to_revenue():
+def test_adapt_citycouncil_revenue():
     item = {
         "CODLINHA": "27",
         "CODUNIDGESTORA": "101",
@@ -180,24 +180,24 @@ def test_adapt_from_csv_data_to_revenue():
         "excluded": True,
     }
 
-    revenue_obj = to_revenue(item)
+    revenue_obj = to_citycouncil_revenue(item)
 
-    assert revenue_obj.external_code == expected_revenue["external_code"]
-    assert revenue_obj.budget_unit == expected_revenue["budget_unit"]
-    assert revenue_obj.published_at == expected_revenue["published_at"]
-    assert revenue_obj.registered_at == expected_revenue["registered_at"]
-    assert revenue_obj.revenue_type == expected_revenue["revenue_type"]
-    assert revenue_obj.modality == expected_revenue["modality"]
-    assert revenue_obj.description == expected_revenue["description"]
-    assert revenue_obj.value == expected_revenue["value"]
-    assert revenue_obj.resource == expected_revenue["resource"]
-    assert revenue_obj.legal_status == expected_revenue["legal_status"]
-    assert revenue_obj.destination == expected_revenue["destination"]
-    assert revenue_obj.excluded == expected_revenue["excluded"]
+    assert revenue_obj["external_code"] == expected_revenue["external_code"]
+    assert revenue_obj["budget_unit"] == expected_revenue["budget_unit"]
+    assert revenue_obj["published_at"] == expected_revenue["published_at"]
+    assert revenue_obj["registered_at"] == expected_revenue["registered_at"]
+    assert revenue_obj["revenue_type"] == expected_revenue["revenue_type"]
+    assert revenue_obj["modality"] == expected_revenue["modality"]
+    assert revenue_obj["description"] == expected_revenue["description"]
+    assert revenue_obj["value"] == expected_revenue["value"]
+    assert revenue_obj["resource"] == expected_revenue["resource"]
+    assert revenue_obj["legal_status"] == expected_revenue["legal_status"]
+    assert revenue_obj["destination"] == expected_revenue["destination"]
+    assert revenue_obj["excluded"] == expected_revenue["excluded"]
 
 
 @pytest.mark.django_db
-def test_adapt_from_csv_data_to_contract_file(settings):
+def test_adapt_citycouncil_contract_file(settings):
     contract = baker.make("datasets.CityCouncilContract", external_code=45)
     item = {
         "CODARQCON": "39",
@@ -205,7 +205,7 @@ def test_adapt_from_csv_data_to_contract_file(settings):
         "CAMINHO": "contratos/Contrato N2 Soluções e Publicação.pdf",
     }
 
-    file_obj = to_contract_file(item)
+    file_obj = to_citycouncil_contract_file(item)
 
     assert file_obj.content_object == contract
     assert file_obj.url == f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHO']}"
@@ -219,14 +219,14 @@ def test_deal_with_contract_not_found_for_file(caplog):
         "CODCON": "45",
         "CAMINHO": "contratos/Contrato N2 Soluções e Publicação.pdf",
     }
-    file_obj = to_contract_file(item)
+    file_obj = to_citycouncil_contract_file(item)
 
     assert file_obj is None
     assert "Arquivo do contrato não encontrado" in caplog.text
 
 
 @pytest.mark.django_db
-def test_adapt_from_csv_data_to_bid_file(settings):
+def test_adapt_citycouncil_bid_file(settings):
     bid = baker.make("datasets.CityCouncilBid", external_code=60)
     item = {
         "CODARQLIC": "113",
@@ -234,7 +234,7 @@ def test_adapt_from_csv_data_to_bid_file(settings):
         "CAMINHOARQLIC": "upload/licitacao/Edital Pregao 01_2013.doc",
     }
 
-    file_obj = to_bid_file(item)
+    file_obj = to_citycouncil_bid_file(item)
 
     assert file_obj.content_object == bid
     assert file_obj.url == f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHOARQLIC']}"
@@ -248,7 +248,7 @@ def test_deal_with_bid_not_found_for_file(caplog):
         "CODLIC": "60",
         "CAMINHOARQLIC": "upload/licitacao/Edital Pregao 01_2013.doc",
     }
-    file_obj = to_bid_file(item)
+    file_obj = to_citycouncil_bid_file(item)
 
     assert file_obj is None
     assert "Arquivo da licitação não encontrado" in caplog.text

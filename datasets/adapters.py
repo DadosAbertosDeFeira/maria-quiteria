@@ -1,12 +1,6 @@
 import logging
 
-from datasets.models import (
-    CityCouncilBid,
-    CityCouncilContract,
-    CityCouncilExpense,
-    CityCouncilRevenue,
-    File,
-)
+from datasets.models import CityCouncilBid, CityCouncilContract, File
 from datasets.parsers import (
     city_council_revenue_type_mapping,
     currency_to_float,
@@ -135,35 +129,31 @@ def map_to_fields(item, fields_mapping, functions):
     return new_item
 
 
-def to_expense(item):
-    new_item = map_to_fields(
+def to_citycouncil_expense(item):
+    return map_to_fields(
         item, CITYCOUNCIL_EXPENSE_FIELDS_MAPPING, CITYCOUNCIL_EXPENSE_FUNCTIONS
     )
-    return CityCouncilExpense(**new_item)
 
 
-def to_contract(item):
-    new_item = map_to_fields(
+def to_citycouncil_contract(item):
+    return map_to_fields(
         item, CITYCOUNCIL_CONTRACT_FIELDS_MAPPING, CITYCOUNCIL_CONTRACT_FUNCTIONS
     )
-    return CityCouncilContract(**new_item)
 
 
-def to_bid(item):
-    new_item = map_to_fields(
+def to_citycouncil_bid(item):
+    return map_to_fields(
         item, CITYCOUNCIL_BID_FIELDS_MAPPING, CITYCOUNCIL_BID_FUNCTIONS
     )
-    return CityCouncilBid(**new_item)
 
 
-def to_revenue(item):
-    new_item = map_to_fields(
+def to_citycouncil_revenue(item):
+    return map_to_fields(
         item, CITYCOUNCIL_REVENUE_FIELDS_MAPPING, CITYCOUNCIL_REVENUE_FUNCTIONS
     )
-    return CityCouncilRevenue(**new_item)
 
 
-def to_contract_file(item):
+def to_citycouncil_contract_file(item):
     try:
         contract = CityCouncilContract.objects.get(external_code=item["CODCON"])
     except CityCouncilContract.DoesNotExist:
@@ -180,7 +170,7 @@ def to_contract_file(item):
     )
 
 
-def to_bid_file(item):
+def to_citycouncil_bid_file(item):
     try:
         bid = CityCouncilBid.objects.get(external_code=item["CODLIC"])
     except CityCouncilBid.DoesNotExist:
