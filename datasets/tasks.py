@@ -1,3 +1,4 @@
+import os
 from datetime import date, datetime, timedelta
 from logging import info
 from pathlib import Path
@@ -10,6 +11,7 @@ from django.core.exceptions import ImproperlyConfigured
 from dotenv import find_dotenv, load_dotenv
 from dramatiq import actor, get_broker, set_broker
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
+from dramatiq.brokers.stub import StubBroker
 from tika import parser
 
 # Esse bloco (feio) faz com que esse módulo funcione dentro ou fora do Django
@@ -23,7 +25,6 @@ try:
     )
 except ImproperlyConfigured:
     import configurations
-    import os
 
     os.environ.setdefault("DJANGO_CONFIGURATION", "Dev")
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
@@ -47,8 +48,12 @@ from datasets.adapters import (  # noqa isort:skip
 )
 
 
-rabbitmq_broker = RabbitmqBroker(url=settings.CLOUDAMQP_URL)
-set_broker(rabbitmq_broker)
+if os.getenv("DJANGO_CONFIGURATION") != "Prod":
+    broker = StubBroker()
+    broker.emit_after("process_boot")
+else:
+    broker = RabbitmqBroker(url=settings.CLOUDAMQP_URL)
+set_broker(broker)
 client = get_s3_client(settings)
 
 

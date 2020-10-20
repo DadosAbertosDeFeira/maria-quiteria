@@ -109,11 +109,10 @@ class Common(Configuration):
     AWS_S3_REGION = values.Value(environ_prefix=None)
 
     CITY_COUNCIL_WEBSERVICE = values.Value(
-        default="http://teste.transparenciacmfs.n2solucoes.com.br/", environ_prefix=None
+        default="http://teste.com.br/", environ_prefix=None
     )
     CITY_COUNCIL_WEBSERVICE_ENDPOINT = values.Value(
-        default="http://teste.transparenciacmfs.n2solucoes.com.br/webservice/",
-        environ_prefix=None,
+        default="http://teste.com.br/webservice/", environ_prefix=None,
     )
     CITY_COUNCIL_WEBSERVICE_TOKEN = values.Value(default="fake", environ_prefix=None)
 
