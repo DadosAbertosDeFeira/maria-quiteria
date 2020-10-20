@@ -108,9 +108,14 @@ class Common(Configuration):
     AWS_S3_BUCKET_FOLDER = values.Value(environ_prefix=None)
     AWS_S3_REGION = values.Value(environ_prefix=None)
 
-    CITY_COUNCIL_WEBSERVICE = "http://teste-transparencia.com.br/"
-    CITY_COUNCIL_WEBSERVICE_ENDPOINT = "http://teste-transparencia.com.br/webservice/"
-    CITY_COUNCIL_WEBSERVICE_TOKEN = "token-secreto"
+    CITY_COUNCIL_WEBSERVICE = values.Value(
+        default="http://teste.transparenciacmfs.n2solucoes.com.br/", environ_prefix=None
+    )
+    CITY_COUNCIL_WEBSERVICE_ENDPOINT = values.Value(
+        default="http://teste.transparenciacmfs.n2solucoes.com.br/webservice/",
+        environ_prefix=None,
+    )
+    CITY_COUNCIL_WEBSERVICE_TOKEN = values.Value(default="fake", environ_prefix=None)
 
 
 class Dev(Common):
@@ -132,7 +137,3 @@ class Prod(Common):
 
     DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=True)}
     GOOGLE_ANALYTICS_KEY = values.Value()
-
-    CITY_COUNCIL_WEBSERVICE = values.Value()
-    CITY_COUNCIL_WEBSERVICE_ENDPOINT = values.Value()
-    CITY_COUNCIL_WEBSERVICE_TOKEN = values.Value()
