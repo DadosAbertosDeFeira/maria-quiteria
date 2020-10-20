@@ -16,12 +16,6 @@ from .models import (
     File,
     Gazette,
 )
-from django.contrib import admin
-from django.contrib.postgres.search import SearchQuery, SearchRank
-from django.db.models import F
-from django.utils.safestring import mark_safe
-from public_admin.admin import PublicModelAdmin
-from public_admin.sites import PublicAdminSite, PublicApp
 
 
 class GazetteAdmin(PublicModelAdmin):
