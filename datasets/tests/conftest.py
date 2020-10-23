@@ -2,6 +2,7 @@ import pytest
 
 
 @pytest.fixture
-def mock_save_file(mocker):
-    parser_mock = mocker.patch("datasets.management.commands._file.pipeline")
-    return parser_mock
+def mock_save_file(mocker, settings):
+    settings.ASYNC_FILE_PROCESSING = True
+    pipeline_mock = mocker.patch("datasets.signals.pipeline")
+    return pipeline_mock
