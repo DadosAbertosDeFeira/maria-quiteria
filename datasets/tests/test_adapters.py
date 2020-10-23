@@ -9,6 +9,7 @@ from datasets.adapters import (
     to_citycouncil_expense,
     to_citycouncil_revenue,
 )
+from django.contrib.admin.options import get_content_type_for_model
 from model_bakery import baker
 
 
@@ -207,9 +208,9 @@ def test_adapt_citycouncil_contract_file(settings):
 
     file_obj = to_citycouncil_contract_file(item)
 
-    assert file_obj.content_object == contract
-    assert file_obj.url == f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHO']}"
-    assert file_obj.external_code == item["CODARQCON"]
+    assert file_obj["content_type"] == get_content_type_for_model(contract)
+    assert file_obj["url"] == f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHO']}"
+    assert file_obj["external_code"] == item["CODARQCON"]
 
 
 @pytest.mark.django_db
@@ -236,9 +237,11 @@ def test_adapt_citycouncil_bid_file(settings):
 
     file_obj = to_citycouncil_bid_file(item)
 
-    assert file_obj.content_object == bid
-    assert file_obj.url == f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHOARQLIC']}"
-    assert file_obj.external_code == item["CODARQLIC"]
+    assert file_obj["content_type"] == get_content_type_for_model(bid)
+    assert (
+        file_obj["url"] == f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHOARQLIC']}"
+    )
+    assert file_obj["external_code"] == item["CODARQLIC"]
 
 
 @pytest.mark.django_db

@@ -1,6 +1,6 @@
 import logging
 
-from datasets.models import CityCouncilBid, CityCouncilContract, File
+from datasets.models import CityCouncilBid, CityCouncilContract
 from datasets.parsers import (
     city_council_revenue_type_mapping,
     currency_to_float,
@@ -162,12 +162,12 @@ def to_citycouncil_contract_file(item):
 
     content_type = get_content_type_for_model(contract)
     url = f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHO']}"
-    return File(
-        url=url,
-        content_type=content_type,
-        object_id=contract.pk,
-        external_code=item["CODARQCON"],
-    )
+    return {
+        "url": url,
+        "content_type": content_type,
+        "object_id": contract.pk,
+        "external_code": item["CODARQCON"],
+    }
 
 
 def to_citycouncil_bid_file(item):
@@ -179,9 +179,9 @@ def to_citycouncil_bid_file(item):
 
     content_type = get_content_type_for_model(bid)
     url = f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHOARQLIC']}"
-    return File(
-        url=url,
-        content_type=content_type,
-        object_id=bid.pk,
-        external_code=item["CODARQLIC"],
-    )
+    return {
+        "url": url,
+        "content_type": content_type,
+        "object_id": bid.pk,
+        "external_code": item["CODARQLIC"],
+    }
