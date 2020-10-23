@@ -9,6 +9,7 @@ from datasets.models import (
     CityCouncilMinute,
     CityCouncilRevenue,
     CityHallBid,
+    File,
     Gazette,
     GazetteEvent,
 )
@@ -54,3 +55,6 @@ Gazette = Recipe(Gazette,)
 
 
 GazetteEvent = Recipe(GazetteEvent, gazette=foreign_key(Gazette))
+
+
+File = Recipe(File,)
