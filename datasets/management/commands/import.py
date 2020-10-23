@@ -1,7 +1,7 @@
 import csv
+import os
 from datetime import datetime
 
-from core import settings
 from datasets.adapters import (
     to_citycouncil_bid,
     to_citycouncil_bid_file,
@@ -17,6 +17,7 @@ from datasets.models import (
     CityCouncilRevenue,
     File,
 )
+from django.conf import settings
 from django.core.management.base import BaseCommand
 
 mapping = {
@@ -67,6 +68,10 @@ class Command(BaseCommand):
         model = source_map["model"]
 
         if options.get("drop_all"):
+            if os.getenv("DJANGO_CONFIGURATION") == "Prod":
+                self.warn(
+                    "VOCÊ ESTÁ EM AMBIENTE DE PRODUÇÃO E TODOS OS DADOS SERÃO APAGADOS."
+                )
             confirmation = input("Tem certeza? s/n ")
             if confirmation.lower() in ["s", "y"]:
                 model.objects.all().delete()
