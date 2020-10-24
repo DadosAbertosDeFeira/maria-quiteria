@@ -11,6 +11,11 @@ services:
         volumes:
             - ./db:/var/lib/postgresql
 
+    tika:
+        image: apache/tika
+        ports:
+            - "9998:9998"
+
     web:
         build:
             context: .
@@ -19,6 +24,10 @@ services:
             - .:/code
         ports:
             - "8000:8000"
+        environment:
+            TIKA_CLIENT_ONLY: 1
+            TIKA_SERVER_ENDPOINT: http://tika:9998
         env_file: .env
         depends_on:
             - db
+            - tika
