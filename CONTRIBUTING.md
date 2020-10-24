@@ -3,8 +3,11 @@
 Ficamos muito felizes que você está lendo este guia de contribuição, sempre precisamos
 de pessoas voluntárias que acreditem na ideia e queiram contribuir com o projeto.
 
-Se você ainda não fez isso, junte-se também a nós [nosso grupo aberto do Telegram](https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg)
-e participe das discussões. Não hesite em nos procurar para tirar todas as suas dúvidas.
+Se você ainda não fez isso, junte-se a nós no [nosso grupo aberto do Telegram](https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg) 
+ou no nosso [Discord](https://discord.gg/BS4GNf) e participe das discussões.
+Não hesite em nos procurar para tirar todas as suas dúvidas e conhecer mais sobre o projeto.
+
+[![Convite Discord](https://invidget.switchblade.xyz/F9RgD8k?language=pt)](https://discord.gg/F9RgD8k)
 
 ## Antes de começar
 
@@ -23,7 +26,7 @@ acompanhar o que a comunidade em geral vem trabalhando. Lá você encontrá cois
 fotografia até pedidos de acesso à informação.
 
 Os detalhes de como instalar e executar este projeto podem ser encontrados no
-[`README.md`](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/master/README.md).
+[`README.md`](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/main/README.md).
 
 ## Reportando bugs
 
@@ -46,7 +49,7 @@ Caso seja algo novo, você tem duas alternativas:
 
 - Criar uma nova _issue_
 - Compartilhar a sua sugestão com outros participantes e mantenedores do projeto em nosso
-[grupo no Telegram](https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg)
+[grupo no Telegram](https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg) ou no nosso [Discord](https://discord.gg/BS4GNf)
 
 Em ambos, tente usar uma linguagem clara, e com o máximo de detalhes. Qual a motivação,
 qual problema resolveria e possíveis desafios, por exemplo, são importantes para entender
@@ -82,7 +85,7 @@ revisões.
 * Use o tempo presente nas mensagens do _commit_. Exemplo: _"Adiciona funcionalidade"_
 e não _"Adicionada a funcionalidade"_.
 
-* Atualize o [README.md](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/master/README.md)
+* Atualize o [README.md](https://github.com/DadosAbertosDeFeira/maria-quiteria/blob/main/README.md)
 com os detalhes da mudança caso esta inclua uma nova base de dados ou um novo comando na CLI.
 
 * Embora o código esteja escrito em inglês, por convenção, as mensagens de _commit_,

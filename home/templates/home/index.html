@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 
 <head>
     {% load static %}
@@ -14,20 +14,18 @@
     <link rel="stylesheet" href="https://unpkg.com/bulma@0.8.0/css/bulma.min.css" />
     <link rel="stylesheet" type="text/css" href="{% static "home/hero.css" %}">
     <link rel="stylesheet" href="https://unpkg.com/bulma-modal-fx/dist/css/modal-fx.min.css" />
+    <link rel="stylesheet" type="text/css" href="{% static "home/style.css" %}">
 
     {% include 'snippets/google-analytics.html' %}
 </head>
 
 <body>
-    <section class="hero is-info is-medium is-bold">
+    <section class="hero is-info is-medium background">
         <div class="hero-head">
             <nav class="navbar">
                 <div class="container">
                     <div class="navbar-brand">
-                        <a class="navbar-item" href="../">
-                            <img src="{% static "home/torre-do-tomba-sem-fundo.png" %}" alt="Logo">
-                        </a>
-                        <span class="navbar-burger burger" data-target="navbarMenu">
+                        <span class="navbar-burger burger has-text-white" data-target="navbarMenu">
                             <span></span>
                             <span></span>
                             <span></span>
@@ -35,9 +33,9 @@
                     </div>
                     <div id="navbarMenu" class="navbar-menu">
                         <div class="navbar-end">
-                            <a href="https://www.instagram.com/dadosabertosdefeira/" class="navbar-item"
-                                target="_blank">
-                                <span class="icon" title="Instagram">
+                            <a href="https://www.instagram.com/dadosabertosdefeira/" class="navbar-item" target="_blank"
+                                title="Instagram">
+                                <span class="icon">
                                     <i class="fa fa-instagram"></i>
                                 </span>
                             </a>
@@ -66,7 +64,7 @@
                                 </span>
                             </a>
                             <span class="navbar-item">
-                                <a class="button is-white is-outlined" href="https://github.com/DadosAbertosDeFeira"
+                                <a class="button has-text-weight-medium" href="https://github.com/DadosAbertosDeFeira"
                                     target="_blank" title="Github">
                                     <span class="icon">
                                         <i class="fa fa-github"></i>
@@ -80,34 +78,31 @@
             </nav>
         </div>
         <div class="hero-body">
-            <div class="container has-text-centered">
-                <h1 class="title">
+            <div class="container has-text-centered hide">
+                <h1 class="title is-2">
                     Dados Abertos de Feira
                 </h1>
-                <h2 class="subtitle">
+                <h2 class="content is-large">
                     Uma iniciativa para fomentar a <b>transparência</b> e os <b>dados abertos</b> no município de
-                    <a href="https://pt.wikipedia.org/wiki/Feira_de_Santana" target="_blank" rel="noopener noreferrer">
-                        Feira de Santana.
-                    </a>
+                    <b>Feira de Santana</b>
                 </h2>
             </div>
         </div>
     </section>
     <div class="box cta">
         <p class="has-text-centered">
-            <a href="https://medium.com/@dadosabertosdefeira/e-o-hospital-de-campanha-95aba4b2d9ac"
-                target="_blank" rel="noopener noreferrer">
-                <span class="tag is-danger">Hospital de Campanha</span>
+            <a href="https://medium.com/@dadosabertosdefeira/e-o-hospital-de-campanha-95aba4b2d9ac" target="_blank"
+                rel="noopener noreferrer">
+                <span class="tag is-success is-large is-light">Hospital de Campanha</span>
             </a>
 
-            <a href="https://datastudio.google.com/s/utHkBhqvk9E"
-                target="_blank" rel="noopener noreferrer">
-                <span class="tag is-warning">Beneficiários do Auxílio Emergencial</span>
+            <a href="https://datastudio.google.com/s/utHkBhqvk9E" target="_blank" rel="noopener noreferrer">
+                <span class="tag is-info is-large is-light">Beneficiários do Auxílio Emergencial</span>
             </a>
 
             <a href="https://datastudio.google.com/u/0/reporting/cd9d3ac4-299b-46b4-bdab-8e9c081f5071?s=s8-Q-jNGhZg"
                 target="_blank" rel="noopener noreferrer">
-                <span class="tag is-primary">COVID-19 em Feira</span>
+                <span class="tag is-danger is-large is-light">COVID-19 em Feira</span>
             </a>
         </p>
     </div>
@@ -120,7 +115,7 @@
                     </div>
                     <div class="card-content">
                         <div class="content">
-                            <h4>Dashboard</h4>
+                            <h3 class="title is-5">Dashboard</h3>
                             <p>
                                 Estamos coletando os dados abertos do município para que
                                 fique mais fácil para você fazer buscas e baixá-los.
@@ -137,7 +132,7 @@
                     </div>
                     <div class="card-content">
                         <div class="content">
-                            <h4>Blog</h4>
+                            <h3 class="title is-5">Blog</h3>
                             <p>
                                 Acompanhe o que temos feito, análises de dados da cidade e
                                 mais conteúdo sobre dados abertos e transparência em Feira!
@@ -154,7 +149,7 @@
                     </div>
                     <div class="card-content">
                         <div class="content">
-                            <h4>Contribua</h4>
+                            <h3 class="title is-5">Contribua</h3>
                             <p>
                                 Essa é uma iniciativa voluntária, feita a muitas mãos, e
                                 qualquer pessoa interessada pode fazer parte!
@@ -176,34 +171,41 @@
             <div class="columns">
                 <div class="column is-3 is-offset-2">
                     <h2><strong>Portais da Transparência</strong></h2>
-                    <ul>
-                        <li><a href="http://www.transparencia.feiradesantana.ba.gov.br/">Portal da Prefeitura</a></li>
-                        <li><a href="https://www.transparencia.feiradesantana.ba.leg.br/">Portal da Câmara</a></li>
+                    <ul class="content">
+                        <li><a class="footer-link" href="http://www.transparencia.feiradesantana.ba.gov.br/">Portal da
+                                Prefeitura</a></li>
+                        <li><a class="footer-link" href="https://www.transparencia.feiradesantana.ba.leg.br/">Portal da
+                                Câmara</a></li>
                     </ul>
                 </div>
                 <div class="column is-3">
                     <h2><strong>Lei de Acesso à Informação</strong></h2>
-                    <ul>
-                        <li><a
+                    <ul class="content">
+                        <li><a class="footer-link"
                                 href="https://escoladedados.org/tutoriais/solicitando-dados-via-lei-de-acesso-a-informacao/">Como
                                 fazer um pedido de informação</a></li>
-                        <li><a href="http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=contato">Faça um
+                        <li><a class="footer-link"
+                                href="http://www.transparencia.feiradesantana.ba.gov.br/index.php?view=contato">Faça um
                                 pedido para a Prefeitura</a></li>
-                        <li><a href="https://www.transparencia.feiradesantana.ba.leg.br/index.php?view=contato">Faça um
+                        <li><a class="footer-link"
+                                href="https://www.transparencia.feiradesantana.ba.leg.br/index.php?view=contato">Faça um
                                 pedido para a Câmara</a></li>
-                        <li><a href="https://www.politize.com.br/artigo-5/livre-acesso-a-informacao/">O que é a Lei de
+                        <li><a class="footer-link"
+                                href="https://www.politize.com.br/artigo-5/livre-acesso-a-informacao/">O que é a Lei de
                                 Acesso à Informação</a></li>
-                        <li><a href="https://www.gov.br/acessoainformacao/pt-br">LAI no Governo Federal</a></li>
+                        <li><a class="footer-link" href="https://www.gov.br/acessoainformacao/pt-br">LAI no Governo
+                                Federal</a></li>
                     </ul>
                 </div>
                 <div class="column is-4">
-                    <h2><strong>Nossas redes sociais</strong></h2>
-                    <ul>
-                        <li><a href="https://fb.me/dadosabertosdefeira">Facebook</a></li>
-                        <li><a href="https://twitter.com/dadosdefeira">Twitter</a></li>
-                        <li><a href="https://www.instagram.com/dadosabertosdefeira/">Instagram</a></li>
-                        <li><a href="https://medium.com/@dadosabertosdefeira">Blog</a></li>
-                        <li><a href="https://github.com/DadosAbertosDeFeira/">Github</a></li>
+                    <h2><strong>Nossas Redes Sociais</strong></h2>
+                    <ul class="content">
+                        <li><a class="footer-link" href="https://fb.me/dadosabertosdefeira">Facebook</a></li>
+                        <li><a class="footer-link" href="https://twitter.com/dadosdefeira">Twitter</a></li>
+                        <li><a class="footer-link" href="https://www.instagram.com/dadosabertosdefeira/">Instagram</a>
+                        </li>
+                        <li><a class="footer-link" href="https://medium.com/@dadosabertosdefeira">Blog</a></li>
+                        <li><a class="footer-link" href="https://github.com/DadosAbertosDeFeira/">Github</a></li>
                     </ul>
                 </div>
             </div>
@@ -212,7 +214,7 @@
                     <a href="https://github.com/BulmaTemplates/bulma-templates" target="_blank">
                         <div class="tags has-addons">
                             <span class="tag is-dark">Bulma Templates</span>
-                            <span class="tag is-info">MIT license</span>
+                            <span class="tag is-link">MIT license</span>
                         </div>
                     </a>
                 </div>

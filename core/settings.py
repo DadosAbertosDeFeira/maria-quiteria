@@ -35,6 +35,7 @@ class Common(Configuration):
         "django.contrib.messages",
         "django.contrib.staticfiles",
         "datasets.apps.DatasetsConfig",
+        "simple_history",
     ]
 
     MIDDLEWARE = [
@@ -46,6 +47,7 @@ class Common(Configuration):
         "django.contrib.messages.middleware.MessageMiddleware",
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
         "whitenoise.middleware.WhiteNoiseMiddleware",
+        "simple_history.middleware.HistoryRequestMiddleware",
     ]
 
     ROOT_URLCONF = "core.urls"
@@ -62,7 +64,7 @@ class Common(Configuration):
                     "django.contrib.auth.context_processors.auth",
                     "django.contrib.messages.context_processors.messages",
                     "home.context_processors.google_analytics_key",
-                ],
+                ]
             },
         }
     ]

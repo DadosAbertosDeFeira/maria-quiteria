@@ -6,6 +6,7 @@ from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.db.models import F
+from simple_history.models import HistoricalRecords
 
 CITY_COUNCIL_EVENT_TYPE = (
     ("sessao_ordinaria", "Sessão Ordinária"),
@@ -49,10 +50,10 @@ REVENUE_TYPES = (
 class File(models.Model):
     created_at = models.DateTimeField("Criado em", auto_now_add=True)
     updated_at = models.DateTimeField("Atualizado em", auto_now=True)
-    url = models.URLField("Arquivo")
+    url = models.URLField("Arquivo", db_index=True)
     content = models.TextField("Conteúdo", null=True, blank=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
+    object_id = models.PositiveIntegerField(db_index=True)
     content_object = GenericForeignKey("content_type", "object_id")
     checksum = models.CharField(max_length=128, null=True, blank=True)
     s3_url = models.URLField("URL externa", null=True, blank=True)
@@ -68,6 +69,7 @@ class File(models.Model):
         verbose_name_plural = "Arquivos"
         indexes = [GinIndex(fields=["search_vector"])]
         unique_together = ("url", "content_type", "object_id")
+        ordering = ["-created_at"]
 
     def __repr__(self):
         return f"[{self.content_type}] {self.url}"
@@ -90,9 +92,7 @@ class DatasetMixin(models.Model):
     def last_collected_item_date(cls):
         try:
             field = cls._meta.get_latest_by
-            kwargs = {
-                f"{field}__isnull": False,
-            }
+            kwargs = {f"{field}__isnull": False}
             found = cls.objects.filter(**kwargs).latest()
             if found:
                 value = getattr(found, field)
@@ -116,12 +116,14 @@ class CityCouncilAgenda(DatasetMixin):
         choices=CITY_COUNCIL_EVENT_TYPE,
         null=True,
         blank=True,
+        db_index=True,
     )
     title = models.CharField("Título", max_length=100, null=True, blank=True)
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Agenda"
         verbose_name_plural = "Câmara de Vereadores - Agendas"
+        ordering = ["-date"]
         get_latest_by = "date"
 
     def __repr__(self):
@@ -147,13 +149,15 @@ class CityCouncilAttendanceList(DatasetMixin):
     )
     date = models.DateField("Data")
     description = models.CharField("Descrição", max_length=200, null=True, blank=True)
-    council_member = models.CharField("Vereador", max_length=200)
-    status = models.CharField("Situação", max_length=20, choices=STATUS)
+    council_member = models.CharField("Vereador", max_length=200, db_index=True)
+    status = models.CharField("Situação", max_length=20, choices=STATUS, db_index=True)
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Lista de Presença"
         verbose_name_plural = "Câmara de Vereadores - Listas de Presença"
         get_latest_by = "date"
+        ordering = ["-date"]
 
     def __repr__(self):
         return f"{self.date} {self.council_member} {self.status}"
@@ -170,16 +174,20 @@ class CityCouncilAttendanceList(DatasetMixin):
 
 
 class CityCouncilContract(DatasetMixin):
-    external_code = models.PositiveIntegerField("Código externo")
-    description = models.TextField("Descrição", null=True, blank=True)
-    details = models.TextField("Objeto do contrato", null=True, blank=True)
-    company_or_person_document = models.CharField(
-        "CNPJ ou CPF", max_length=50, null=True, blank=True
+    external_code = models.PositiveIntegerField("Código externo", db_index=True)
+    description = models.TextField("Descrição", null=True, blank=True, db_index=True)
+    details = models.TextField(
+        "Objeto do contrato", null=True, blank=True, db_index=True
     )
-    company_or_person = models.TextField("Empresa ou pessoa", null=True, blank=True)
+    company_or_person_document = models.CharField(
+        "CNPJ ou CPF", max_length=50, null=True, blank=True, db_index=True
+    )
+    company_or_person = models.TextField(
+        "Empresa ou pessoa", null=True, blank=True, db_index=True
+    )
     value = models.DecimalField("Valor", max_digits=10, decimal_places=2)
-    start_date = models.DateField("Data de início")
-    end_date = models.DateField("Data final")
+    start_date = models.DateField("Data de início", db_index=True)
+    end_date = models.DateField("Data final", db_index=True)
     excluded = models.BooleanField("Excluído?", default=False)
     files = GenericRelation(File)
 
@@ -187,6 +195,7 @@ class CityCouncilContract(DatasetMixin):
         verbose_name = "Câmara de Vereadores - Contrato"
         verbose_name_plural = "Câmara de Vereadores - Contratos"
         get_latest_by = "start_date"
+        ordering = ["-start_date"]
 
     def __repr__(self):
         interval = f"{self.start_date} {self.end_date}"
@@ -203,42 +212,76 @@ class CityCouncilExpense(DatasetMixin):
         ("liquidacao", "Liquidação"),
         ("pagamento", "Pagamento"),
     )
-    published_at = models.DateField("Publicado em", null=True, blank=True)
-    phase = models.CharField("Fase", max_length=20, choices=PHASE)
+    published_at = models.DateField(
+        "Publicado em", null=True, blank=True, db_index=True
+    )
+    phase = models.CharField("Fase", max_length=20, choices=PHASE, db_index=True)
     phase_code = models.CharField(
-        "Código da fase", max_length=20, null=True, blank=True
+        "Código da fase", max_length=20, null=True, blank=True, db_index=True
     )
-    company_or_person = models.TextField("Empresa ou pessoa", null=True, blank=True)
+    company_or_person = models.TextField(
+        "Empresa ou pessoa", null=True, blank=True, db_index=True
+    )
     value = models.DecimalField("Valor", max_digits=10, decimal_places=2)
-    number = models.CharField("Número", max_length=50, null=True, blank=True)
-    document = models.CharField("CNPJ ou CPF", max_length=50, null=True, blank=True)
-    date = models.DateField("Data")
-    process_number = models.CharField(
-        "Número do processo", max_length=50, null=True, blank=True
+    number = models.CharField(
+        "Número", max_length=50, null=True, blank=True, db_index=True
     )
-    summary = models.TextField("Descrição", null=True, blank=True)
-    legal_status = models.CharField("Natureza", max_length=200, null=True, blank=True)
-    function = models.CharField("Função", max_length=50, null=True, blank=True)
-    subfunction = models.CharField("Subfunção", max_length=50, null=True, blank=True)
-    resource = models.CharField("Fonte", max_length=200, null=True, blank=True)
-    subgroup = models.CharField("Subgrupos", max_length=100, null=True, blank=True)
-    group = models.CharField("Grupo", max_length=100, null=True, blank=True)
+    document = models.CharField(
+        "CNPJ ou CPF", max_length=50, null=True, blank=True, db_index=True
+    )
+    date = models.DateField("Data", db_index=True)
+    process_number = models.CharField(
+        "Número do processo", max_length=50, null=True, blank=True, db_index=True
+    )
+    summary = models.TextField("Descrição", null=True, blank=True, db_index=True)
+    legal_status = models.CharField(
+        "Natureza", max_length=200, null=True, blank=True, db_index=True
+    )
+    function = models.CharField(
+        "Função", max_length=50, null=True, blank=True, db_index=True
+    )
+    subfunction = models.CharField(
+        "Subfunção", max_length=50, null=True, blank=True, db_index=True
+    )
+    resource = models.CharField(
+        "Fonte", max_length=200, null=True, blank=True, db_index=True
+    )
+    subgroup = models.CharField(
+        "Subgrupos", max_length=100, null=True, blank=True, db_index=True
+    )
+    group = models.CharField(
+        "Grupo", max_length=100, null=True, blank=True, db_index=True
+    )
     budget_unit = models.PositiveIntegerField("Unidade orçamentária", default=101)
     modality = models.CharField(
-        "Modalidade", max_length=50, null=True, blank=True, choices=EXPENSE_MODALITIES
+        "Modalidade",
+        max_length=50,
+        null=True,
+        blank=True,
+        choices=EXPENSE_MODALITIES,
+        db_index=True,
     )
     excluded = models.BooleanField("Excluído?", default=False)
     external_file_code = models.CharField(
-        "Código do arquivo (externo)", max_length=50, null=True, blank=True
+        "Código do arquivo (externo)",
+        max_length=50,
+        null=True,
+        blank=True,
+        db_index=True,
     )
     external_file_line = models.CharField(
-        "Linha do arquivo (externo)", max_length=50, null=True, blank=True
+        "Linha do arquivo (externo)",
+        max_length=50,
+        null=True,
+        blank=True,
+        db_index=True,
     )
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Despesa"
         verbose_name_plural = "Câmara de Vereadores - Despesas"
         get_latest_by = "date"
+        ordering = ["-date"]
 
     def __repr__(self):
         return f"{self.date} {self.phase} {self.company_or_person} {self.value}"
@@ -248,14 +291,17 @@ class CityCouncilExpense(DatasetMixin):
 
 
 class CityCouncilMinute(DatasetMixin):
-    date = models.DateField("Data")
-    title = models.CharField("Título", max_length=300, null=True, blank=True)
+    date = models.DateField("Data", db_index=True)
+    title = models.CharField(
+        "Título", max_length=300, null=True, blank=True, db_index=True
+    )
     event_type = models.CharField(
         "Tipo de evento",
         max_length=20,
         choices=CITY_COUNCIL_EVENT_TYPE,
         null=True,
         blank=True,
+        db_index=True,
     )
     files = GenericRelation(File)
 
@@ -263,6 +309,7 @@ class CityCouncilMinute(DatasetMixin):
         verbose_name = "Câmara de Vereadores - Atas"
         verbose_name_plural = "Câmara de Vereadores - Atas"
         get_latest_by = "date"
+        ordering = ["-date"]
 
     def __repr__(self):
         return f"{self.date} {self.title}"
@@ -276,9 +323,9 @@ class Gazette(DatasetMixin):
         ("executivo", "Poder Executivo"),
         ("legislativo", "Poder Legislativo"),
     )
-    date = models.DateField("Data", null=True)
-    power = models.CharField("Poder", max_length=25, choices=POWER_TYPE)
-    year_and_edition = models.CharField("Ano e edição", max_length=100)
+    date = models.DateField("Data", null=True, db_index=True)
+    power = models.CharField("Poder", max_length=25, choices=POWER_TYPE, db_index=True)
+    year_and_edition = models.CharField("Ano e edição", max_length=100, db_index=True)
     is_legacy = models.BooleanField("É do site antigo?", default=False)
     files = GenericRelation(File)
 
@@ -299,9 +346,13 @@ class GazetteEvent(DatasetMixin):
     gazette = models.ForeignKey(
         Gazette, on_delete=models.CASCADE, related_name="events"
     )
-    title = models.CharField("Título", max_length=300, null=True, blank=True)
-    secretariat = models.CharField("Secretaria", max_length=100, null=True, blank=True)
-    summary = models.TextField("Sumário", null=True, blank=True)
+    title = models.CharField(
+        "Título", max_length=300, null=True, blank=True, db_index=True
+    )
+    secretariat = models.CharField(
+        "Secretaria", max_length=100, null=True, blank=True, db_index=True
+    )
+    summary = models.TextField("Sumário", null=True, blank=True, db_index=True)
     published_on = models.CharField(
         "Publicado em", max_length=100, null=True, blank=True
     )
@@ -316,19 +367,25 @@ class GazetteEvent(DatasetMixin):
 
 
 class CityHallBid(DatasetMixin):
-    session_at = models.DateTimeField("Sessão Data / Horário", null=True)
-    public_agency = models.CharField("Órgão", max_length=200)
-    description = models.TextField("Descrição", null=True, blank=True)
+    session_at = models.DateTimeField("Sessão Data / Horário", null=True, db_index=True)
+    public_agency = models.CharField("Órgão", max_length=200, db_index=True)
+    description = models.TextField("Descrição", null=True, blank=True, db_index=True)
     modality = models.CharField(
-        "Modalidade", max_length=60, choices=BID_MODALITIES, null=True, blank=True
+        "Modalidade",
+        max_length=60,
+        choices=BID_MODALITIES,
+        null=True,
+        blank=True,
+        db_index=True,
     )
-    codes = models.CharField("Códigos", max_length=300)
+    codes = models.CharField("Códigos", max_length=300, db_index=True)
     files = GenericRelation(File)
 
     class Meta:
         verbose_name = "Prefeitura - Licitação"
         verbose_name_plural = "Prefeitura - Licitações"
         get_latest_by = "session_at"
+        ordering = [F("session_at").desc(nulls_last=True)]
 
     def __repr__(self):
         return f"{self.session_at} {self.modality} {self.public_agency}"
@@ -355,10 +412,10 @@ class CityHallBid(DatasetMixin):
 
 class CityHallBidEvent(DatasetMixin):
     bid = models.ForeignKey(
-        CityHallBid, on_delete=models.CASCADE, related_name="events",
+        CityHallBid, on_delete=models.CASCADE, related_name="events"
     )
     published_at = models.DateTimeField("Publicado em", null=True)
-    summary = models.TextField("Descrição", null=True, blank=True)
+    summary = models.TextField("Descrição", null=True, blank=True, db_index=True)
     files = GenericRelation(File)
 
     class Meta:
@@ -375,14 +432,21 @@ class CityHallBidEvent(DatasetMixin):
 
 
 class CityCouncilBid(DatasetMixin):
-    external_code = models.CharField("Código externo", max_length=10)
+    external_code = models.CharField("Código externo", max_length=10, db_index=True)
     modality = models.CharField(
-        "Modalidade", max_length=60, choices=BID_MODALITIES, null=True, blank=True
+        "Modalidade",
+        max_length=60,
+        choices=BID_MODALITIES,
+        null=True,
+        blank=True,
+        db_index=True,
     )
-    code = models.CharField("Código da licitação", max_length=15)
-    code_type = models.CharField("Código do tipo da licitação", max_length=15)
-    description = models.TextField("Descrição (objeto)")
-    session_at = models.DateTimeField("Sessão Data / Horário", null=True)
+    code = models.CharField("Código da licitação", max_length=15, db_index=True)
+    code_type = models.CharField(
+        "Código do tipo da licitação", max_length=15, db_index=True
+    )
+    description = models.TextField("Descrição (objeto)", db_index=True)
+    session_at = models.DateTimeField("Sessão Data / Horário", null=True, db_index=True)
     excluded = models.BooleanField("Excluído?", default=False)
     files = GenericRelation(File)
 
@@ -390,6 +454,7 @@ class CityCouncilBid(DatasetMixin):
         verbose_name = "Câmara de Vereadores - Licitação"
         verbose_name_plural = "Câmara de Vereadores - Licitações"
         get_latest_by = "session_at"
+        ordering = [F("session_at").desc(nulls_last=True)]
 
     def __repr__(self):
         model_name = self._meta.verbose_name
@@ -424,6 +489,7 @@ class CityCouncilRevenue(DatasetMixin):
         verbose_name = "Câmara de Vereadores - Receita"
         verbose_name_plural = "Câmara de Vereadores - Receitas"
         get_latest_by = "published_at"
+        ordering = [F("published_at").desc(nulls_last=True)]
 
     def __repr__(self):
         model_name = self._meta.verbose_name
