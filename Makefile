@@ -1,20 +1,20 @@
 build:
 	docker-compose build
 
-setup:
+run:
 	docker-compose up -d
 
 migrate:
 	docker-compose run --rm web python manage.py migrate
 
-createsuperuser:
-	docker-compose run --rm web python ./manage.py createsuperuser
+crawl:
+	docker-compose run --rm web python manage.py crawl
 
-runtests:
-	docker-compose run --rm web pytest
+createsuperuser:
+	docker-compose run --rm web python manage.py createsuperuser
 
 collectstatic:
 	docker-compose run --rm web python manage.py collectstatic
 
-test:
+tests:
 	docker-compose run --rm web pytest
