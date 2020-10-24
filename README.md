@@ -61,6 +61,12 @@ Depois basta aplicar as `migrations`:
 python manage.py migrate
 ```
 
+#### Executando os testes
+
+```
+pytest
+```
+
 * Admin
 
 Para navegar na admin, primeiro crie um super administrador:
@@ -73,7 +79,8 @@ Depois, rode o servidor com:
 python manage.py runserver
 ```
 
-Com as configurações padrão o painel de controle estará acessível pela URL: [`127.0.0.1`](http://127.0.0.1:8000).
+Com as configurações padrão o painel de controle estará acessível pela URL:
+[`localhost:8000`](http://localhost:8000).
 
 * Java
 
@@ -163,4 +170,56 @@ janela aberta:
 
 ```
 rabbitmq-server
+```
+
+#### Usando Docker
+
+Se você não quiser instalar todas as dependências, você pode instalar o [Docker](https://docs.docker.com/install/)
+em conjunto com o [Docker Compose](https://docs.docker.com/compose/install/).
+
+Para isso, você precisa criar um `.env` como no `.env.example` da raiz do projeto. Executando o projeto no Docker:
+
+1. Iniciando o serviço:
+
+```
+make build
+```
+
+2. Crie as tabelas no banco:
+
+```
+make migrate
+```
+
+3. Crie um usuario `admin`:
+
+```
+make createsuperuser
+```
+
+4. Processe os arquivos estáticos:
+
+```
+make collectstatic
+```
+
+5. Executando o serviço:
+
+```
+make run
+```
+
+6. Rodando os testes:
+
+```
+make tests
+```
+
+Nas próximas vezes, basta executar os containers: `make run` e acessar [localhost:8000](http://localhost:8000).
+Para visualizar os dados que já coletamos, acesse [localhost:8000/painel](http://localhost:8000/painel).
+
+7. Para executar os raspadores de dados:
+
+```
+make crawl
 ```

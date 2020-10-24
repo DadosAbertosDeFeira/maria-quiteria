@@ -71,8 +71,16 @@ class Common(Configuration):
 
     WSGI_APPLICATION = "core.wsgi.application"
 
-    default_db = "postgres://postgres:postgres@localhost:5432/mariaquiteria"
-    DATABASES = {"default": dj_database_url.config(default=default_db)}
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("DATABASE_NAME", "mariaquiteria"),
+            "USER": os.getenv("DATABASE_USER", "postgres"),
+            "PASSWORD": os.getenv("DATABASE_PASSWORD", "postgres"),
+            "HOST": os.getenv("DATABASE_HOST", "localhost"),
+            "PORT": int(os.getenv("DATABASE_PORT", "5432")),
+        }
+    }
 
     AUTH_PASSWORD_VALIDATORS = [
         {

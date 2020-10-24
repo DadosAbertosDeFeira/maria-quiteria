@@ -1,0 +1,34 @@
+version: "3.4"
+
+services:
+    db:
+        image: postgres
+        environment:
+            PG_HOST: db
+            POSTGRES_DB: mariaquiteria
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+        volumes:
+            - ./db:/var/lib/postgresql
+
+    tika:
+        image: apache/tika
+        ports:
+            - "9998:9998"
+
+    web:
+        build:
+            context: .
+            target: dev
+        volumes:
+            - .:/code
+        ports:
+            - "8000:8000"
+        environment:
+            DATABASE_HOST: db
+            TIKA_CLIENT_ONLY: 1
+            TIKA_SERVER_ENDPOINT: http://tika:9998
+        env_file: .env
+        depends_on:
+            - db
+            - tika
