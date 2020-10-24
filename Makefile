@@ -1,11 +1,11 @@
+bash:
+	docker-compose run --rm web bash
+
 build:
 	docker-compose build
 
-run:
-	docker-compose up -d
-
-migrate:
-	docker-compose run --rm web python manage.py migrate
+collectstatic:
+	docker-compose run --rm web python manage.py collectstatic
 
 crawl:
 	docker-compose run --rm web python manage.py crawl
@@ -13,8 +13,11 @@ crawl:
 createsuperuser:
 	docker-compose run --rm web python manage.py createsuperuser
 
-collectstatic:
-	docker-compose run --rm web python manage.py collectstatic
+migrate:
+	docker-compose run --rm web python manage.py migrate
+
+run:
+	docker-compose up -d
 
 tests:
 	docker-compose run --rm web pytest
