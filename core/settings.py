@@ -72,13 +72,13 @@ class Common(Configuration):
     WSGI_APPLICATION = "core.wsgi.application"
 
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv("DATABASE_NAME", "mariaquiteria"),
-            'USER': os.getenv("DATABASE_USER", "postgres"),
-            'PASSWORD': os.getenv("DATABASE_PASSWORD", "postgres"),
-            'HOST': os.getenv("DATABASE_HOST", "db"),
-            'PORT': int(os.getenv("DATABASE_PORT", "5432")),
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("DATABASE_NAME", "mariaquiteria"),
+            "USER": os.getenv("DATABASE_USER", "postgres"),
+            "PASSWORD": os.getenv("DATABASE_PASSWORD", "postgres"),
+            "HOST": os.getenv("DATABASE_HOST", "db"),
+            "PORT": int(os.getenv("DATABASE_PORT", "5432")),
         }
     }
 
