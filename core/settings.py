@@ -77,7 +77,7 @@ class Common(Configuration):
             "NAME": os.getenv("DATABASE_NAME", "mariaquiteria"),
             "USER": os.getenv("DATABASE_USER", "postgres"),
             "PASSWORD": os.getenv("DATABASE_PASSWORD", "postgres"),
-            "HOST": os.getenv("DATABASE_HOST", "db"),
+            "HOST": os.getenv("PG_HOST", "DATABASE_HOST"),
             "PORT": int(os.getenv("DATABASE_PORT", "5432")),
         }
     }

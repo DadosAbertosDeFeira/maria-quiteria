@@ -1,6 +1,7 @@
 FROM python:3.8-slim as dev
 
 ENV PYTHONUNBUFFERED 1
+ENV PG_HOST db
 
 WORKDIR /code
 

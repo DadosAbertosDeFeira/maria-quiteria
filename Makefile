@@ -1,3 +1,9 @@
+build:
+	docker-compose build
+
+setup:
+	docker-compose up -d
+
 migrate:
 	docker-compose run --rm web python manage.py migrate
 
@@ -9,3 +15,6 @@ runtests:
 
 collectstatic:
 	docker-compose run --rm web python manage.py collectstatic
+
+test:
+	docker-compose run --rm web pytest

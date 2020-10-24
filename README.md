@@ -61,7 +61,7 @@ Depois basta aplicar as `migrations`:
 python manage.py migrate
 ```
 
-* Usando Docker
+#### Usando Docker
 
 Se você não quiser instalar todas as dependências, você pode instalar o [Docker](https://docs.docker.com/install/) em conjunto com o [Docker Compose](https://docs.docker.com/compose/install/).
 
@@ -72,7 +72,7 @@ Para isso, você precisa criar um `.env` como no `.env.example` da raiz do proje
 1. Iniciando o serviço:
 
 ```
-docker-compose build
+make build
 ```
 
 2. Crie as tabelas no banco:
@@ -96,7 +96,13 @@ make collectstatic
 5. Executando o serviço:
 
 ```
-docker-compose up -d
+make setup
+```
+
+6. Rodando os testes:
+
+```
+make test
 ```
 
 Nas próximas vezes, basta executar os containers: `docker-compose up` e acesse [localhost:8000/admin](http://localhost:8000/admin)
@@ -107,7 +113,7 @@ Para a acessar o banco depois com seu cliente preferido, basta usar os seguintes
 ```
 User: postgres
 Password: postgres
-Database: postgres
+Database: mariaquiteria
 Host: localhost
 ```
 
