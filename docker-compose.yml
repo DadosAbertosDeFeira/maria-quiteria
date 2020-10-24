@@ -25,6 +25,7 @@ services:
         ports:
             - "8000:8000"
         environment:
+            DATABASE_HOST: db
             TIKA_CLIENT_ONLY: 1
             TIKA_SERVER_ENDPOINT: http://tika:9998
         env_file: .env
