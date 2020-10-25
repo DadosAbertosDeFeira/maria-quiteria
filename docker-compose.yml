@@ -16,6 +16,25 @@ services:
         ports:
             - "9998:9998"
 
+    rabbitmq:
+        image: rabbitmq
+        ports:
+          - "5672:5672"
+        restart: always
+
+    dramatiq:
+        build:
+            context: .
+            dockerfile: dramatiq.Dockerfile
+        environment:
+            DATABASE_HOST: db
+            TIKA_CLIENT_ONLY: 1
+            TIKA_SERVER_ENDPOINT: http://tika:9998
+        depends_on:
+            - db
+            - rabbitmq
+            - tika
+
     web:
         build:
             context: .
@@ -26,9 +45,7 @@ services:
             - "8000:8000"
         environment:
             DATABASE_HOST: db
-            TIKA_CLIENT_ONLY: 1
-            TIKA_SERVER_ENDPOINT: http://tika:9998
         env_file: .env
         depends_on:
             - db
-            - tika
+            - dramatiq
