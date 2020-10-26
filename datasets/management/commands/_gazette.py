@@ -23,7 +23,7 @@ def save_gazette(item):
     if created and item.get("files"):
         content_type = get_content_type_for_model(gazette)
         for file_ in item["files"]:
-            save_file(file_["url"], content_type, gazette.pk, file_["checksum"])
+            save_file(file_, content_type, gazette.pk)
 
     for event in item["events"]:
         GazetteEvent.objects.get_or_create(
@@ -65,7 +65,7 @@ def save_legacy_gazette(item):
     if created and item.get("files"):
         content_type = get_content_type_for_model(gazette)
         for file_ in item["files"]:
-            save_file(file_["url"], content_type, gazette.pk, file_["checksum"])
+            save_file(file_, content_type, gazette.pk)
 
     GazetteEvent.objects.create(
         gazette=gazette,

@@ -2,9 +2,8 @@ version: "3.4"
 
 services:
     db:
-        image: postgres
+        image: library/postgres:12.4-alpine
         environment:
-            PG_HOST: db
             POSTGRES_DB: mariaquiteria
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: postgres
@@ -16,19 +15,34 @@ services:
         ports:
             - "9998:9998"
 
+    rabbitmq:
+        image: rabbitmq
+        ports:
+          - "5672:5672"
+        restart: always
+
+    dramatiq:
+        build: .
+        command: ["dramatiq", "datasets.tasks", "-p3", "-t2", "-v"]
+        environment:
+            DATABASE_HOST: db
+            TIKA_CLIENT_ONLY: 1
+            TIKA_SERVER_ENDPOINT: http://tika:9998
+        depends_on:
+            - db
+            - rabbitmq
+            - tika
+
     web:
-        build:
-            context: .
-            target: dev
+        build: .
+        command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
         volumes:
             - .:/code
         ports:
             - "8000:8000"
         environment:
             DATABASE_HOST: db
-            TIKA_CLIENT_ONLY: 1
-            TIKA_SERVER_ENDPOINT: http://tika:9998
         env_file: .env
         depends_on:
             - db
-            - tika
+            - dramatiq

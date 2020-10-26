@@ -21,7 +21,7 @@ def save_bid(item):
     if created and item.get("files"):
         content_type = get_content_type_for_model(bid)
         for file_ in item["files"]:
-            save_file(file_["url"], content_type, bid.pk, file_["checksum"])
+            save_file(file_, content_type, bid.pk)
 
     content_type = get_content_type_for_model(CityHallBidEvent)
     for event in item["history"]:
