@@ -19,5 +19,8 @@ migrate:
 run:
 	docker-compose up -d
 
+runspider:
+	docker-compose run --rm web scrapy crawl $(SPIDER) -a start_from_date=$(START_DATE)
+
 tests:
 	docker-compose run --rm web pytest
