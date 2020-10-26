@@ -68,7 +68,7 @@ make run
 
 Com as configurações padrão o painel de controle estará acessível pela URL:
 [`localhost:8000`](http://localhost:8000). Veja as bases de dados disponíveis
-no nosso painel público [`localhost:8000/painel`](http://localhost:8000/painel)
+no nosso painel público [`localhost:8000/painel`](http://localhost:8000/painel).
 
 Para navegar no admin, primeiro crie um super administrador:
 ```
@@ -97,15 +97,15 @@ na documentação do [scrapy](https://docs.scrapy.org/).
 Para rodar um _spider_, execute:
 
 ```
-SPIDER=cityhall_payments make runspider
+SPIDER=citycouncil_agenda make runspider
 # ou
-SPIDER=cityhall_payments START_DATE=03/01/2020 make runspider
+SPIDER=citycouncil_agenda START_DATE=03/01/2020 make runspider
 ```
 
 Para salvar os dados de um _spider_ em um arquivo:
 
 ```
-SPIDER=cityhall_payments make runspider -o pagamentos.json
+docker-compose run --rm web scrapy crawl citycouncil_agenda -o citycouncil_agenda.json
 ```
 
 Você pode substituir `json` por outros formatos como `csv`.
