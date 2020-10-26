@@ -27,199 +27,89 @@ Contribuições são muito bem-vindas. Veja como contribuir no nosso [Guia de Co
 Toda a comunicação e demais interações do Dados Abertos de Feira estão sujeitas
 ao nosso [Código de Conduta](CODE_OF_CONDUCT.md).
 
-## Coleta
-
-Esse projeto usa [Scrapy](https://docs.scrapy.org/en/latest/) para a coleta de dados
-e [Django](https://www.djangoproject.com/) para o _backend_.
-
 ### Configurando seu ambiente
 
-* Instale as dependências
+Você precisará do [Docker](https://docs.docker.com/install/)
+e do [Docker-Compose](https://docs.docker.com/compose/install/) para rodar o projeto.
 
-Para rodar esse projeto localmente, instale as dependências:
+#### Carregue as variáveis de ambiente
+
+Um exemplo das configurações pode ser encontrado no arquivo `.env.example`,
+que deve ser copiado para um arquivo `.env` na raiz do projeto.
+
+#### Instale as dependências e prepare os serviços
 
 ```bash
-pip install -r dev_requirements.txt
-```
-
-* Carregue as variáveis de ambiente
-
-Um exemplo das configurações pode ser encontrado no arquivo `.env.example`
-(que pode ser copiado para um arquivo `.env` na raiz do projeto).
-
-* Postgres
-
-Esse projeto usa o Postgres. Para rodar o banco de dados local, crie um
-banco de dados com o nome `mariaquiteria`.
-
-Adicione a variável de ambiente `DATABASE_URL` com a url de conexão ao seu Postgres.
-Ex: `DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/NAME`
-
-Depois basta aplicar as `migrations`:
-
-```
-python manage.py migrate
-```
-
-#### Executando os testes
-
-```
-pytest
-```
-
-* Admin
-
-Para navegar na admin, primeiro crie um super administrador:
-```
-python manage.py createsuperuser
-```
-
-Depois, rode o servidor com:
-```
-python manage.py runserver
-```
-
-Com as configurações padrão o painel de controle estará acessível pela URL:
-[`localhost:8000`](http://localhost:8000).
-
-* Java
-
-Nesse projeto utilizamos o [Apache Tika](https://tika.apache.org/download.html)
-para extrair o conteúdo dos arquivos de licitações, contratos e outros.
-Para tê-lo funcionando com esse projeto você precisa apenas do Java +7
-instalado na sua máquina (pode ser a JRE mesmo).
-
-### Rodando os spiders
-
-No diretório `scraper` você poderá encontrar os _spiders_ responsáveis pela
-coleta dos dados. Para entender melhor como eles funcionam, dê uma olhada
-na documentação do [scrapy](https://docs.scrapy.org/).
-
-Para executar um _spider_, execute:
-
-```
-scrapy crawl cityhall_payments
-scrapy crawl cityhall_payments -a start_from_date=03/01/2020
-```
-
-Para salvar os dados de um _spider_ em um arquivo:
-
-```
-scrapy crawl cityhall_payments -o pagamentos.json
-```
-
-Você pode substituir `json` por outros formatos como `csv`.
-
-#### Extraindo o conteúdo dos arquivos ao rodar os spiders
-
-Para incluir o conteúdo dos arquivos nos itens raspados
-você deve configurar a variável de ambiente `EXTRACT_FILE_CONTENT_FROM_PIPELINE`
-como `True`.
-
-### Salvando dados da coleta no banco de dados
-
-Para executar os _spiders_ e salvar os itens no banco de dados, execute:
-
-```
-python manage.py crawl
-```
-
-Caso queira passar alguma configuração extra para o Scrapy através
-do comando `crawl` você pode adicionar após o parâmetro `--scrapy-args`:
-
-```
-./manage.py crawl --scrapy-args '{"LOG_FILE": "test.log"}'
-```
-
-#### Serviço de fila e processamento assíncrono
-
-Você pode utilizar ou não um serviço de fila para processamento assíncrono. Isso
-é **totalmente** opcional. Essa funcionalidade pode ser utilizada para
-extraírmos o conteúdo de PDFs para texto, com o Tika, de maneira assíncrona à
-raspagem de dados. Por padrão, essa funcionalidade está ativada, seguindo
-a configuração do ambiente de produção.
-
-Para utilizá-la, basta instalar o RabbitMQ. Para essa última parte, temos duas
-formas de te ajudar. Basta seguir para a próxima seção.
-
-Caso queira desativar essa funcionalidade, você vai precisar configurar a variável
-de ambiente `ASYNC_FILE_PROCESSING` para `False`.
-
-##### Utilizando o Docker para subir o RabbitMQ
-
-Se você não quiser instalar o RabbitMQ, a forma mais prática de ter uma
-instância dele rodando é com o [Docker](https://docs.docker.com/install/):
-
-```
-docker run -p 5672:5672 rabbitmq
-```
-
-Deixe esse processo rodando em uma janela do terminal.
-Em outra janela, execute o `dramatiq`:
-
-```
-dramatiq datasets.tasks -p3 -v
-```
-
-##### Instalando o RabbitMQ localmente
-
-Caso prefira, você pode
-[baixar e instalar](https://www.rabbitmq.com/download.html) o RabbitMQ do site
-oficial. Feito isso, inicie o serviço em uma janela do terminal e mantenha essa
-janela aberta:
-
-```
-rabbitmq-server
-```
-
-#### Usando Docker
-
-Se você não quiser instalar todas as dependências, você pode instalar o [Docker](https://docs.docker.com/install/)
-em conjunto com o [Docker Compose](https://docs.docker.com/compose/install/).
-
-Para isso, você precisa criar um `.env` como no `.env.example` da raiz do projeto. Executando o projeto no Docker:
-
-1. Iniciando o serviço:
-
-```
 make build
 ```
 
-2. Crie as tabelas no banco:
+O passo anterior vai criar um banco de dados postgres.
+Agora, basta aplicar as `migrations`:
 
 ```
 make migrate
 ```
 
-3. Crie um usuario `admin`:
-
-```
-make createsuperuser
-```
-
-4. Processe os arquivos estáticos:
-
-```
-make collectstatic
-```
-
-5. Executando o serviço:
-
-```
-make run
-```
-
-6. Rodando os testes:
+### Executando os testes
 
 ```
 make tests
 ```
 
-Nas próximas vezes, basta executar os containers: `make run` e acessar [localhost:8000](http://localhost:8000).
-Para visualizar os dados que já coletamos, acesse [localhost:8000/painel](http://localhost:8000/painel).
+### Acessando o site
 
-7. Para executar os raspadores de dados:
+Rode o servidor com:
+```
+make run
+```
+
+Com as configurações padrão o painel de controle estará acessível pela URL:
+[`localhost:8000`](http://localhost:8000). Veja as bases de dados disponíveis
+no nosso painel público [`localhost:8000/painel`](http://localhost:8000/painel)
+
+Para navegar no admin, primeiro crie um super administrador:
+```
+make createsuperuser
+```
+
+### Coletando os dados
+
+Boa parte dos dados que temos vem da raspagem de dados feita por _spiders_.
+O comando abaixo vai executar todos os _spiders_ e salvar os itens raspados
+no banco de dados:
 
 ```
 make crawl
+```
+
+Durante a coleta e adição ao banco, vamos também tentar extrair o conteúdo
+dos arquivos encontrados.
+
+### Rodando os spiders individualmente
+
+No diretório `scraper` você poderá encontrar os _spiders_ responsáveis pela
+coleta dos dados. Para entender melhor como eles funcionam, dê uma olhada
+na documentação do [scrapy](https://docs.scrapy.org/).
+
+Para rodar um _spider_, execute:
+
+```
+SPIDER=cityhall_payments make runspider
+# ou
+SPIDER=cityhall_payments START_DATE=03/01/2020 make runspider
+```
+
+Para salvar os dados de um _spider_ em um arquivo:
+
+```
+SPIDER=cityhall_payments make runspider -o pagamentos.json
+```
+
+Você pode substituir `json` por outros formatos como `csv`.
+
+Caso queira passar alguma configuração extra para o Scrapy através
+do comando `crawl` você pode adicionar após o parâmetro `--scrapy-args`:
+
+```
+docker-compose run --rm web python manage.py crawl --scrapy-args '{"LOG_FILE": "test.log"}'
 ```
