@@ -37,6 +37,9 @@ e do [Docker-Compose](https://docs.docker.com/compose/install/) para rodar o pro
 Um exemplo das configurações pode ser encontrado no arquivo `.env.example`,
 que deve ser copiado para um arquivo `.env` na raiz do projeto.
 
+Caso queira utilizar um banco de dados diferente basta configurar a variável
+de ambiente `DATABASE_URL` em seu `.env`.
+
 #### Instale as dependências e prepare os serviços
 
 ```bash

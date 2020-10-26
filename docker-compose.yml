@@ -2,9 +2,8 @@ version: "3.4"
 
 services:
     db:
-        image: postgres
+        image: library/postgres:12.4
         environment:
-            PG_HOST: db
             POSTGRES_DB: mariaquiteria
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: postgres
@@ -38,7 +37,7 @@ services:
     web:
         build:
             context: .
-            target: dev
+            dockerfile: Dockerfile
         volumes:
             - .:/code
         ports:
