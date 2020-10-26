@@ -1,9 +1,8 @@
 from datetime import date, datetime
 
+from datasets.parsers import from_str_to_date
 from scraper.items import GazetteItem, LegacyGazetteItem
 from scrapy import Request
-
-from datasets.parsers import from_str_to_date
 
 from . import BaseSpider
 from .utils import replace_query_param
@@ -35,7 +34,7 @@ class LegacyGazetteSpider(BaseSpider):
                     published_on=event["published_on"],
                     date=from_str_to_date(event["date"]),
                     details=url["details"],
-                    file_urls=[url["url"]],
+                    files=[url["url"]],
                     crawled_at=datetime.now(),
                     crawled_from=response.url,
                 )
@@ -200,7 +199,7 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
     def parse_document_url(self, response):
         gazette = response.meta["gazette"]
         url = response.headers["Location"].decode("utf-8")
-        gazette["file_urls"] = [url.replace("https", "http")]
+        gazette["files"] = [url.replace("https", "http")]
         return gazette
 
     def extract_power(self, url):

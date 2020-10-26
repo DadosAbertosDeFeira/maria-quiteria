@@ -11,7 +11,6 @@ class LegacyGazetteItem(BaseItem):
     published_on = scrapy.Field()
     date = scrapy.Field()
     details = scrapy.Field()
-    file_urls = scrapy.Field()
     files = scrapy.Field()
 
 
@@ -20,7 +19,6 @@ class GazetteItem(BaseItem):
     power = scrapy.Field()
     year_and_edition = scrapy.Field()
     events = scrapy.Field()
-    file_urls = scrapy.Field()
     files = scrapy.Field()
 
 
@@ -42,7 +40,6 @@ class CityCouncilMinuteItem(BaseItem):
     date = scrapy.Field()
     title = scrapy.Field()
     event_type = scrapy.Field()
-    file_urls = scrapy.Field()
     files = scrapy.Field()
 
 
@@ -54,7 +51,6 @@ class CityHallContractItem(BaseItem):
     contractor_name = scrapy.Field()
     value = scrapy.Field()
     ends_at = scrapy.Field()
-    file_urls = scrapy.Field()
     files = scrapy.Field()
 
 

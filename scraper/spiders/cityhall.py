@@ -256,7 +256,7 @@ class ContractsSpider(BaseSpider):
                 crawled_from=response.url,
             )
             if document_url:
-                item["file_urls"] = [f"{base_url}{document_url}"]
+                item["files"] = [f"{base_url}{document_url}"]
             yield item
 
     def clean_details(self, raw_details):
