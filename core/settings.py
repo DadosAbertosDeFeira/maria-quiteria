@@ -78,7 +78,7 @@ class Common(Configuration):
             "USER": os.getenv("DATABASE_USER", "postgres"),
             "PASSWORD": os.getenv("DATABASE_PASSWORD", "postgres"),
             "HOST": os.getenv("DATABASE_HOST", "localhost"),
-            "PORT": int(os.getenv("DATABASE_PORT", "5432")),
+            "PORT": os.getenv("DATABASE_PORT", "5432"),
         }
     }
 

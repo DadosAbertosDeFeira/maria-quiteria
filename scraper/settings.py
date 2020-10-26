@@ -27,8 +27,6 @@ SENTRY_DSN = os.getenv("SENTRY_DSN", "")
 ITEM_PIPELINES = {
     "spidermon.contrib.scrapy.pipelines.ItemValidationPipeline": 200,
 }
-FILES_STORE = f"{os.getcwd()}/data/"
-KEEP_FILES = os.getenv("KEEP_FILES", False)
 
 # http cache
 HTTPCACHE_ENABLED = True
