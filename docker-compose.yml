@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
     db:
-        image: library/postgres:12.4
+        image: library/postgres:12.4-alpine
         environment:
             POSTGRES_DB: mariaquiteria
             POSTGRES_USER: postgres
@@ -22,9 +22,8 @@ services:
         restart: always
 
     dramatiq:
-        build:
-            context: .
-            dockerfile: dramatiq.Dockerfile
+        build: .
+        command: ["dramatiq", "datasets.tasks", "-p3", "-t2", "-v"]
         environment:
             DATABASE_HOST: db
             TIKA_CLIENT_ONLY: 1
@@ -35,9 +34,8 @@ services:
             - tika
 
     web:
-        build:
-            context: .
-            dockerfile: Dockerfile
+        build: .
+        command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
         volumes:
             - .:/code
         ports:
