@@ -107,7 +107,7 @@ class BidsSpider(BaseSpider):
                 session_at=from_str_to_datetime(date),
             )
             if document_url:
-                item["file_urls"] = [response.urljoin(document_url)]
+                item["files"] = [response.urljoin(document_url)]
             yield item
 
     def _parse_descriptions(self, raw_descriptions):
@@ -256,7 +256,7 @@ class ContractsSpider(BaseSpider):
                 crawled_from=response.url,
             )
             if document_url:
-                item["file_urls"] = [f"{base_url}{document_url}"]
+                item["files"] = [f"{base_url}{document_url}"]
             yield item
 
     def clean_details(self, raw_details):

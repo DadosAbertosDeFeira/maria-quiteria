@@ -193,6 +193,7 @@ class CityCouncilContract(DatasetMixin):
     end_date = models.DateField("Data final", db_index=True)
     excluded = models.BooleanField("Excluído?", default=False)
     files = GenericRelation(File)
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Contrato"
@@ -279,6 +280,7 @@ class CityCouncilExpense(DatasetMixin):
         blank=True,
         db_index=True,
     )
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Despesa"
@@ -452,6 +454,7 @@ class CityCouncilBid(DatasetMixin):
     session_at = models.DateTimeField("Sessão Data / Horário", null=True, db_index=True)
     excluded = models.BooleanField("Excluído?", default=False)
     files = GenericRelation(File)
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Licitação"
@@ -489,6 +492,7 @@ class CityCouncilRevenue(DatasetMixin):
     )
     destination = models.CharField("Destinação", max_length=200, null=True, blank=True)
     excluded = models.BooleanField("Excluído?", default=False)
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "Câmara de Vereadores - Receita"

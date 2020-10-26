@@ -76,5 +76,5 @@ def save_minute(item):
     if created and item.get("files"):
         content_type = get_content_type_for_model(minute)
         for file_ in item["files"]:
-            save_file(file_["url"], content_type, minute.pk, file_["checksum"])
+            save_file(file_, content_type, minute.pk)
     return minute

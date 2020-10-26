@@ -5,22 +5,12 @@ class BaseItem(scrapy.Item):
     crawled_at = scrapy.Field()
     crawled_from = scrapy.Field()
 
-    def __repr__(self):
-        copy = self.deepcopy()
-        if copy.get("files"):
-            for file_ in copy["files"]:
-                if file_["content"]:
-                    preview = file_["content"].strip()[:200]
-                    file_["content"] = f"Preview: {preview}"
-        return super(BaseItem, copy).__repr__()
-
 
 class LegacyGazetteItem(BaseItem):
     title = scrapy.Field()
     published_on = scrapy.Field()
     date = scrapy.Field()
     details = scrapy.Field()
-    file_urls = scrapy.Field()
     files = scrapy.Field()
 
 
@@ -29,7 +19,6 @@ class GazetteItem(BaseItem):
     power = scrapy.Field()
     year_and_edition = scrapy.Field()
     events = scrapy.Field()
-    file_urls = scrapy.Field()
     files = scrapy.Field()
 
 
@@ -51,7 +40,6 @@ class CityCouncilMinuteItem(BaseItem):
     date = scrapy.Field()
     title = scrapy.Field()
     event_type = scrapy.Field()
-    file_urls = scrapy.Field()
     files = scrapy.Field()
 
 
@@ -63,7 +51,6 @@ class CityHallContractItem(BaseItem):
     contractor_name = scrapy.Field()
     value = scrapy.Field()
     ends_at = scrapy.Field()
-    file_urls = scrapy.Field()
     files = scrapy.Field()
 
 
@@ -76,7 +63,6 @@ class CityHallBidItem(BaseItem):
     codes = scrapy.Field()
     modality = scrapy.Field()
     session_at = scrapy.Field()
-    file_urls = scrapy.Field()
     files = scrapy.Field()
 
 

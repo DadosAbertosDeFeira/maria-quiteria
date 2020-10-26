@@ -71,7 +71,7 @@ class Common(Configuration):
 
     WSGI_APPLICATION = "core.wsgi.application"
 
-    default_db = "postgres://postgres:postgres@localhost:5432/mariaquiteria"
+    default_db = "postgres://postgres:postgres@db:5432/mariaquiteria"
     DATABASES = {"default": dj_database_url.config(default=default_db)}
 
     AUTH_PASSWORD_VALIDATORS = [
@@ -100,7 +100,6 @@ class Common(Configuration):
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
     GOOGLE_ANALYTICS_KEY = None
-    ASYNC_FILE_PROCESSING = values.Value(default=True, environ_prefix=None)
 
     AWS_ACCESS_KEY_ID = values.Value(environ_prefix=None)
     AWS_SECRET_ACCESS_KEY = values.Value(environ_prefix=None)
@@ -116,11 +115,14 @@ class Common(Configuration):
     )
     CITY_COUNCIL_WEBSERVICE_TOKEN = values.Value(default="fake", environ_prefix=None)
 
+    BROKER_HOST = os.getenv("BROKER_HOST", "rabbitmq")
+    BROKER_PORT = os.getenv("BROKER_PORT", "5672")
+    BROKER_URL = f"amqp://{BROKER_HOST}:{BROKER_PORT}"
+
 
 class Dev(Common):
     DEBUG = True
     ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "0.0.0.0"]
-    CLOUDAMQP_URL = "amqp://localhost:5672"
 
     INSTALLED_APPS = Common.INSTALLED_APPS + ["debug_toolbar"]
 
@@ -133,6 +135,6 @@ class Prod(Common):
     SECRET_KEY = values.SecretValue()
     ALLOWED_HOSTS = values.ListValue()
     CLOUDAMQP_URL = values.Value(environ_prefix=None)
-
+    BROKER_URL = CLOUDAMQP_URL
     DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=True)}
     GOOGLE_ANALYTICS_KEY = values.Value()

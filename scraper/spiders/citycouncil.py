@@ -1,7 +1,6 @@
 from datetime import date, datetime
 
 import scrapy
-
 from datasets.parsers import from_str_to_date
 from scraper.items import (
     CityCouncilAgendaItem,
@@ -170,5 +169,5 @@ class MinuteSpider(BaseSpider):
                 date=event_date,
                 title=title.strip(),
                 event_type=self.get_type(title),
-                file_urls=[response.urljoin(file_url)],
+                files=[response.urljoin(file_url)],
             )

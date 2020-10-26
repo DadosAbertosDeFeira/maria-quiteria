@@ -52,7 +52,7 @@ if os.getenv("DJANGO_CONFIGURATION") != "Prod":
     broker = StubBroker()
     broker.emit_after("process_boot")
 else:
-    broker = RabbitmqBroker(url=settings.CLOUDAMQP_URL)
+    broker = RabbitmqBroker(url=settings.BROKER_URL)
 set_broker(broker)
 client = get_s3_client(settings)
 
