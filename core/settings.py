@@ -108,7 +108,6 @@ class Common(Configuration):
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
     GOOGLE_ANALYTICS_KEY = None
-    ASYNC_FILE_PROCESSING = values.Value(default=True, environ_prefix=None)
 
     AWS_ACCESS_KEY_ID = values.Value(environ_prefix=None)
     AWS_SECRET_ACCESS_KEY = values.Value(environ_prefix=None)
