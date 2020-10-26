@@ -73,7 +73,7 @@ class CityHallBidItem(BaseModel):
     codes = StringType()
     modality = StringType()
     session_at = DateTimeType()
-    files = ListType(DictType(StringType))
+    files = ListType(StringType)
 
 
 class CityHallPaymentsItem(BaseModel):
