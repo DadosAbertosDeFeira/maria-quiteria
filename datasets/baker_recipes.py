@@ -12,6 +12,7 @@ from datasets.models import (
     File,
     Gazette,
     GazetteEvent,
+    SyncInformation,
 )
 from model_bakery.recipe import Recipe, foreign_key
 
@@ -58,3 +59,6 @@ GazetteEvent = Recipe(GazetteEvent, gazette=foreign_key(Gazette))
 
 
 File = Recipe(File,)
+
+
+SyncInformation = Recipe(SyncInformation,)

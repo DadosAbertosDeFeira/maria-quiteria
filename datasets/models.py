@@ -46,6 +46,11 @@ REVENUE_TYPES = (
     ("transferencia", "Transferência"),
 )
 
+SYNC_SOURCE = (
+    ("camara", "Câmara Municipal"),
+    ("prefeitura", "Prefeitura"),
+)
+
 
 class File(models.Model):
     created_at = models.DateTimeField("Criado em", auto_now_add=True)
@@ -507,3 +512,13 @@ class CityCouncilRevenue(DatasetMixin):
     def __str__(self):
         model_name = self._meta.verbose_name
         return f"{model_name} {self.published_at} {self.modality} {self.value}"
+
+
+class SyncInformation(models.Model):
+    created_at = models.DateTimeField("Criado em", auto_now_add=True)
+    updated_at = models.DateTimeField("Atualizado em", auto_now=True)
+    date = models.DateField("Data alvo")
+    source = models.CharField(
+        "Fonte", choices=SYNC_SOURCE, max_length=20, db_index=True
+    )
+    succeed = models.BooleanField("Concluída com sucesso?", null=True)

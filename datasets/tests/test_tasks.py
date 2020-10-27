@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 import pytest
 from datasets.models import (
@@ -6,6 +6,7 @@ from datasets.models import (
     CityCouncilContract,
     CityCouncilExpense,
     CityCouncilRevenue,
+    SyncInformation,
 )
 from datasets.tasks import (
     WebserviceException,
@@ -28,6 +29,7 @@ from datasets.tasks import (
 )
 from django.conf import settings
 from model_bakery import baker
+from requests import HTTPError
 
 
 @pytest.fixture
@@ -112,6 +114,7 @@ class TestBackupFile:
         assert backup_file(a_file.pk) is None
 
 
+@pytest.mark.django_db
 class TestGetCityCouncilUpdates:
     def test_get_city_council_updates(self, mocker):
         expected_payload = {
@@ -140,23 +143,46 @@ class TestGetCityCouncilUpdates:
         post_mock = mocker.patch("datasets.tasks.requests.post")
         post_mock.return_value.status_code = 200
         post_mock.return_value.json.return_value = expected_payload
+        yesterday = date.today() - timedelta(days=1)
+        formatted_yesterday = yesterday.strftime("%Y-%m-%d")
 
-        assert get_city_council_updates() == expected_payload
+        assert get_city_council_updates(yesterday) == expected_payload
+
+        assert post_mock.called
+        assert post_mock.call_args_list[0][1]["data"]["data"] == formatted_yesterday
+
+        sync_info = SyncInformation.objects.get()
+        assert sync_info.date == yesterday
+        assert sync_info.source == "camara"
+        assert sync_info.succeed is True
 
     def test_handle_with_error_when_parameters_are_invalid(self, mocker):
         expected_payload = {"erro": "Os parametros enviados são inválidos."}
         post_mock = mocker.patch("datasets.tasks.requests.post")
         post_mock.return_value.json.return_value = expected_payload
+        tomorrow = date.today() + timedelta(days=1)
+
         with pytest.raises(WebserviceException) as exception:
-            get_city_council_updates()
+            get_city_council_updates(tomorrow)
         assert "Os parametros enviados são inválidos." in str(exception.value)
 
-    @pytest.mark.parametrize("status_code", [400, 404, 500, 501, 503])
-    def test_raise_exception_if_request_is_not_successful(self, status_code, mocker):
+        sync_info = SyncInformation.objects.get()
+        assert sync_info.date == tomorrow
+        assert sync_info.source == "camara"
+        assert sync_info.succeed is False
+
+    def test_raise_exception_if_request_is_not_successful(self, mocker):
         post_mock = mocker.patch("datasets.tasks.requests.post")
-        post_mock.return_value.status_code = status_code
-        with pytest.raises(Exception):
-            get_city_council_updates()
+        post_mock.return_value.raise_for_status.side_effect = HTTPError()
+        yesterday = date.today() - timedelta(days=1)
+
+        with pytest.raises(HTTPError):
+            get_city_council_updates(yesterday)
+
+        sync_info = SyncInformation.objects.get()
+        assert sync_info.date == yesterday
+        assert sync_info.source == "camara"
+        assert sync_info.succeed is False
 
 
 class TestDistributeCityCouncilObjectsToSync:

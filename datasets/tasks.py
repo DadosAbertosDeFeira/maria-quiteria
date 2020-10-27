@@ -1,5 +1,5 @@
 import os
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from logging import info
 from pathlib import Path
 
@@ -12,6 +12,7 @@ from dotenv import find_dotenv, load_dotenv
 from dramatiq import actor, get_broker, set_broker
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from dramatiq.brokers.stub import StubBroker
+from requests import HTTPError
 from tika import parser
 
 # Esse bloco (feio) faz com que esse módulo funcione dentro ou fora do Django
@@ -22,6 +23,7 @@ try:
         CityCouncilExpense,
         CityCouncilRevenue,
         File,
+        SyncInformation,
     )
 except ImproperlyConfigured:
     import configurations
@@ -117,21 +119,35 @@ def backup_file(file_id):
 
 
 @actor(max_retries=5)
-def get_city_council_updates():
+def get_city_council_updates(target_date: date):
     """Solicita atualizações ao webservice da Câmara."""
-    yesterday = date.today() - timedelta(days=1)  # formato aaaa-mm-dd
+    sync_info, _ = SyncInformation.objects.get_or_create(
+        date=target_date, source="camara", defaults={"succeed": False}
+    )
+
     response = requests.post(
         settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT,
         data={
-            "data": yesterday.strftime("%Y-%m-%d"),
+            "data": sync_info.date.strftime("%Y-%m-%d"),  # formato aaaa-mm-dd
             "token": settings.CITY_COUNCIL_WEBSERVICE_TOKEN,
         },
         headers={"User-Agent": "Maria Quitéria"},
     )
-    response.raise_for_status()
+    try:
+        response.raise_for_status()
+        sync_info.succeed = True
+        sync_info.save()
+    except HTTPError:
+        sync_info.succeed = False
+        sync_info.save()
+        raise HTTPError
+
     response = response.json()
     if response.get("erro"):
+        sync_info.succeed = False
+        sync_info.save()
         raise WebserviceException(response["erro"])
+
     return response
 
 
