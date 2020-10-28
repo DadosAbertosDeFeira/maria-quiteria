@@ -27,7 +27,7 @@ jobs:
       - name: Run Tests
         env:
           DJANGO_SETTINGS_MODULE: "core.settings"
-          DJANGO_CONFIGURATION: "Dev"
+          DJANGO_CONFIGURATION: "Test"
           DATABASE_URL: "postgres://postgres:postgres@localhost:5432/mariaquiteria"
         run: |
           python manage.py collectstatic
