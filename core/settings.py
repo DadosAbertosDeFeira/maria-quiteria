@@ -138,7 +138,6 @@ class Test(Dev):
 class Prod(Common):
     SECRET_KEY = values.SecretValue()
     ALLOWED_HOSTS = values.ListValue()
-    CLOUDAMQP_URL = values.Value(environ_prefix=None)
-    BROKER_URL = CLOUDAMQP_URL
+    BROKER_URL = values.Value(environ_prefix=None, environ_name="CLOUDAMQP_URL")
     DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=True)}
     GOOGLE_ANALYTICS_KEY = values.Value()
