@@ -522,3 +522,4 @@ class SyncInformation(models.Model):
         "Fonte", choices=SYNC_SOURCE, max_length=20, db_index=True
     )
     succeed = models.BooleanField("Concluída com sucesso?", null=True)
+    response = models.JSONField("Resposta", null=True)

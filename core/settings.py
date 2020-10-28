@@ -131,6 +131,10 @@ class Dev(Common):
     INTERNAL_IPS = ["127.0.0.1"]
 
 
+class Test(Dev):
+    pass
+
+
 class Prod(Common):
     SECRET_KEY = values.SecretValue()
     ALLOWED_HOSTS = values.ListValue()

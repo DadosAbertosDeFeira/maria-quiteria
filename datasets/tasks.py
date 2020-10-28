@@ -1,5 +1,5 @@
 import os
-from datetime import date, datetime
+from datetime import datetime
 from logging import info
 from pathlib import Path
 
@@ -38,6 +38,7 @@ except ImproperlyConfigured:
         CityCouncilExpense,
         CityCouncilRevenue,
         File,
+        SyncInformation,
     )
 
 # models precisam ser importados depois das configurações
@@ -50,7 +51,7 @@ from datasets.adapters import (  # noqa isort:skip
 )
 
 
-if os.getenv("DJANGO_CONFIGURATION") != "Prod":
+if os.getenv("DJANGO_CONFIGURATION") == "Test":
     broker = StubBroker()
     broker.emit_after("process_boot")
 else:
@@ -119,8 +120,9 @@ def backup_file(file_id):
 
 
 @actor(max_retries=5)
-def get_city_council_updates(target_date: date):
+def get_city_council_updates(formatted_date):
     """Solicita atualizações ao webservice da Câmara."""
+    target_date = datetime.strptime(formatted_date, "%Y-%m-%d").date()
     sync_info, _ = SyncInformation.objects.get_or_create(
         date=target_date, source="camara", defaults={"succeed": False}
     )
@@ -128,7 +130,7 @@ def get_city_council_updates(target_date: date):
     response = requests.post(
         settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT,
         data={
-            "data": sync_info.date.strftime("%Y-%m-%d"),  # formato aaaa-mm-dd
+            "data": formatted_date,  # formato aaaa-mm-dd
             "token": settings.CITY_COUNCIL_WEBSERVICE_TOKEN,
         },
         headers={"User-Agent": "Maria Quitéria"},
@@ -136,18 +138,20 @@ def get_city_council_updates(target_date: date):
     try:
         response.raise_for_status()
         sync_info.succeed = True
-        sync_info.save()
     except HTTPError:
         sync_info.succeed = False
         sync_info.save()
         raise HTTPError
 
     response = response.json()
+    sync_info.response = response
+
     if response.get("erro"):
         sync_info.succeed = False
         sync_info.save()
         raise WebserviceException(response["erro"])
 
+    sync_info.save()
     return response
 
 

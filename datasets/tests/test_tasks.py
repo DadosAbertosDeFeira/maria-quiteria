@@ -146,7 +146,7 @@ class TestGetCityCouncilUpdates:
         yesterday = date.today() - timedelta(days=1)
         formatted_yesterday = yesterday.strftime("%Y-%m-%d")
 
-        assert get_city_council_updates(yesterday) == expected_payload
+        assert get_city_council_updates(formatted_yesterday) == expected_payload
 
         assert post_mock.called
         assert post_mock.call_args_list[0][1]["data"]["data"] == formatted_yesterday
@@ -155,6 +155,7 @@ class TestGetCityCouncilUpdates:
         assert sync_info.date == yesterday
         assert sync_info.source == "camara"
         assert sync_info.succeed is True
+        assert sync_info.response == expected_payload
 
     def test_handle_with_error_when_parameters_are_invalid(self, mocker):
         expected_payload = {"erro": "Os parametros enviados são inválidos."}
@@ -163,13 +164,14 @@ class TestGetCityCouncilUpdates:
         tomorrow = date.today() + timedelta(days=1)
 
         with pytest.raises(WebserviceException) as exception:
-            get_city_council_updates(tomorrow)
+            get_city_council_updates(tomorrow.strftime("%Y-%m-%d"))
         assert "Os parametros enviados são inválidos." in str(exception.value)
 
         sync_info = SyncInformation.objects.get()
         assert sync_info.date == tomorrow
         assert sync_info.source == "camara"
         assert sync_info.succeed is False
+        assert sync_info.response == expected_payload
 
     def test_raise_exception_if_request_is_not_successful(self, mocker):
         post_mock = mocker.patch("datasets.tasks.requests.post")
@@ -177,12 +179,13 @@ class TestGetCityCouncilUpdates:
         yesterday = date.today() - timedelta(days=1)
 
         with pytest.raises(HTTPError):
-            get_city_council_updates(yesterday)
+            get_city_council_updates(yesterday.strftime("%Y-%m-%d"))
 
         sync_info = SyncInformation.objects.get()
         assert sync_info.date == yesterday
         assert sync_info.source == "camara"
         assert sync_info.succeed is False
+        assert sync_info.response is None
 
 
 class TestDistributeCityCouncilObjectsToSync:
