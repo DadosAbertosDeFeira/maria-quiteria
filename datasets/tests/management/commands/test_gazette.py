@@ -1,6 +1,8 @@
 from datetime import date, datetime
 
 import pytest
+from django.utils.timezone import make_aware
+
 from datasets.management.commands._gazette import (
     _extract_date,
     save_gazette,
@@ -12,10 +14,10 @@ from datasets.management.commands._gazette import (
 class TestSaveGazette:
     def test_save_gazette(self, mock_save_file):
         item = {
-            "date": datetime(2019, 11, 5),
+            "date": date(2019, 11, 5),
             "power": "executivo",
             "year_and_edition": "Ano V - Edi\u00e7\u00e3o N\u00ba 1131",
-            "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
+            "crawled_at": make_aware(datetime(2019, 11, 6, 10, 11, 19)),
             "crawled_from": "http://www.diariooficial.br/st=1&publ=1&edicao=1131",
             "events": [
                 {
@@ -31,7 +33,7 @@ class TestSaveGazette:
         assert gazette.date == item["date"]
         assert gazette.power == item["power"]
         assert gazette.year_and_edition == item["year_and_edition"]
-        assert gazette.crawled_at.replace(tzinfo=None) == item["crawled_at"]
+        assert gazette.crawled_at == item["crawled_at"]
         assert gazette.crawled_from == item["crawled_from"]
         assert gazette.files.count() == 1
 
@@ -42,10 +44,10 @@ class TestSaveGazette:
 
     def test_save_different_events_to_same_gazette(self, mock_save_file):
         item = {
-            "date": datetime(2019, 11, 5),
+            "date": date(2019, 11, 5),
             "power": "executivo",
             "year_and_edition": "Ano V - Edi\u00e7\u00e3o N\u00ba 1131",
-            "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
+            "crawled_at": make_aware(datetime(2019, 11, 6, 10, 11, 19)),
             "crawled_from": "http://www.diariooficial.br/st=1&edicao=1131",
             "events": [
                 {
@@ -72,9 +74,9 @@ class TestSaveLegacyGazette:
         legacy_item = {
             "title": "DECRETO Nº 9.416, DE 26 DE NOVEMBRO DE 2014.",
             "published_on": "Folha do Estado",
-            "date": datetime(2014, 11, 27),
+            "date": make_aware(datetime(2014, 11, 27)),
             "details": "ABRE CRÉDITO SUPLEMENTAR AO ORÇAMENTO DO MUNICÍPIO...",
-            "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
+            "crawled_at": make_aware(datetime(2019, 11, 6, 10, 11, 19)),
             "crawled_from": "http://www.diariooficial.br/st=1&publicacao=1",
         }
 
@@ -84,7 +86,7 @@ class TestSaveLegacyGazette:
         assert gazette.power == "executivo"
         assert gazette.year_and_edition == ""
         assert gazette.is_legacy is True
-        assert gazette.crawled_at.replace(tzinfo=None) == legacy_item["crawled_at"]
+        assert gazette.crawled_at == legacy_item["crawled_at"]
         assert gazette.crawled_from == legacy_item["crawled_from"]
         assert gazette.events.count() == 1
 
@@ -99,28 +101,28 @@ class TestSaveLegacyGazette:
             {
                 "title": "DECRETO Nº 9.416, DE 26 DE NOVEMBRO DE 2014.",
                 "published_on": "Folha do Estado",
-                "date": datetime(2014, 11, 27),
+                "date": date(2014, 11, 27),
                 "details": "ABRE CRÉDITO SUPLEMENTAR AO ORÇAMENTO DO MUNICÍPIO...",
                 "files": ["http://www.feiradesantana.ba.gov.br/leis/Deno20149416.pdf"],
-                "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
+                "crawled_at": make_aware(datetime(2019, 11, 6, 10, 11, 19)),
                 "crawled_from": "http://www.diariooficial.br/st=1&&edicao=1131",
             },
             {
                 "title": "DECRETO Nº 9.415, DE 26 DE NOVEMBRO DE 2014.",
                 "published_on": "Folha do Estado",
-                "date": datetime(2014, 11, 27),
+                "date": date(2014, 11, 27),
                 "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA...",
                 "files": ["http://www.diariooficial.feira.ba.gov.br/d.pdf"],
-                "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
+                "crawled_at": make_aware(datetime(2019, 11, 6, 10, 11, 19)),
                 "crawled_from": "http://www.diariooficial.br/st=1&&edicao=1131",
             },
             {
                 "title": "DECRETO Nº 9.414, DE 26 DE NOVEMBRO DE 2014.",
                 "published_on": "Folha do Estado",
-                "date": datetime(2014, 11, 27),
+                "date": date(2014, 11, 27),
                 "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA...",
                 "files": ["http://www.diariooficial.feira.ba.gov.br/d.pdf"],
-                "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
+                "crawled_at": make_aware(datetime(2019, 11, 6, 10, 11, 19)),
                 "crawled_from": "http://www.diariooficial.br/st=1&&edicao=1131",
             },
         ]
@@ -138,25 +140,25 @@ class TestSaveLegacyGazette:
                 "date": None,
                 "details": "ABRE CRÉDITO SUPLEMENTAR AO ORÇAMENTO DO MUNICÍPIO...",
                 "files": ["http://www.diariooficial.feira.ba.gov.br/d.pdf"],
-                "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
+                "crawled_at": make_aware(datetime(2019, 11, 6, 10, 11, 19)),
                 "crawled_from": "http://www.diariooficial.br/?st=1&edicao=1130",
             },
             {
                 "title": "DECRETO Nº 9.415, DE 26 DE NOVEMBRO DE 2014.",
                 "published_on": "Folha do Estado",
-                "date": datetime(2014, 11, 27),
+                "date": date(2014, 11, 27),
                 "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA...",
                 "files": ["http://www.diariooficial.feira.ba.gov.br/d.pdf"],
-                "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
+                "crawled_at": make_aware(datetime(2019, 11, 6, 10, 11, 19)),
                 "crawled_from": "http://www.diariooficial.br/?&edicao=1131",
             },
             {
                 "title": "DECRETO Nº 9.414, DE 26 DE NOVEMBRO DE 2014.",
                 "published_on": "Folha do Estado",
-                "date": datetime(2014, 11, 26),
+                "date": date(2014, 11, 26),
                 "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA...",
                 "files": ["http://www.diariooficial.feira.ba.gov.br/d.pdf"],
-                "crawled_at": datetime(2019, 11, 6, 10, 11, 19),
+                "crawled_at": make_aware(datetime(2019, 11, 6, 10, 11, 19)),
                 "crawled_from": "http://www.diariooficial.br/?&edicao=1131",
             },
         ]

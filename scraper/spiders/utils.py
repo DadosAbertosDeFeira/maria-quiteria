@@ -1,6 +1,8 @@
 import logging
 import re
 import unicodedata
+import tzlocal
+from datetime import datetime
 from urllib.parse import parse_qs, urlparse
 
 from datasets.parsers import from_str_to_date
@@ -107,3 +109,8 @@ def strip_accents(string):
         for char in unicodedata.normalize("NFD", string)
         if unicodedata.category(char) != "Mn"
     )
+
+
+def datetime_now_aware() -> datetime:
+    """Create a datetime now aware using local timezone."""
+    return datetime.now(tz=tzlocal.get_localzone())

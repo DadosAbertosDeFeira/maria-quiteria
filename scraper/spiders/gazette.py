@@ -1,11 +1,11 @@
-from datetime import date, datetime
+from datetime import date
 
 from datasets.parsers import from_str_to_date
 from scraper.items import GazetteItem, LegacyGazetteItem
 from scrapy import Request
 
 from . import BaseSpider
-from .utils import replace_query_param
+from .utils import datetime_now_aware, replace_query_param
 
 
 class LegacyGazetteSpider(BaseSpider):
@@ -35,7 +35,7 @@ class LegacyGazetteSpider(BaseSpider):
                     date=from_str_to_date(event["date"]),
                     details=url["details"],
                     files=[url["url"]],
-                    crawled_at=datetime.now(),
+                    crawled_at=datetime_now_aware(),
                     crawled_from=response.url,
                 )
 
@@ -187,7 +187,7 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
                     power=gazette["power"],
                     year_and_edition=gazette["year_and_edition"],
                     events=gazette["events"],
-                    crawled_at=datetime.now(),
+                    crawled_at=datetime_now_aware(),
                     crawled_from=response.url,
                 )
                 yield Request(

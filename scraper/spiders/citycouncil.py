@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date
 
 import scrapy
 from datasets.parsers import from_str_to_date
@@ -9,7 +9,7 @@ from scraper.items import (
 )
 
 from . import BaseSpider
-from .utils import extract_date, months_and_years
+from .utils import datetime_now_aware, extract_date, months_and_years
 
 
 class AgendaSpider(BaseSpider):
@@ -63,7 +63,7 @@ class AgendaSpider(BaseSpider):
             ]
             event_date = from_str_to_date(event_date)
             yield CityCouncilAgendaItem(
-                crawled_at=datetime.now(),
+                crawled_at=datetime_now_aware(),
                 crawled_from=response.url,
                 date=event_date,
                 details=" ".join(events),
@@ -89,7 +89,7 @@ class AttendanceListSpider(BaseSpider):
         return status_labels.get(status.upper().strip())
 
     def start_requests(self):
-        today = datetime.now().date()
+        today = datetime_now_aware().date()
         self.logger.info(f"Data inicial: {self.start_date}")
 
         for month, year in months_and_years(self.start_date, today):
@@ -115,7 +115,7 @@ class AttendanceListSpider(BaseSpider):
 
         for council_member, status in zip(council_members, status):
             yield CityCouncilAttendanceListItem(
-                crawled_at=datetime.now(),
+                crawled_at=datetime_now_aware(),
                 crawled_from=response.url,
                 date=extract_date(title),
                 description=description.strip() if description else "",
@@ -147,7 +147,7 @@ class MinuteSpider(BaseSpider):
 
     def start_requests(self):
         self.logger.info(f"Data inicial: {self.start_date}")
-        today = datetime.now().date()
+        today = datetime_now_aware().date()
 
         for month, year in months_and_years(self.start_date, today):
             url = (
@@ -164,7 +164,7 @@ class MinuteSpider(BaseSpider):
         for event_date, title, file_url in zip(dates, event_titles, file_urls):
             event_date = from_str_to_date(event_date)
             yield CityCouncilMinuteItem(
-                crawled_at=datetime.now(),
+                crawled_at=datetime_now_aware(),
                 crawled_from=response.url,
                 date=event_date,
                 title=title.strip(),

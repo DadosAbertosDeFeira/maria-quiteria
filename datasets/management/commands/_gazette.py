@@ -3,7 +3,6 @@ from datetime import date
 
 from datasets.models import Gazette, GazetteEvent
 from django.contrib.admin.options import get_content_type_for_model
-from django.utils.timezone import make_aware
 
 from ._file import save_file
 
@@ -15,7 +14,7 @@ def save_gazette(item):
         power=item["power"],
         year_and_edition=item["year_and_edition"],
         defaults={
-            "crawled_at": make_aware(item["crawled_at"]),
+            "crawled_at": item["crawled_at"],
             "crawled_from": item["crawled_from"],
         },
     )
@@ -32,7 +31,7 @@ def save_gazette(item):
             secretariat=event["secretariat"],
             crawled_from=item["crawled_from"],
             summary=event["summary"],
-            defaults={"crawled_at": make_aware(item["crawled_at"])},
+            defaults={"crawled_at": item["crawled_at"]},
         )
     return gazette
 
@@ -59,7 +58,7 @@ def save_legacy_gazette(item):
         power="executivo",
         crawled_from=item["crawled_from"],
         is_legacy=True,
-        defaults={"crawled_at": make_aware(item["crawled_at"]), "notes": notes},
+        defaults={"crawled_at": item["crawled_at"], "notes": notes},
     )
 
     if created and item.get("files"):
@@ -73,7 +72,7 @@ def save_legacy_gazette(item):
         crawled_from=item["crawled_from"],
         summary=item["details"],
         published_on=item["published_on"],
-        crawled_at=make_aware(item["crawled_at"]),
+        crawled_at=item["crawled_at"],
     )
     return gazette
 

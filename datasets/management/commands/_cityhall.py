@@ -1,6 +1,5 @@
 from datasets.models import CityHallBid, CityHallBidEvent
 from django.contrib.admin.options import get_content_type_for_model
-from django.utils.timezone import make_aware
 
 from ._file import save_file
 
@@ -12,7 +11,7 @@ def save_bid(item):
         codes=item["codes"],
         defaults={
             "crawled_from": item["crawled_from"],
-            "crawled_at": make_aware(item["crawled_at"]),
+            "crawled_at": item["crawled_at"],
             "description": item["description"],
             "modality": item["modality"],
         },
@@ -30,7 +29,7 @@ def save_bid(item):
             bid=bid,
             published_at=event["published_at"],
             summary=event["event"],
-            defaults={"crawled_at": make_aware(item["crawled_at"])},
+            defaults={"crawled_at": item["crawled_at"]},
         )
         if created and event.get("url"):
             save_file(event.get("url"), content_type, event_obj.pk)
