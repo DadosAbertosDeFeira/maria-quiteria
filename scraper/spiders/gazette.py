@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from datasets.parsers import from_str_to_date
 from scraper.items import GazetteItem, LegacyGazetteItem

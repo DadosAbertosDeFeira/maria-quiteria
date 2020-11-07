@@ -14,7 +14,7 @@ def save_agenda(item):
         title=item["title"],
         event_type=item["event_type"],
         crawled_from=item["crawled_from"],
-        defaults={"crawled_at": item["crawled_at"], "details": item["details"],},
+        defaults={"crawled_at": item["crawled_at"], "details": item["details"]},
     )
     return agenda
 
