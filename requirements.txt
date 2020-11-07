@@ -4,6 +4,7 @@ django==3.1.4
 django-configurations==2.2
 django-public-admin==0.0.5
 django-simple-history==2.12.0
+djangorestframework==3.12.2
 dramatiq[rabbitmq,watch]==1.10.0
 gunicorn==20.0.4
 jinja2==2.11.2

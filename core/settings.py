@@ -35,6 +35,7 @@ class Common(Configuration):
         "django.contrib.messages",
         "django.contrib.staticfiles",
         "datasets.apps.DatasetsConfig",
+        "rest_framework",
         "simple_history",
     ]
 
