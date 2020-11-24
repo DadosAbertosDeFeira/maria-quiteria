@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('datasets', '0022_historical_citycouncil'),
+        ("datasets", "0022_historical_citycouncil"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='file',
-            name='s3_url',
-            field=models.URLField(blank=True, max_length=400, null=True, verbose_name='URL externa'),
+            model_name="file",
+            name="s3_url",
+            field=models.URLField(
+                blank=True, max_length=400, null=True, verbose_name="URL externa"
+            ),
         ),
     ]
