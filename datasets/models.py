@@ -182,7 +182,6 @@ class CityCouncilContract(DatasetMixin):
     external_code = models.PositiveIntegerField(
         "Código externo", unique=True, db_index=True
     )
-    external_code = models.PositiveIntegerField("Código externo", db_index=True)
     description = models.TextField("Descrição", null=True, blank=True, db_index=True)
     details = models.TextField(
         "Objeto do contrato", null=True, blank=True, db_index=True
