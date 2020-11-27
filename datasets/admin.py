@@ -303,8 +303,6 @@ class MariaQuiteriaPublicAdminSite(PublicAdminSite):
     index_title = "Painel de buscas"
 
 
-public_app = PublicApp("datasets", models=())
-public_admin = MariaQuiteriaPublicAdminSite(public_apps=public_app)
 models_and_admins = [
     (CityCouncilAgenda, CityCouncilAgendaAdmin),
     (CityCouncilAttendanceList, CityCouncilAttendanceListAdmin),
@@ -316,6 +314,10 @@ models_and_admins = [
     (Gazette, GazetteAdmin),
     (CityHallBid, CityHallBidAdmin),
 ]
+public_app = PublicApp(
+    "datasets", models=(model[0].__name__ for model in models_and_admins)
+)
+public_admin = MariaQuiteriaPublicAdminSite(public_apps=public_app)
 
 for model, admin_class in models_and_admins:
     public_admin.register(model, admin_class)
