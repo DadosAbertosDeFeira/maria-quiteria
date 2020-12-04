@@ -1,6 +1,7 @@
 from logging import info
 from pathlib import Path
 
+import tika
 from datasets.services import get_s3_client
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -8,6 +9,8 @@ from dotenv import find_dotenv, load_dotenv
 from dramatiq import actor, middleware, set_broker
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from tika import parser
+
+tika.initVM()  # noqa
 
 # Esse bloco (feio) faz com que esse módulo funcione dentro ou fora do Django
 try:
