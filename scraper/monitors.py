@@ -1,10 +1,6 @@
 from spidermon import Monitor, MonitorSuite, monitors
 from spidermon.contrib.actions.telegram import SendTelegramMessage
-from spidermon.contrib.scrapy.monitors import (
-    ErrorCountMonitor,
-    FinishReasonMonitor,
-    ItemValidationMonitor,
-)
+from spidermon.contrib.scrapy.monitors import FinishReasonMonitor, ItemValidationMonitor
 
 
 def find_exceptions(stats):
@@ -64,7 +60,6 @@ class SpiderCloseMonitorSuite(MonitorSuite):
 
     monitors = [
         RequestsItemsRatioMonitor,
-        ErrorCountMonitor,
         FinishReasonMonitor,
         ItemValidationMonitor,
     ]
