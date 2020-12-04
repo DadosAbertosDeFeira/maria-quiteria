@@ -192,7 +192,7 @@ class CityCouncilContract(DatasetMixin):
     company_or_person = models.TextField(
         "Empresa ou pessoa", null=True, blank=True, db_index=True
     )
-    value = models.DecimalField("Valor", max_digits=10, decimal_places=2)
+    value = models.DecimalField("Valor", max_digits=20, decimal_places=2)
     start_date = models.DateField("Data de início", db_index=True)
     end_date = models.DateField("Data final", db_index=True)
     excluded = models.BooleanField("Excluído?", default=False)
@@ -230,7 +230,7 @@ class CityCouncilExpense(DatasetMixin):
     company_or_person = models.TextField(
         "Empresa ou pessoa", null=True, blank=True, db_index=True
     )
-    value = models.DecimalField("Valor", max_digits=10, decimal_places=2)
+    value = models.DecimalField("Valor", max_digits=20, decimal_places=2)
     number = models.CharField(
         "Número", max_length=50, null=True, blank=True, db_index=True
     )
@@ -487,7 +487,7 @@ class CityCouncilRevenue(DatasetMixin):
     )
     modality = models.CharField("Modalidade", max_length=60, null=True, blank=True)
     description = models.TextField("Descrição")
-    value = models.DecimalField("Valor", max_digits=10, decimal_places=2)
+    value = models.DecimalField("Valor", max_digits=20, decimal_places=2)
     resource = models.CharField(
         "Fonte", max_length=200, null=True, blank=True, default="prefeitura"
     )

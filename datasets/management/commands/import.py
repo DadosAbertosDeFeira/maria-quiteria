@@ -30,7 +30,7 @@ mapping = {
         "adapter": to_citycouncil_contract,
     },
     "citycouncil_bids": {"model": CityCouncilBid, "adapter": to_citycouncil_bid},
-    "citycouncil_revenue": {
+    "citycouncil_revenues": {
         "model": CityCouncilRevenue,
         "adapter": to_citycouncil_revenue,
     },
