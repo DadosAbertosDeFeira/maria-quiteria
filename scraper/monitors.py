@@ -7,7 +7,7 @@ def find_exceptions(stats):
     exceptions = []
     for key, value in stats.items():
         if key.startswith("spider_exceptions"):
-            exceptions.append(f"{key} ({value})")
+            exceptions.append(f"`{key}` ({value})")
     return exceptions
 
 
@@ -37,20 +37,22 @@ class CustomSendTelegramMessage(SendTelegramMessage):
         stats = self.data.stats
         n_scraped_items = stats.get("item_scraped_count", 0)
 
-        failures = len(self.result.failures)
-        emoji = "💀" if failures > 0 else "🎉"
-
         exceptions = find_exceptions(stats)
         exceptions_message = ""
         if exceptions:
             exceptions_message = "\n".join(exceptions)
 
+        number_of_failures = len(self.result.failures)
+        number_of_exceptions = len(exceptions)
+        emoji = "💀" if number_of_failures > 0 or number_of_exceptions > 0 else "🎉"
+
         message = "\n".join(
             [
-                f"{emoji} Spider {self.data.spider.name} {stats['finish_reason']}",
+                f"{emoji} Spider `{self.data.spider.name}` {stats['finish_reason']}",
                 f"- Duração em segundos: {stats['elapsed_time_seconds']}",
                 f"- Itens raspados: {n_scraped_items}",
-                f"- Erros: {failures}\n{exceptions_message}",
+                f"- Erros: {number_of_failures}",
+                f"- Exceções: {number_of_exceptions}\n{exceptions_message}",
             ]
         )
         return message
