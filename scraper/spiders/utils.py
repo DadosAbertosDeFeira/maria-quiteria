@@ -1,9 +1,10 @@
 import logging
 import re
 import unicodedata
-import tzlocal
-from datetime import datetime
+
+from datetime import datetime, timezone
 from urllib.parse import parse_qs, urlparse
+
 
 from datasets.parsers import from_str_to_date
 
@@ -111,6 +112,6 @@ def strip_accents(string):
     )
 
 
-def datetime_now_aware() -> datetime:
-    """Create a datetime now aware using local timezone."""
-    return datetime.now(tz=tzlocal.get_localzone())
+def datetime_utcnow_aware() -> datetime:
+    """Data e hora UTC com informação de timezone."""
+    return datetime.utcnow().replace(tzinfo=timezone.utc)

@@ -7,7 +7,7 @@ from scraper.items import CityHallBidItem, CityHallContractItem, CityHallPayment
 
 from . import BaseSpider
 from .utils import (
-    datetime_now_aware,
+    datetime_utcnow_aware,
     extract_param,
     identify_contract_id,
     is_url,
@@ -101,7 +101,7 @@ class BidsSpider(BaseSpider):
             month, year = match.group(2).split("-")
 
             item = CityHallBidItem(
-                crawled_at=datetime_now_aware(),
+                crawled_at=datetime_utcnow_aware(),
                 crawled_from=response.url,
                 public_agency=match.group(1).upper(),
                 month=int(month),
@@ -197,7 +197,7 @@ class ContractsSpider(BaseSpider):
     def start_requests(self):
         start_date = self.start_date
         self.logger.info(f"Data inicial: {start_date}")
-        today = datetime_now_aware().date()
+        today = datetime_utcnow_aware().date()
 
         while start_date < today:
             formatted_date = start_date.strftime("%d/%m/%Y")
@@ -258,7 +258,7 @@ class ContractsSpider(BaseSpider):
                 contractor_name=contractor_name,
                 value=details[2],
                 ends_at=details[3],
-                crawled_at=datetime_now_aware(),
+                crawled_at=datetime_utcnow_aware(),
                 crawled_from=response.url,
             )
             if document_url:
@@ -304,7 +304,7 @@ class PaymentsSpider(BaseSpider):
     def start_requests(self):
         start_date = self.start_date
         self.logger.info(f"Data inicial: {start_date}")
-        today = datetime_now_aware().date()
+        today = datetime_utcnow_aware().date()
 
         while start_date < today:
             formatted_date = start_date.strftime("%d/%m/%Y")
@@ -353,7 +353,7 @@ class PaymentsSpider(BaseSpider):
                 phase=headline[1],
                 company_or_person=headline[2],
                 value=headline[3],
-                crawled_at=datetime_now_aware(),
+                crawled_at=datetime_utcnow_aware(),
                 crawled_from=response.url,
             )
             details = [
@@ -448,7 +448,7 @@ class COVID19ExpensesSpider(BaseSpider):
                 phase=headline[1],
                 company_or_person=headline[2],
                 value=headline[3],
-                crawled_at=datetime_now_aware(),
+                crawled_at=datetime_utcnow_aware(),
                 crawled_from=self.source,
             )
             details = [
