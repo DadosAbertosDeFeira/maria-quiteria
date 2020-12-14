@@ -1,6 +1,8 @@
 from datetime import datetime
 
 import pytest
+from django.utils.timezone import make_aware
+
 from datasets.management.commands._cityhall import save_bid
 
 
@@ -8,9 +10,9 @@ from datasets.management.commands._cityhall import save_bid
 class TestSaveBid:
     def test_save_bid(self, mock_save_file):
         item = {
-            "crawled_at": datetime(2020, 3, 21, 7, 15, 17, 908831),
+            "crawled_at": make_aware(datetime(2020, 3, 21, 7, 15, 17, 908831)),
             "crawled_from": "http://www.feiradesantana.ba.gov.br/servicos.asp",
-            "session_at": datetime(2018, 4, 17, 8, 30, 0),
+            "session_at": make_aware(datetime(2018, 4, 17, 8, 30, 0)),
             "public_agency": "PMFS",
             "month": 4,
             "year": 2018,
@@ -43,9 +45,9 @@ class TestSaveBid:
     def test_save_history(self, mock_save_file):
         item = {
             "public_agency": "PMFS",
-            "crawled_at": datetime(2020, 4, 4, 14, 29, 49, 261985),
+            "crawled_at": make_aware(datetime(2020, 4, 4, 14, 29, 49, 261985)),
             "crawled_from": "http://www.feiradesantana.ba.gov.br/servicos.asp",
-            "session_at": datetime(2019, 4, 5, 8, 30),
+            "session_at": make_aware(datetime(2019, 4, 5, 8, 30)),
             "description": (
                 "Contratação de empresa para prestação de serviços "
                 "profissionais de apoio administrativo em Unidades de Saúde da "
@@ -59,7 +61,7 @@ class TestSaveBid:
             "modality": "pregao_eletronico",
             "history": [
                 {
-                    "published_at": datetime(2018, 4, 17, 8, 30, 0),
+                    "published_at": make_aware(datetime(2018, 4, 17, 8, 30, 0)),
                     "event": "Resposta a pedido de esclarecimento",
                     "url": "http://www.feiradesantana.ba.gov.br/SMS.pdf",
                 }
@@ -76,9 +78,9 @@ class TestSaveBid:
     def test_handle_with_existent_event(self, mock_save_file):
         item = {
             "public_agency": "PMFS",
-            "crawled_at": datetime(2020, 4, 4, 14, 29, 49, 261985),
+            "crawled_at": make_aware(datetime(2020, 4, 4, 14, 29, 49, 261985)),
             "crawled_from": "http://www.feiradesantana.ba.gov.br/servicos.asp",
-            "session_at": datetime(2019, 4, 5, 8, 30),
+            "session_at": make_aware(datetime(2019, 4, 5, 8, 30)),
             "description": (
                 "Contratação de empresa para prestação de serviços "
                 "profissionais de apoio administrativo em Unidades de Saúde da "
@@ -92,7 +94,7 @@ class TestSaveBid:
             "modality": "pregao_eletronico",
             "history": [
                 {
-                    "published_at": datetime(2019, 4, 4, 16, 20, 0),
+                    "published_at": make_aware(datetime(2019, 4, 4, 16, 20, 0)),
                     "event": "Resposta a pedido de esclarecimento",
                     "url": "http://www.feiradesantana.ba.gov.br/SMS.pdf",
                 }
@@ -103,17 +105,17 @@ class TestSaveBid:
 
         item["history"] = [
             {
-                "published_at": datetime(2019, 4, 4, 16, 20, 0),
+                "published_at": make_aware(datetime(2019, 4, 4, 16, 20, 0)),
                 "event": "Resposta a pedido de esclarecimento",
                 "url": "http://www.feiradesantana.ba.gov.br/SMS.pdf",
             },
             {
-                "published_at": datetime(2019, 4, 4, 18, 20, 0),
+                "published_at": make_aware(datetime(2019, 4, 4, 18, 20, 0)),
                 "event": "Resposta a pedido de esclarecimento",
                 "url": "http://www.feiradesantana.ba.gov.br/SMS.pdf",
             },
             {
-                "published_at": datetime(2019, 4, 4, 16, 20, 0),
+                "published_at": make_aware(datetime(2019, 4, 4, 16, 20, 0)),
                 "event": "CORREÇÃO DE EDITAL",
                 "url": "http://www.feiradesantana.ba.gov.br/SMS.pdf",
             },
@@ -124,9 +126,9 @@ class TestSaveBid:
 
     def test_handle_with_updated_bid(self, mock_save_file):
         item = {
-            "crawled_at": datetime(2020, 3, 21, 7, 15, 17, 908831),
+            "crawled_at": make_aware(datetime(2020, 3, 21, 7, 15, 17, 908831)),
             "crawled_from": "http://www.feiradesantana.ba.gov.br/servicos.asp",
-            "session_at": datetime(2018, 4, 17, 8, 30, 0),
+            "session_at": make_aware(datetime(2018, 4, 17, 8, 30, 0)),
             "public_agency": "PMFS",
             "month": 4,
             "year": 2018,
@@ -160,9 +162,9 @@ class TestSaveBid:
 
     def test_create_different_bids_for_different_agency_modality(self, mock_save_file):
         item = {
-            "crawled_at": datetime(2020, 3, 21, 7, 15, 17, 908831),
+            "crawled_at": make_aware(datetime(2020, 3, 21, 7, 15, 17, 908831)),
             "crawled_from": "http://www.feiradesantana.ba.gov.br/servicos.asp",
-            "session_at": datetime(2018, 4, 17, 8, 30, 0),
+            "session_at": make_aware(datetime(2018, 4, 17, 8, 30, 0)),
             "public_agency": "PMFS",
             "month": 4,
             "year": 2018,

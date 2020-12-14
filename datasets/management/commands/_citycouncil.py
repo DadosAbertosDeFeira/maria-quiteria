@@ -6,7 +6,6 @@ from datasets.models import (
     CityCouncilMinute,
 )
 from django.contrib.admin.options import get_content_type_for_model
-from django.utils.timezone import make_aware
 
 
 def save_agenda(item):
@@ -15,10 +14,7 @@ def save_agenda(item):
         title=item["title"],
         event_type=item["event_type"],
         crawled_from=item["crawled_from"],
-        defaults={
-            "crawled_at": make_aware(item["crawled_at"]),
-            "details": item["details"],
-        },
+        defaults={"crawled_at": item["crawled_at"], "details": item["details"]},
     )
     return agenda
 
@@ -28,7 +24,7 @@ def save_attendance_list(item):
         date=item["date"],
         council_member=item["council_member"],
         defaults={
-            "crawled_at": make_aware(item["crawled_at"]),
+            "crawled_at": item["crawled_at"],
             "crawled_from": item["crawled_from"],
             "description": item["description"],
             "status": item.get("status"),
@@ -56,7 +52,7 @@ def save_expense(item):
         subgroup=item["subgroup"],
         group=item["group"],
         defaults={
-            "crawled_at": make_aware(item["crawled_at"]),
+            "crawled_at": item["crawled_at"],
             "crawled_from": item["crawled_from"],
         },
     )
@@ -70,7 +66,7 @@ def save_minute(item):
         defaults={
             "title": item["title"],
             "event_type": item["event_type"],
-            "crawled_at": make_aware(item["crawled_at"]),
+            "crawled_at": item["crawled_at"],
         },
     )
     if created and item.get("files"):

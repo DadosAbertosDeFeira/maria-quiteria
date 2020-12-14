@@ -1,6 +1,8 @@
 from datetime import date, datetime
 
 import pytest
+from django.utils.timezone import make_aware
+
 from datasets.management.commands._citycouncil import (
     save_agenda,
     save_attendance_list,
@@ -12,7 +14,7 @@ from datasets.management.commands._citycouncil import (
 class TestSaveAgenda:
     def test_save_gazette(self):
         item = {
-            "crawled_at": datetime(2020, 3, 21, 7, 15, 17, 908831),
+            "crawled_at": make_aware(datetime(2020, 3, 21, 7, 15, 17, 908831)),
             "crawled_from": "https://www.feiradesantana.ba.leg.br/agenda",
             "date": date(2019, 8, 29),
             "details": "- Especial , dia 29 (quinta-feira), às 09 horas,"
@@ -33,12 +35,12 @@ class TestSaveAgenda:
         assert agenda.details == item["details"]
         assert agenda.event_type == item["event_type"]
         assert agenda.title == item["title"]
-        assert agenda.crawled_at.replace(tzinfo=None) == item["crawled_at"]
+        assert agenda.crawled_at == item["crawled_at"]
         assert agenda.crawled_from == item["crawled_from"]
 
     def test_handle_with_changed_agenda(self):
         item = {
-            "crawled_at": datetime(2020, 3, 21, 7, 15, 17, 908831),
+            "crawled_at": make_aware(datetime(2020, 3, 21, 7, 15, 17, 908831)),
             "crawled_from": "https://www.feiradesantana.ba.leg.br/agenda",
             "date": date(2019, 8, 29),
             "details": "- Especial , dia 29 (quinta-feira), às 09 horas,"
@@ -56,7 +58,7 @@ class TestSaveAgenda:
 
         agenda = save_agenda(item)
         item["details"] = "Festa na cidade bla bla bla"
-        item["crawled_at"] = datetime(2020, 3, 22, 7, 15, 17, 908831)
+        item["crawled_at"] = make_aware(datetime(2020, 3, 22, 7, 15, 17, 908831))
 
         updated_agenda = save_agenda(item)
 
@@ -73,7 +75,7 @@ class TestSaveAttendanceList:
             "description": "Abertura da 1ª etapa do 4º período da 18ª legislatura",
             "council_member": "Roberto Luis da Silva Tourinho",
             "status": "presente",
-            "crawled_at": datetime(2020, 3, 21, 7, 15, 17, 276019),
+            "crawled_at": make_aware(datetime(2020, 3, 21, 7, 15, 17, 276019)),
             "crawled_from": "https://www.feiradesantana.ba.leg.br/lista/7/03-02-2020",
         }
 
@@ -82,7 +84,7 @@ class TestSaveAttendanceList:
         assert attendance.description == item["description"]
         assert attendance.council_member == item["council_member"]
         assert attendance.status == item["status"]
-        assert attendance.crawled_at.replace(tzinfo=None) == item["crawled_at"]
+        assert attendance.crawled_at == item["crawled_at"]
         assert attendance.crawled_from == item["crawled_from"]
 
     def test_handle_with_changed_attendance_list(self):
@@ -91,13 +93,13 @@ class TestSaveAttendanceList:
             "description": "Abertura da 1ª etapa do 4º período da 18ª legislatura",
             "council_member": "Roberto Luis da Silva Tourinho",
             "status": "ausente",
-            "crawled_at": datetime(2020, 3, 21, 7, 15, 17, 276019),
+            "crawled_at": make_aware(datetime(2020, 3, 21, 7, 15, 17, 276019)),
             "crawled_from": "https://www.feiradesantana.ba.leg.br/lista/7/03-02-2020",
         }
 
         attendance = save_attendance_list(item)
         item["status"] = "falta_justificada"
-        item["crawled_at"] = datetime(2020, 3, 22, 7, 15, 17, 908831)
+        item["crawled_at"] = make_aware(datetime(2020, 3, 22, 7, 15, 17, 908831))
 
         updated_attendance = save_attendance_list(item)
 
@@ -113,7 +115,7 @@ class TestSaveAttendanceList:
 class TestSaveMinute:
     def test_save_minute(self, mock_save_file):
         item = {
-            "crawled_at": datetime(2020, 4, 30, 18, 18, 56, 173788),
+            "crawled_at": make_aware(datetime(2020, 4, 30, 18, 18, 56, 173788)),
             "crawled_from": "https://www.feiradesantana.ba.leg.br/atas?"
             "mes=9&ano=2018&Acessar=OK",
             "date": date(2018, 9, 11),
