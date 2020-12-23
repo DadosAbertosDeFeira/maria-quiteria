@@ -82,3 +82,8 @@ class CityHallPaymentsItem(BaseItem):
     subfunction = scrapy.Field()
     type_of_process = scrapy.Field()
     resource = scrapy.Field()
+
+
+class TcmBaDocumentsItem(BaseItem):
+    file_request = scrapy.Field()
+    files = scrapy.Field()
