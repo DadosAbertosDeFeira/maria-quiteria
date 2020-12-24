@@ -121,6 +121,31 @@ class DocumentsSpider(BaseSpider):
             "javax.faces.partial.ajax": "true",
         }
 
+        # TODO pegar "Foram encontrados 71228 resultados" para conferir com raspados
+        # consultaPublicaTabPanel\:consultaPublicaDataTablePanel_body > div:nth-child(2)
+
+        # TODO páginas
+        # máximo de páginas: span.rf-insl-mx
+
+        # TODO checar se já chegou no máximo de páginas
+
+        # TODO request da paginação
+        # {
+        #     "consultaPublicaTabPanel:j_idt215": "consultaPublicaTabPanel:j_idt215",
+        #     "consultaPublicaTabPanel:j_idt215:j_idt216": "5",  # FIXME número da página
+        #     "javax.faces.ViewState": self.view_state,
+        #     "javax.faces.source": "consultaPublicaTabPanel:j_idt215:j_idt216",
+        #     "javax.faces.partial.event": "change",
+        #     "javax.faces.partial.execute": "consultaPublicaTabPanel:j_idt215:j_idt216 @component",
+        #     "javax.faces.partial.render": "@component",
+        #     "javax.faces.behavior.event": "change",
+        #     "org.richfaces.ajax.component": "consultaPublicaTabPanel:j_idt215:j_idt216",
+        #     "rfExt": "null",
+        #     "AJAX:EVENTS_COUNT": "1",
+        #     "javax.faces.partial.ajax": "true"
+        # }
+
+        # para cada página...
         yield scrapy.FormRequest(
             "https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam",
             formdata=body,
@@ -169,47 +194,51 @@ class DocumentsSpider(BaseSpider):
         """Acessa a lista de documentos de uma unidade jurisdicionada."""
         res = get_html_selector_from_xml(response.body, response.url)
         rows = res.css("tr.ui-widget-content")
-        form_ids = res.xpath(
-            "//form[contains(@id, 'consultaPublicaTabPanel:tabelaDocumentos')]"
-        )
 
-        # TODO extrair informações dos documentos e passar no meta
-        # TODO incluir informações do "Campos"
-        # for row in rows:
-        #     form_id = row.xpath("//form[contains(@id, 'consultaPublicaTabPanel:tabelaDocumentos')]")
-        #     labels = row.css("td::text").getall()
+        unit = res.css(
+            "#consultaPublicaTabPanel\:unidadeJurisdicionadaDecoration\:unidadeJurisdicionada::text"
+        ).get()
 
-        form_id = "consultaPublicaTabPanel:tabelaDocumentos:0:j_idt272"
+        for row in rows:
+            form_id = row.css("form::attr(id)").get()
 
-        body = {
-            form_id: form_id,
-            "javax.faces.ViewState": self.view_state,
-            "javax.faces.source": f"{form_id}:downloadDocBinario",
-            "javax.faces.partial.event": "click",
-            "javax.faces.partial.execute": f"{form_id}:downloadDocBinario @component",
-            "javax.faces.partial.render": "@component",
-            "org.richfaces.ajax.component": f"{form_id}:downloadDocBinario",
-            f"{form_id}:downloadDocBinario": f"{form_id}:downloadDocBinario",
-            "rfExt": "null",
-            "AJAX:EVENTS_COUNT": "1",
-            "javax.faces.partial.ajax": "true",
-        }
+            if form_id:
+                labels = row.css("td[role='gridcell']::text").getall()
+                # esperamos algo como:
+                # ['\n', 'Documentos', '01 - DEMONSTRATIVO.pdf', 'MICHELE REIS', '23/12/2020']
 
-        yield scrapy.FormRequest(
-            "https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam",
-            formdata=body,
-            callback=self.parse_document_download,
-            dont_filter=True,
-            headers=self.headers,
-        )
+                document_info = {
+                    "category": labels[1],
+                    "filename": labels[2],
+                    "inserted_by": labels[3],
+                    "inserted_at": labels[4],
+                    "unit": unit,
+                }
+                body = {
+                    form_id: form_id,
+                    "javax.faces.ViewState": self.view_state,
+                    "javax.faces.source": f"{form_id}:downloadDocBinario",
+                    "javax.faces.partial.event": "click",
+                    "javax.faces.partial.execute": f"{form_id}:downloadDocBinario @component",
+                    "javax.faces.partial.render": "@component",
+                    "org.richfaces.ajax.component": f"{form_id}:downloadDocBinario",
+                    f"{form_id}:downloadDocBinario": f"{form_id}:downloadDocBinario",
+                    "rfExt": "null",
+                    "AJAX:EVENTS_COUNT": "1",
+                    "javax.faces.partial.ajax": "true",
+                }
+
+                yield scrapy.FormRequest(
+                    "https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam",
+                    formdata=body,
+                    callback=self.parse_document_download,
+                    dont_filter=True,
+                    headers=self.headers,
+                    meta={"document_info": document_info},
+                )
 
     def parse_document_download(self, response):
         """Faz o download de um documento."""
-        res = get_html_selector_from_xml(response.body, response.url)
-        filename = res.css(
-            "img::attr(title)"
-        ).get()  # FIXME usar valor da coluna "Descrição"
-
         cookies = [
             cookie.decode("utf-8").split(";")[0]
             for cookie in response.headers.getlist("Set-Cookie")
@@ -230,13 +259,17 @@ class DocumentsSpider(BaseSpider):
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101 Firefox/84.0",
         }
 
-        # TODO adicionar os outros campos disponíveis
         yield TcmBaDocumentsItem(
             crawled_at=datetime.now(),
             crawled_from=response.url,
             file_request={
                 "url": "https://e.tcm.ba.gov.br/epp/PdfReadOnly/downloadDocumento.seam",
                 "headers": headers,
-                "filename": filename,
+                "filename": response.meta["document_info"]["filename"],
             },
+            category=response.meta["document_info"]["category"],
+            filename=response.meta["document_info"]["filename"],
+            inserted_by=response.meta["document_info"]["inserted_by"],
+            inserted_at=response.meta["document_info"]["inserted_at"],
+            unit=response.meta["document_info"]["unit"],
         )

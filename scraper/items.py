@@ -87,3 +87,8 @@ class CityHallPaymentsItem(BaseItem):
 class TcmBaDocumentsItem(BaseItem):
     file_request = scrapy.Field()
     files = scrapy.Field()
+    category = scrapy.Field()
+    filename = scrapy.Field()
+    inserted_by = scrapy.Field()
+    inserted_at = scrapy.Field()
+    unit = scrapy.Field()
