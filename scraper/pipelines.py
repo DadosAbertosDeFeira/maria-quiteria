@@ -19,6 +19,7 @@ class SessionAwareFilesPipeline(FilesPipeline):
                 },
             )
             requests.append(request)
+            item["file_request"] = None
         return requests
 
     def file_path(self, request, response=None, info=None):
