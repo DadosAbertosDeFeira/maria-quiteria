@@ -91,6 +91,9 @@ com os detalhes da mudança caso esta inclua uma nova base de dados ou um novo c
 comentários, _pull requests_, _issues_, e demais comunicações do projeto deverão ser
 escritas em português.
 
+* Marque a opção "Permitir edição pelos mantenedores". Assim poderemos fazer modificações de emergência
+mantendo o _pull request_ aberto por você.
+
 Sentiu falta de algo nesse guia? Conta pra gente!
 
 Bem vinda(o) ao Dados Abertos de Feira!
