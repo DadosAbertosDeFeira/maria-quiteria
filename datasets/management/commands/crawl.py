@@ -87,7 +87,8 @@ class Command(BaseCommand):
 
         process = CrawlerProcess(settings=settings)
         process.crawl(
-            AgendaSpider, start_from_date=CityCouncilAgenda.last_collected_item_date(),
+            AgendaSpider,
+            start_from_date=CityCouncilAgenda.last_collected_item_date(),
         )
         process.crawl(
             AttendanceListSpider,
