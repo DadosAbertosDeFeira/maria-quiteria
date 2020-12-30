@@ -67,8 +67,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.RemoveField(
-            model_name="citycouncilexpense",
-            name="type_of_process",
+            model_name="citycouncilexpense", name="type_of_process",
         ),
         migrations.AddField(
             model_name="citycouncilexpense",

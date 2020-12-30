@@ -45,9 +45,7 @@ class Migration(migrations.Migration):
                 ("file_url", models.URLField(blank=True, null=True)),
                 ("file_content", models.TextField(blank=True, null=True)),
             ],
-            options={
-                "abstract": False,
-            },
+            options={"abstract": False,},
         ),
         migrations.AddField(
             model_name="citycouncilagenda",
@@ -103,8 +101,6 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={
-                "abstract": False,
-            },
+            options={"abstract": False,},
         ),
     ]

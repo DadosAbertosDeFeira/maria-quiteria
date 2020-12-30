@@ -97,10 +97,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={
-                "verbose_name": "Arquivo",
-                "verbose_name_plural": "Arquivos",
-            },
+            options={"verbose_name": "Arquivo", "verbose_name_plural": "Arquivos",},
         ),
         migrations.AddIndex(
             model_name="file",
@@ -109,7 +106,6 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AlterUniqueTogether(
-            name="file",
-            unique_together={("url", "content_type", "object_id")},
+            name="file", unique_together={("url", "content_type", "object_id")},
         ),
     ]

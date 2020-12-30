@@ -50,9 +50,7 @@ CityCouncilRevenue = Recipe(CityCouncilRevenue)
 CityHallBid = Recipe(CityHallBid)
 
 
-Gazette = Recipe(
-    Gazette,
-)
+Gazette = Recipe(Gazette,)
 
 
 GazetteEvent = Recipe(GazetteEvent, gazette=foreign_key(Gazette))
