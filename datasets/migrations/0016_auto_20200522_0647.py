@@ -12,17 +12,45 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RemoveIndex(
-            model_name="gazette", name="datasets_ga_search__1d3d09_gin",
+            model_name="gazette",
+            name="datasets_ga_search__1d3d09_gin",
         ),
-        migrations.RemoveField(model_name="citycouncilminute", name="file_content",),
-        migrations.RemoveField(model_name="citycouncilminute", name="file_url",),
-        migrations.RemoveField(model_name="cityhallbid", name="file_content",),
-        migrations.RemoveField(model_name="cityhallbid", name="file_url",),
-        migrations.RemoveField(model_name="cityhallbidevent", name="file_content",),
-        migrations.RemoveField(model_name="cityhallbidevent", name="file_url",),
-        migrations.RemoveField(model_name="gazette", name="file_content",),
-        migrations.RemoveField(model_name="gazette", name="file_url",),
-        migrations.RemoveField(model_name="gazette", name="search_vector",),
+        migrations.RemoveField(
+            model_name="citycouncilminute",
+            name="file_content",
+        ),
+        migrations.RemoveField(
+            model_name="citycouncilminute",
+            name="file_url",
+        ),
+        migrations.RemoveField(
+            model_name="cityhallbid",
+            name="file_content",
+        ),
+        migrations.RemoveField(
+            model_name="cityhallbid",
+            name="file_url",
+        ),
+        migrations.RemoveField(
+            model_name="cityhallbidevent",
+            name="file_content",
+        ),
+        migrations.RemoveField(
+            model_name="cityhallbidevent",
+            name="file_url",
+        ),
+        migrations.RemoveField(
+            model_name="gazette",
+            name="file_content",
+        ),
+        migrations.RemoveField(
+            model_name="gazette",
+            name="file_url",
+        ),
+        migrations.RemoveField(
+            model_name="gazette",
+            name="search_vector",
+        ),
         migrations.AlterField(
             model_name="gazetteevent",
             name="gazette",

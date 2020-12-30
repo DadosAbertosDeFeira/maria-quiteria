@@ -5,7 +5,10 @@ from dramatiq import pipeline
 
 def save_file(url, content_type, object_id, checksum=None):
     file_, created = File.objects.get_or_create(
-        url=url, content_type=content_type, object_id=object_id, checksum=checksum,
+        url=url,
+        content_type=content_type,
+        object_id=object_id,
+        checksum=checksum,
     )
     if file_.s3_url is None or file_.content is None:
         pipeline(
