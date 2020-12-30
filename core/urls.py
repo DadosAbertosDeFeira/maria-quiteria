@@ -7,6 +7,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("home.urls")),
     path("painel/", public_admin.urls),
+    path("api/", include("api.routes")),
 ]
 
 
