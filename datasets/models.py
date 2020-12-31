@@ -129,6 +129,9 @@ class CityCouncilAgenda(DatasetMixin):
     def __repr__(self):
         return f"{self.date} {self.event_type} {self.title}"
 
+    def __str__(self):
+        return f"Agenda para {self.title.capitalize()}"
+
     @classmethod
     def last_collected_item_date(cls):
         """Retorna primeiro dia do ano do mais recente item coletado."""
@@ -161,6 +164,9 @@ class CityCouncilAttendanceList(DatasetMixin):
 
     def __repr__(self):
         return f"{self.date} {self.council_member} {self.status}"
+
+    def __str__(self):
+        return f"Presença em {self.date} - {self.council_member}"
 
     @classmethod
     def last_collected_item_date(cls):
