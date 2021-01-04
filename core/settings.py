@@ -1,5 +1,6 @@
 import logging
 import os
+from datetime import timedelta
 
 import dj_database_url
 import sentry_sdk
@@ -113,6 +114,25 @@ class Common(Configuration):
     BROKER_HOST = os.getenv("BROKER_HOST", "rabbitmq")
     BROKER_PORT = os.getenv("BROKER_PORT", "5672")
     BROKER_URL = f"amqp://{BROKER_HOST}:{BROKER_PORT}"
+
+    REST_FRAMEWORK = {
+        "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+        "DEFAULT_AUTHENTICATION_CLASSES": (
+            "rest_framework.authentication.SessionAuthentication",
+            "rest_framework_simplejwt.authentication.JWTAuthentication",
+        ),
+    }
+
+    ACCESS_TOKEN_LIFETIME_IN_MINUTES = int(
+        os.getenv("ACCESS_TOKEN_LIFETIME_IN_MINUTES", 1440)  # 24 horas
+    )
+    REFRESH_TOKEN_LIFETIME_IN_MINUTES = int(
+        os.getenv("REFRESH_TOKEN_LIFETIME_IN_MINUTES", 1440)  # 24 horas
+    )
+    SIMPLE_JWT = {
+        "ACCESS_TOKEN_LIFETIME": timedelta(minutes=ACCESS_TOKEN_LIFETIME_IN_MINUTES),
+        "REFRESH_TOKEN_LIFETIME": timedelta(minutes=REFRESH_TOKEN_LIFETIME_IN_MINUTES),
+    }
 
 
 class Dev(Common):
