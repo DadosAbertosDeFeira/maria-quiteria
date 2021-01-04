@@ -116,3 +116,7 @@ do comando `crawl` você pode adicionar após o parâmetro `--scrapy-args`:
 ```
 docker-compose run --rm web python manage.py crawl --scrapy-args '{"LOG_FILE": "test.log"}'
 ```
+
+### API
+
+Sobre acesso a API veja instruções em nossa [Wiki](https://github.com/DadosAbertosDeFeira/maria-quiteria/wiki/API).
