@@ -1,3 +1,4 @@
+from scraper.notifiers.discord import SendDiscordMessage
 from spidermon import Monitor, MonitorSuite, monitors
 from spidermon.contrib.actions.telegram import SendTelegramMessage
 from spidermon.contrib.scrapy.monitors import FinishReasonMonitor, ItemValidationMonitor
@@ -32,7 +33,7 @@ class RequestsItemsRatioMonitor(Monitor):
             )
 
 
-class CustomSendTelegramMessage(SendTelegramMessage):
+class SpiderReportMessage:
     def get_message(self):
         stats = self.data.stats
         n_scraped_items = stats.get("item_scraped_count", 0)
@@ -58,12 +59,20 @@ class CustomSendTelegramMessage(SendTelegramMessage):
         return message
 
 
+class CustomSendTelegramMessage(SpiderReportMessage, SendTelegramMessage):
+    pass
+
+
+class CustomSendDiscordMessage(SpiderReportMessage, SendDiscordMessage):
+    pass
+
+
 class SpiderCloseMonitorSuite(MonitorSuite):
 
     monitors = [
-        RequestsItemsRatioMonitor,
+        # RequestsItemsRatioMonitor,  # FIXME
         FinishReasonMonitor,
         ItemValidationMonitor,
     ]
 
-    monitors_finished_actions = [CustomSendTelegramMessage]
+    monitors_finished_actions = [CustomSendTelegramMessage, CustomSendDiscordMessage]
