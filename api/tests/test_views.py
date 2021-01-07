@@ -27,7 +27,7 @@ class TestCityCouncilAgendaView:
     @pytest.mark.parametrize(
         "data,quantity_expected",
         [
-            ({"query": "test"}, 1),
+            ({"query": "TEST"}, 1),
             ({"start_date": "2020-05-20"}, 1),
             ({"end_date": "2020-03-20"}, 2),
             ({"start_date": "2020-02-20", "end_date": "2020-03-18"}, 1),

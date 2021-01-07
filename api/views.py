@@ -28,7 +28,7 @@ class CityCouncilAgendaView(ListAPIView):
         kwargs = {}
 
         if query:
-            kwargs["details__contains"] = query
+            kwargs["details__icontains"] = query
         if start_date:
             kwargs["date__gte"] = start_date
         if end_date:
