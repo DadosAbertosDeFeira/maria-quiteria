@@ -14,5 +14,11 @@ def user():
 
 
 @pytest.fixture
+def api_client_authenticated(api_client, user):
+    api_client.force_authenticate(user)
+    return api_client
+
+
+@pytest.fixture
 def url():
     return "/api/"
