@@ -14,15 +14,18 @@ class TestCityCouncilAgendaView:
 
     def test_should_list_city_council_agenda(self, api_client_authenticated):
         agenda = baker.make_recipe("datasets.CityCouncilAgenda")
+        baker.make_recipe("datasets.CityCouncilAgenda")
+
         response = api_client_authenticated.get(self.url)
 
         assert response.status_code == HTTPStatus.OK
 
-        data = response.json()[0]
-        assert data["date"] == agenda.date.strftime("%Y-%m-%d")
-        assert data["details"] == agenda.details
-        assert data["event_type"] == agenda.event_type
-        assert data["title"] == agenda.title
+        data = response.json()
+        assert data[0]["date"] == agenda.date.strftime("%Y-%m-%d")
+        assert data[0]["details"] == agenda.details
+        assert data[0]["event_type"] == agenda.event_type
+        assert data[0]["title"] == agenda.title
+        assert len(data) == 2
 
     @pytest.mark.parametrize(
         "data,quantity_expected",
