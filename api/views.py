@@ -19,38 +19,35 @@ class CityHallBidView(ListAPIView):
     serializer_class = CityHallBidSerializer
 
     def get_queryset(self):
-        bids = CityHallBid.objects.prefetch_related('events')
-        query_params = self.request.query_params
+        bids = CityHallBid.objects.prefetch_related("events")
 
-        if query_params:
-            bids = self.filter_by_query_params(bids, query_params)
+        if self.request.query_params:
+            bids = self.filter_by_query_params(bids)
 
         return bids
 
-    @staticmethod
-    def filter_by_query_params(bids, query_params):
-        bids = CityHallBidView.filter_by_description(bids, query_params)
-        bids = CityHallBidView.filter_by_start_date(bids, query_params)
-        bids = CityHallBidView.filter_by_end_date(bids, query_params)
+    def filter_by_query_params(self, bids):
+        bids = self.filter_by_query(bids)
+        bids = self.filter_by_start_date(bids)
+        bids = self.filter_by_end_date(bids)
         return bids
 
-    @staticmethod
-    def filter_by_end_date(bids, query_params):
-        end_date = query_params.get('end_date', None)
+    def filter_by_end_date(self, bids):
+        end_date = self.request.query_params.get("end_date", None)
         if end_date is not None:
             bids = bids.filter(session_at__lte=end_date)
         return bids
 
-    @staticmethod
-    def filter_by_start_date(bids, query_params):
-        start_date = query_params.get('start_date', None)
+    def filter_by_start_date(self, bids):
+        start_date = self.request.query_params.get("start_date", None)
         if start_date is not None:
             bids = bids.filter(session_at__gte=start_date)
         return bids
 
-    @staticmethod
-    def filter_by_description(bids, query_params):
-        description = query_params.get('query', None)
+    def filter_by_query(self, bids):
+        description = self.request.query_params.get("query", None)
         if description is not None:
-            bids = bids.filter(description__icontains=description) | bids.filter(events__summary__icontains=description)
+            bids = bids.filter(description__icontains=description) |\
+                   bids.filter(events__summary__icontains=description) |\
+                   bids.filter(files__content__icontains=description)
         return bids
