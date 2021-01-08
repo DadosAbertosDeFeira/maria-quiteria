@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import pytest
-from api.serializers import CityCouncilAgendaSerializer
+from api.serializers import CityCouncilAgendaSerializer, CityHallBidSerializer
 
 pytestmark = pytest.mark.django_db
 
@@ -29,4 +29,29 @@ class TestCityCouncilAgendaSerializer:
         assert serializer.validated_data["crawled_at"] == datetime.fromisoformat(
             data["crawled_at"]
         )
+        assert serializer.validated_data["crawled_from"] == data["crawled_from"]
+
+class TestCityHallBidSerializer:
+    def test_city_hall_bid_serializer(self):
+        data = {
+            "session_at": "2021-01-06T08:30:00-03:00",
+            "public_agency": "PMFS",
+            "description": "Contratação de empresa de engenharia para perfuração de 03 (três)...",
+            "modality": "convite",
+            "codes": "LICITAÇÃO Nº 150-2020 TOMADA DE PREÇO Nº 038-2020",
+            "crawled_at": "2020-01-01T04:16:13-04:00",
+            "crawled_from": "http://www.pudim.com.br/",
+            "events": [],
+            "files": []
+        }
+
+        serializer = CityHallBidSerializer(data=data)
+        assert serializer.is_valid() is True
+
+        assert serializer.validated_data["session_at"] == datetime.fromisoformat(data["session_at"])
+        assert serializer.validated_data["public_agency"] == data["public_agency"]
+        assert serializer.validated_data["description"] == data["description"]
+        assert serializer.validated_data["modality"] == data["modality"]
+        assert serializer.validated_data["codes"] == data["codes"]
+        assert serializer.validated_data["crawled_at"] == datetime.fromisoformat(data["crawled_at"])
         assert serializer.validated_data["crawled_from"] == data["crawled_from"]

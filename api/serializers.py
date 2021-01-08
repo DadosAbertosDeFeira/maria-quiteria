@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from datasets.models import CityHallBid, CityHallBidEvent, File, CityCouncilAgenda
 
+
 class CityCouncilAgendaSerializer(serializers.ModelSerializer):
     class Meta:
         model = CityCouncilAgenda

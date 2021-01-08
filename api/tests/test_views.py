@@ -67,3 +67,54 @@ class TestCityCouncilAgendaView:
                 'O valor "%(value)s" tem um formato de data inválido.'
                 "Deve ser no formato  YYY-MM-DD."
             )
+
+class TestCityHallBidView:
+    url = reverse("city-hall-bid")
+
+    def test_shold_list_city_hall_bids(self, api_client_authenticated):
+        bid = baker.make_recipe("datasets.CityHallBid")
+        baker.make_recipe("datasets.CityHallBid")
+
+        response = api_client_authenticated.get(self.url)
+
+        assert response.status_code == HTTPStatus.OK
+        data = response.json()
+
+        assert data[0]["id"] == bid.id
+        # assert data[0]["created_at"] == bid.created_at
+        # assert data[0]["updated_at"] == bid.updated_at
+        # assert data[0]["crawled_at"] == bid.crawled_at
+        assert data[0]["crawled_from"] == bid.crawled_from
+        assert data[0]["notes"] == bid.notes
+        assert data[0]["session_at"] == bid.session_at
+        assert data[0]["public_agency"] == bid.public_agency
+        assert data[0]["description"] == bid.description
+        assert data[0]["modality"] == bid.modality
+        assert data[0]["codes"] == bid.codes
+
+    @pytest.mark.parametrize(
+        "data,quantity_expected",
+        [
+            ({"query": "TEST"}, 1),
+            ({"start_date": "2020-05-20"}, 1),
+            ({"end_date": "2020-03-20"}, 2),
+            ({"start_date": "2020-02-20", "end_date": "2020-03-18"}, 1),
+            ({}, 3),
+        ],
+        ids=[
+            "filter_by_query",
+            "filter_by_start_date",
+            "filter_by_end_date",
+            "filter_by_range_date",
+            "filter_by_non",
+        ],
+    )
+    def test_should_filter_bids(
+            self, api_client_authenticated, data, quantity_expected
+    ):
+        baker.make_recipe("datasets.CityHallBid", description="test", session_at=date(2020, 3, 18))
+        baker.make_recipe("datasets.CityHallBid", session_at=date(2020, 3, 20))
+        baker.make_recipe("datasets.CityHallBid", session_at=date(2020, 5, 20))
+
+        response = api_client_authenticated.get(self.url, data=data)
+        assert response.status_code == HTTPStatus.OK
