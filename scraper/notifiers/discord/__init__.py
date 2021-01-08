@@ -15,6 +15,7 @@ class DiscordMessageManager:
     def __init__(self, webhook_url, fake=False):
         if not webhook_url:
             raise NotConfigured("You must provide a discord webhook url.")
+        self.webhook_url = webhook_url
         self.fake = fake
 
     def send_message(self, text):
