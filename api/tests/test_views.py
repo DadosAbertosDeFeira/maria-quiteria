@@ -5,6 +5,7 @@ import pytest
 from django.core import exceptions
 from django.urls import reverse
 from model_bakery import baker
+from datetime import datetime
 
 pytestmark = pytest.mark.django_db
 
@@ -68,12 +69,13 @@ class TestCityCouncilAgendaView:
                 "Deve ser no formato  YYY-MM-DD."
             )
 
+
 class TestCityHallBidView:
     url = reverse("city-hall-bid")
 
     def test_shold_list_city_hall_bids(self, api_client_authenticated):
-        bid = baker.make_recipe("datasets.CityHallBid")
-        baker.make_recipe("datasets.CityHallBid")
+        session_at = datetime.strptime('2021-01-09 20:17:45-03:00', '%Y-%m-%d %H:%M:%S%z')
+        bid = baker.make_recipe("datasets.CityHallBid", session_at=session_at)
 
         response = api_client_authenticated.get(self.url)
 
@@ -81,12 +83,13 @@ class TestCityHallBidView:
         data = response.json()
 
         assert data[0]["id"] == bid.id
-        # assert data[0]["created_at"] == bid.created_at
-        # assert data[0]["updated_at"] == bid.updated_at
-        # assert data[0]["crawled_at"] == bid.crawled_at
-        assert data[0]["crawled_from"] == bid.crawled_from
+
+        # o replace e apenas para remover a diferenca entre o formato retornado e o formado do datetime
+        # data[0]["session_at"] = '2021-01-09T20:17:45-03:00'
+        # str(bid.session_at) = '2021-01-09 20:17:45-03:00'
+        assert data[0]["session_at"].replace('T', ' ') == str(bid.session_at)
         assert data[0]["notes"] == bid.notes
-        assert data[0]["session_at"] == bid.session_at
+        assert data[0]["crawled_from"] == bid.crawled_from
         assert data[0]["public_agency"] == bid.public_agency
         assert data[0]["description"] == bid.description
         assert data[0]["modality"] == bid.modality
