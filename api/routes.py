@@ -1,6 +1,11 @@
-from api.views import CityCouncilAgendaView, HealthCheckView
 from django.urls import path
 from rest_framework import routers
+
+from api.views import (
+    CityCouncilAgendaView,
+    CityCouncilAttendanceListView,
+    HealthCheckView,
+)
 
 router = routers.DefaultRouter()
 
@@ -10,5 +15,10 @@ urlpatterns = [
         "city-council-agenda/",
         CityCouncilAgendaView.as_view(),
         name="city-council-agenda",
+    ),
+    path(
+        "city-council-attendance-list/",
+        CityCouncilAttendanceListView.as_view(),
+        name="city-council-attendance-list",
     ),
 ]
