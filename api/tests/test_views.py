@@ -21,7 +21,7 @@ class TestCityCouncilAgendaView:
 
         assert response.status_code == HTTPStatus.OK
 
-        data = response.json()
+        data = response.json()["results"]
         assert data[0]["date"] == agenda.date.strftime("%Y-%m-%d")
         assert data[0]["details"] == agenda.details
         assert data[0]["event_type"] == agenda.event_type
@@ -57,7 +57,7 @@ class TestCityCouncilAgendaView:
         response = api_client_authenticated.get(self.url, data=data)
 
         assert response.status_code == HTTPStatus.OK
-        assert len(response.json()) == quantity_expected
+        assert len(response.json()["results"]) == quantity_expected
 
     def test_filter_date_when_is_passing_wrong_format(self, api_client_authenticated):
         baker.make_recipe("datasets.CityCouncilAgenda")
