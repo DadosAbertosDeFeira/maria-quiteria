@@ -11,5 +11,5 @@ urlpatterns = [
         CityCouncilAgendaView.as_view(),
         name="city-council-agenda",
     ),
-    path("city-hall-bid/", CityHallBidView.as_view(), name="city-hall-bid"),
+    path("city-hall/bids/", CityHallBidView.as_view(), name="city-hall-bids"),
 ]
