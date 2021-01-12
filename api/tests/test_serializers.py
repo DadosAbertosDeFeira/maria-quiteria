@@ -37,7 +37,7 @@ class TestCityHallBidSerializer:
         data = {
             "session_at": "2021-01-06T08:30:00-03:00",
             "public_agency": "PMFS",
-            "description": "Contratação de empresa de engenharia para perfuração de 03 (três)...",
+            "description": "Contratação de empresa de engenharia",
             "modality": "convite",
             "codes": "LICITAÇÃO Nº 150-2020 TOMADA DE PREÇO Nº 038-2020",
             "crawled_at": "2020-01-01T04:16:13-04:00",
