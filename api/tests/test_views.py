@@ -72,7 +72,7 @@ class TestCityCouncilAgendaView:
 class TestCityHallBidView:
     url = reverse("city-hall-bid")
 
-    def test_shold_list_city_hall_bids(self, api_client_authenticated):
+    def test_should_list_city_hall_bids(self, api_client_authenticated):
         session_at = datetime.strptime(
             "2021-01-09T20:17:45-03:00", "%Y-%m-%dT%H:%M:%S%z"
         )
