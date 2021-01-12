@@ -80,7 +80,7 @@ class TestCityHallBidView:
         response = api_client_authenticated.get(self.url)
 
         assert response.status_code == HTTPStatus.OK
-        data = response.json()
+        data = response.json()["results"]
 
         assert data[0]["id"] == bid.id
 
@@ -103,10 +103,10 @@ class TestCityHallBidView:
         ],
         ids=[
             "filter_by_query",
-            "filter_by_non",
             "filter_by_start_date",
             "filter_by_end_date",
             "filter_by_range_date",
+            "filter_by_non",
         ],
     )
     def test_should_filter_bids(
