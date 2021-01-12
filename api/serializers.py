@@ -23,7 +23,7 @@ class FileSerializer(serializers.ModelSerializer):
 class CityHallBidSerializer(serializers.ModelSerializer):
 
     events = CityHallBidEventSerializer(many=True, read_only=True)
-    files = FilesSerializer(many=True, read_only=True)
+    files = FileSerializer(many=True, read_only=True)
 
     class Meta:
         model = CityHallBid

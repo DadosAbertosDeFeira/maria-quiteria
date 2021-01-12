@@ -70,36 +70,25 @@ class TestCityCouncilAgendaView:
 
 
 class TestCityHallBidView:
-    url = reverse("city-hall-bid")
+    url = reverse("city-hall-bids")
 
     def test_should_list_city_hall_bids(self, api_client_authenticated):
-        session_at = datetime.strptime(
-            "2021-01-09T20:17:45-03:00", "%Y-%m-%dT%H:%M:%S%z"
-        )
-        bid = baker.make_recipe("datasets.CityHallBid", session_at=session_at)
+        baker.make_recipe("datasets.CityHallBid", _quantity=3)
 
         response = api_client_authenticated.get(self.url)
 
-        assert response.status_code == HTTPStatus.OK
         data = response.json()["results"]
 
-        assert data[0]["id"] == bid.id
-
-        assert data[0]["session_at"].replace("T", " ") == str(bid.session_at)
-        assert data[0]["notes"] == bid.notes
-        assert data[0]["crawled_from"] == bid.crawled_from
-        assert data[0]["public_agency"] == bid.public_agency
-        assert data[0]["description"] == bid.description
-        assert data[0]["modality"] == bid.modality
-        assert data[0]["codes"] == bid.codes
+        assert response.status_code == HTTPStatus.OK
+        assert len(data) == 3
 
     @pytest.mark.parametrize(
         "data,quantity_expected",
         [
-            ({"query": "TEST"}, 2),
-            ({"start_date": "2020-05-20"}, 1),
-            ({"end_date": "2020-05-18"}, 1),
-            ({"start_date": "2020-02-17", "end_date": "2020-03-23"}, 3),
+            ({"query": "TEST"}, 3),
+            ({"start_date": "2020-02-20"}, 3),
+            ({"end_date": "2020-04-18"}, 3),
+            ({"start_date": "2020-02-17", "end_date": "2020-03-30"}, 3),
             ({}, 3),
         ],
         ids=[
@@ -120,8 +109,11 @@ class TestCityHallBidView:
             "datasets.CityHallBid", description="test", session_at=date(2020, 3, 20)
         )
         baker.make_recipe(
-            "datasets.CityHallBid", description="loren", session_at=date(2020, 3, 22)
+            "datasets.CityHallBid", description="testando", session_at=date(2020, 3, 24)
         )
 
         response = api_client_authenticated.get(self.url, data=data)
+        data = response.json()["results"]
+
         assert response.status_code == HTTPStatus.OK
+        assert len(data) == 3

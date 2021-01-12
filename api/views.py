@@ -64,7 +64,7 @@ class CityHallBidView(ListAPIView):
     def filter_by_start_date(self, bids):
         start_date = self.request.query_params.get("start_date", None)
         if start_date is not None:
-            bids = bids.filter(session_at__gte=start_date)
+            bids = bids.filter(session_at__date__gte=start_date)
         return bids
 
     def filter_by_query(self, bids):
