@@ -68,7 +68,7 @@ class CityHallBidView(ListAPIView):
 
     def filter_by_query(self, bids):
         description = self.request.query_params.get("query", None)
-        if description is not None:
+        if description:
             bids = (
                 bids.filter(description__icontains=description)
                 | bids.filter(events__summary__icontains=description)
