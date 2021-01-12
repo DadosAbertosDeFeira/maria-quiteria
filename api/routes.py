@@ -1,4 +1,4 @@
-from api.views import CityCouncilAgendaView, HealthCheckView, CityHallBidView
+from api.views import CityCouncilAgendaView, CityHallBidView, HealthCheckView
 from django.urls import path
 from rest_framework import routers
 

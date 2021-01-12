@@ -1,5 +1,5 @@
+from datasets.models import CityCouncilAgenda, CityHallBid, CityHallBidEvent, File
 from rest_framework import serializers
-from datasets.models import CityHallBid, CityHallBidEvent, File, CityCouncilAgenda
 
 
 class CityCouncilAgendaSerializer(serializers.ModelSerializer):
@@ -11,13 +11,13 @@ class CityCouncilAgendaSerializer(serializers.ModelSerializer):
 class CityHallBidEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = CityHallBidEvent
-        fields = '__all__'
+        fields = "__all__"
 
 
 class FilesSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
-        fields = ['url'] # TODO: verificar se content deve ser retornado também
+        fields = ["url"]
 
 
 class CityHallBidSerializer(serializers.ModelSerializer):
@@ -27,4 +27,4 @@ class CityHallBidSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CityHallBid
-        fields = '__all__'
+        fields = "__all__"
