@@ -5,6 +5,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+import re
 
 from .serializers import CityCouncilAgendaSerializer, CityHallBidSerializer
 
@@ -67,8 +68,9 @@ class CityHallBidView(ListAPIView):
         return bids
 
     def filter_by_query(self, bids):
-        description = self.request.query_params.get("query", None)
-        if description is not None:
+        description = re.sub(r'[^A-Za-z0-9. ]+', '', self.request.query_params.get("query", None))
+
+        if description:
             bids = (
                 bids.filter(description__icontains=description)
                 | bids.filter(events__summary__icontains=description)
