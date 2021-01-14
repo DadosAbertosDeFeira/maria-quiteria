@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from datasets.models import CityCouncilAgenda, CityHallBid
+from django.contrib.postgres.search import SearchVector
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -71,10 +72,10 @@ class CityHallBidView(ListAPIView):
 
         if description:
             description = description.replace('"', "")
-
+            search_vector = SearchVector("files__search_vector", config="portuguese")
             bids = (
                 bids.filter(description__icontains=description)
                 | bids.filter(events__summary__icontains=description)
-                | bids.filter(files__search_vector__icontains=description)
+                | bids.annotate(search=search_vector).filter(search=description)
             )
         return bids

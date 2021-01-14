@@ -85,9 +85,9 @@ class TestCityHallBidView:
     @pytest.mark.parametrize(
         "data,quantity_expected",
         [
-            ({"query": "TEST"}, 3),
+            ({"query": "Aquisição de materiais"}, 1),
             ({"start_date": "2020-02-20"}, 3),
-            ({"end_date": "2020-04-18"}, 3),
+            ({"end_date": "2020-03-20"}, 2),
             ({"start_date": "2020-02-17", "end_date": "2020-03-30"}, 3),
             ({}, 3),
         ],
@@ -103,17 +103,23 @@ class TestCityHallBidView:
         self, api_client_authenticated, data, quantity_expected
     ):
         baker.make_recipe(
-            "datasets.CityHallBid", description="TEST", session_at=date(2020, 3, 18)
+            "datasets.CityHallBid",
+            description="Aquisição de materiais de limpeza",
+            session_at=date(2020, 3, 18),
         )
         baker.make_recipe(
-            "datasets.CityHallBid", description="test", session_at=date(2020, 3, 20)
+            "datasets.CityHallBid",
+            description="material de higienização",
+            session_at=date(2020, 3, 20),
         )
         baker.make_recipe(
-            "datasets.CityHallBid", description="testando", session_at=date(2020, 3, 24)
+            "datasets.CityHallBid",
+            description="e quantificação de hemoglobinas",
+            session_at=date(2020, 3, 24),
         )
 
         response = api_client_authenticated.get(self.url, data=data)
         data = response.json()["results"]
 
         assert response.status_code == HTTPStatus.OK
-        assert len(data) == 3
+        assert len(data) == quantity_expected
