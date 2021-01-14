@@ -1,7 +1,13 @@
 from datetime import datetime
 
 import pytest
-from api.serializers import CityCouncilAgendaSerializer, CityHallBidSerializer
+from api.serializers import (
+    CityCouncilAgendaSerializer,
+    CityHallBidEventSerializer,
+    CityHallBidSerializer,
+    FileSerializer,
+)
+from model_bakery import baker
 
 pytestmark = pytest.mark.django_db
 
@@ -32,6 +38,44 @@ class TestCityCouncilAgendaSerializer:
         assert serializer.validated_data["crawled_from"] == data["crawled_from"]
 
 
+class TestCityHallBidEventSerializer:
+    def test_city_hall_bid_event_serializer(self):
+        bid = baker.make_recipe("datasets.CityHallBid")
+
+        data = {
+            "published_at": "2020-07-21T11:49:00-03:00",
+            "summary": "Julgamento do recurso administrativo",
+            "bid": bid.pk,
+            "crawled_at": datetime.now(),
+            "crawled_from": "https://www.example.com",
+        }
+
+        serializer = CityHallBidEventSerializer(data=data)
+        assert serializer.is_valid() is True
+
+        assert serializer.validated_data["published_at"] == datetime.fromisoformat(
+            data["published_at"]
+        )
+        assert serializer.validated_data["summary"] == data["summary"]
+        assert serializer.validated_data["bid"] == bid
+
+
+class TestFileSerializer:
+    def test_file_serializer(self):
+        bid = baker.make_recipe("datasets.CityHallBid")
+
+        data = {
+            "published_at": "2020-07-21T11:49:00-03:00",
+            "summary": "Julgamento do recurso administrativo",
+            "bid": bid.pk,
+            "url": "https://www.example.com",
+        }
+
+        serializer = FileSerializer(data=data)
+        assert serializer.is_valid() is True
+        assert serializer.validated_data["url"] == data["url"]
+
+
 class TestCityHallBidSerializer:
     def test_city_hall_bid_serializer(self):
         data = {
@@ -42,8 +86,20 @@ class TestCityHallBidSerializer:
             "codes": "LICITAÇÃO Nº 150-2020 TOMADA DE PREÇO Nº 038-2020",
             "crawled_at": "2020-01-01T04:16:13-04:00",
             "crawled_from": "http://www.pudim.com.br/",
-            "events": [],
-            "files": [],
+            "events": [
+                {
+                    "id": 243,
+                    "created_at": "2021-01-01T20:00:32.209476-03:00",
+                    "updated_at": "2021-01-01T20:00:32.209508-03:00",
+                    "crawled_at": "2021-01-01T20:00:32.185236-03:00",
+                    "crawled_from": "http://www.dadosdafeira.br/teste",
+                    "notes": "",
+                    "published_at": "2020-07-21T11:49:00-03:00",
+                    "summary": "Julgamento do recurso administrativo",
+                    "bid": 315,
+                },
+            ],
+            "files": [{"url": "http://www.dadosdafeira.br/licitacoes/testes.pdf"}],
         }
 
         serializer = CityHallBidSerializer(data=data)
@@ -60,3 +116,4 @@ class TestCityHallBidSerializer:
             data["crawled_at"]
         )
         assert serializer.validated_data["crawled_from"] == data["crawled_from"]
+        assert serializer.validated_data["events"] == data["crawled_from"]
