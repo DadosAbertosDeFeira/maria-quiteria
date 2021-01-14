@@ -116,4 +116,3 @@ class TestCityHallBidSerializer:
             data["crawled_at"]
         )
         assert serializer.validated_data["crawled_from"] == data["crawled_from"]
-        assert serializer.validated_data["events"] == data["crawled_from"]
