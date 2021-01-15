@@ -23,7 +23,7 @@ services:
 
     dramatiq:
         build: .
-        command: ["dramatiq", "datasets.tasks", "-p3", "-t2", "-v"]
+        command: ["dramatiq", "web.datasets.tasks", "-p3", "-t2", "-v"]
         environment:
             DATABASE_HOST: db
             TIKA_CLIENT_ONLY: 1

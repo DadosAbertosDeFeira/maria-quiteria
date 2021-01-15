@@ -1,7 +1,7 @@
 from datetime import date
 
 import scrapy
-from datasets.parsers import from_str_to_date
+from web.datasets.parsers import from_str_to_date
 from scraper.items import (
     CityCouncilAgendaItem,
     CityCouncilAttendanceListItem,
