@@ -1,17 +1,19 @@
-from django.urls import path
+from django.urls import include, path
 from rest_framework import routers
-
 from web.api.views import (
     CityCouncilAgendaView,
     CityCouncilAttendanceListView,
+    GazetteView,
     HealthCheckView,
 )
 
 router = routers.DefaultRouter()
+router.register("", HealthCheckView, basename="root")
+router.register("gazettes", GazetteView, basename="gazettes")
 
 
 urlpatterns = [
-    path("", HealthCheckView.as_view()),
+    path("", include(router.urls)),
     path(
         "city-council/agenda/",
         CityCouncilAgendaView.as_view(),

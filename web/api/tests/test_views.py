@@ -4,7 +4,6 @@ from http import HTTPStatus
 import pytest
 from django.core import exceptions
 from django.urls import reverse
-
 from model_bakery import baker
 
 pytestmark = pytest.mark.django_db
@@ -123,3 +122,72 @@ class TestCityCouncilAttendanceListView:
                 'O valor "%(value)s" tem um formato de data inválido.'
                 "Deve ser no formato  YYY-MM-DD."
             )
+
+
+class TestGazetteView:
+    url = reverse("gazettes-list")
+
+    def test_should_list_no_gazette(self, api_client_authenticated):
+        response = api_client_authenticated.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        data = response.json()["results"]
+        assert len(data) == 0
+
+    def test_should_list_one_gazette_with_correct_content(
+        self, api_client_authenticated, one_gazette
+    ):
+        response = api_client_authenticated.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        data = response.json()["results"]
+        assert data[0]["crawled_from"] == one_gazette.crawled_from
+        assert data[0]["date"] == one_gazette.date.strftime("%Y-%m-%d")
+        assert data[0]["power"] == one_gazette.power
+        assert data[0]["year_and_edition"] == one_gazette.year_and_edition
+        assert len(data) == 1
+
+    def test_should_list_more_than_one_gazettes(
+        self, api_client_authenticated, last_of_two_gazettes
+    ):
+        response = api_client_authenticated.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        data = response.json()["results"]
+        assert len(data) == 2
+
+    @pytest.mark.parametrize(
+        "data,quantity_expected",
+        [
+            ({"query": "life"}, 1),
+            ({"power": "executivo"}, 2),
+            ({"start_date": "2021-01-02"}, 2),
+            ({"end_date": "2021-03-15"}, 2),
+            ({"start_date": "2021-01-02", "end_date": "2021-03-15"}, 1),
+            (
+                {
+                    "query": "talk",
+                    "power": "legislativo",
+                    "start_date": "2021-01-01",
+                    "end_date": "2021-04-30",
+                },
+                1,
+            ),
+            ({}, 3),
+        ],
+        ids=[
+            "filter_by_query",
+            "filter_by_power",
+            "filter_by_start_date",
+            "filter_by_end_date",
+            "filter_by_range_date",
+            "filter_by_query_power_and_range_date",
+            "filter_by_non",
+        ],
+    )
+    def test_should_filter_gazettes(
+        self, data, quantity_expected, api_client_authenticated, last_of_three_gazettes
+    ):
+        response = api_client_authenticated.get(self.url, data=data)
+        assert response.status_code == HTTPStatus.OK
+        assert len(response.json()["results"]) == quantity_expected
