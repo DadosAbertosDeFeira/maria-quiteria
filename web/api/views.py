@@ -1,21 +1,24 @@
 from datetime import datetime
 
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.views import APIView
-
+from rest_framework.viewsets import ReadOnlyModelViewSet, ViewSet
+from web.api.filters import GazetteFilter
 from web.api.serializers import (
     CityCouncilAgendaSerializer,
     CityCouncilAttendanceListSerializer,
+    GazetteSerializer,
 )
-from web.datasets.models import CityCouncilAgenda, CityCouncilAttendanceList
+from web.datasets.models import CityCouncilAgenda, CityCouncilAttendanceList, Gazette
 
 
-class HealthCheckView(APIView):
+class HealthCheckView(ViewSet):
     permission_classes = [AllowAny]
 
-    def get(self, request):
+    def list(self, request):
         return Response({"status": "available", "time": datetime.now()})
 
 
@@ -61,3 +64,17 @@ class CityCouncilAttendanceListView(ListAPIView):
             kwargs["date__lte"] = end_date
 
         return self.queryset.filter(**kwargs)
+
+
+class GazetteView(ReadOnlyModelViewSet):
+    queryset = Gazette.objects.all()
+    serializer_class = GazetteSerializer
+    filterset_class = GazetteFilter
+    filter_backends = [SearchFilter, DjangoFilterBackend]
+    search_fields = [
+        "events__title",
+        "events__secretariat",
+        "events__summary",
+        "year_and_edition",
+        "files__search_vector",
+    ]

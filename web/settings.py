@@ -38,6 +38,7 @@ class Common(Configuration):
         "web.datasets.apps.DatasetsConfig",
         "rest_framework",
         "simple_history",
+        "django_filters",
     ]
 
     MIDDLEWARE = [
@@ -116,6 +117,10 @@ class Common(Configuration):
     BROKER_URL = f"amqp://{BROKER_HOST}:{BROKER_PORT}"
 
     REST_FRAMEWORK = {
+        "SEARCH_PARAM": "query",
+        "DEFAULT_FILTER_BACKENDS": [
+            "django_filters.rest_framework.DjangoFilterBackend"
+        ],
         "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
         "DEFAULT_AUTHENTICATION_CLASSES": (
             "rest_framework.authentication.SessionAuthentication",
