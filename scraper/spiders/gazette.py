@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from datasets.parsers import from_str_to_date
+from web.datasets.parsers import from_str_to_date
 from scraper.items import GazetteItem, LegacyGazetteItem
 from scrapy import Request
 
