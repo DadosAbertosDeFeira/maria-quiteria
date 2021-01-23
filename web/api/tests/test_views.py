@@ -4,6 +4,7 @@ from http import HTTPStatus
 import pytest
 from django.core import exceptions
 from django.urls import reverse
+
 from model_bakery import baker
 
 pytestmark = pytest.mark.django_db
@@ -109,7 +110,6 @@ class TestCityCouncilAttendanceListView:
 
         response = api_client_authenticated.get(self.url, data=data)
         assert response.status_code == HTTPStatus.OK
-        print(response.json())
         assert len(response.json()["results"]) == quantity_expected
 
     def test_should_throw_exception_when_date_format_wrong(
