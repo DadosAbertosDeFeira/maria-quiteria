@@ -77,7 +77,7 @@ class TestCityCouncilAttendanceListView:
         response = api_client_authenticated.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
-        data = response.json()
+        data = response.json()["results"]
         assert data[0]["date"] == presenca.date.strftime("%Y-%m-%d")
         assert data[0]["description"] == presenca.description
         assert data[0]["council_member"] == presenca.council_member
@@ -88,9 +88,9 @@ class TestCityCouncilAttendanceListView:
         "data, quantity_expected",
         [
             ({"query": "Competente da Silva"}, 3),
-            ({"start_date": "2020-9-15"}, 1),
-            ({"end_date": "2020-9-11"}, 1),
-            ({"start_date": "2020-9-11", "end_date": "2020-9-15"}, 3),
+            ({"start_date": "2020-3-18"}, 0),
+            ({"end_date": "2020-9-11"}, 3),
+            ({"start_date": "2020-9-11", "end_date": "2020-9-15"}, 0),
             ({}, 3),
         ],
         ids=[
@@ -105,25 +105,12 @@ class TestCityCouncilAttendanceListView:
         self, api_client_authenticated, data, quantity_expected
     ):
 
-        baker.make_recipe(
-            "datasets.CityCouncilAttendanceList",
-            date=date(2020, 9, 11),
-            description=None,
-        )
-        baker.make_recipe(
-            "datasets.CityCouncilAttendanceList",
-            date=date(2020, 9, 13),
-            description="description",
-        )
-        baker.make_recipe(
-            "datasets.CityCouncilAttendanceList",
-            date=date(2020, 9, 15),
-            description="full description",
-        )
+        baker.make_recipe("datasets.CityCouncilAttendanceList", _quantity=3)
 
         response = api_client_authenticated.get(self.url, data=data)
         assert response.status_code == HTTPStatus.OK
-        assert len(response.json()) == quantity_expected
+        print(response.json())
+        assert len(response.json()["results"]) == quantity_expected
 
     def test_should_throw_exception_when_date_format_wrong(
         self, api_client_authenticated
