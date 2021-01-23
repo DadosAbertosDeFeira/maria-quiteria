@@ -21,12 +21,12 @@ jobs:
           flake8 .
       - name: Check migrations
         env:
-          DJANGO_SETTINGS_MODULE: "core.settings"
+          DJANGO_SETTINGS_MODULE: "web.settings"
           DATABASE_URL: "postgres://postgres:postgres@localhost:5432/mariaquiteria"
         run: python manage.py makemigrations --check
       - name: Run Tests
         env:
-          DJANGO_SETTINGS_MODULE: "core.settings"
+          DJANGO_SETTINGS_MODULE: "web.settings"
           DJANGO_CONFIGURATION: "Dev"
           DATABASE_URL: "postgres://postgres:postgres@localhost:5432/mariaquiteria"
         run: |
