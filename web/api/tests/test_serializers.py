@@ -1,9 +1,14 @@
-from datetime import datetime
+from datetime import date, datetime
 from model_bakery import baker
 import pytest
 
-from web.api.serializers import CityCouncilAgendaSerializer, CityHallBidEventSerializer, CityHallBidSerializer, FileSerializer
-
+from web.api.serializers import (
+    CityCouncilAgendaSerializer,
+    CityCouncilAttendanceListSerializer,
+    CityHallBidEventSerializer,
+    CityHallBidSerializer,
+    FileSerializer
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -32,6 +37,34 @@ class TestCityCouncilAgendaSerializer:
             data["crawled_at"]
         )
         assert serializer.validated_data["crawled_from"] == data["crawled_from"]
+
+
+class TestCityCouncilAttendanceList:
+    def test_city_council_attendance_list(self):
+        data = {
+            "date": date(2020, 12, 14),
+            "description": None,
+            "council_member": "Zé Curuca",
+            "status": "ausente",
+            "crawled_at": "2020-01-01T04:16:13-03:00",
+            "crawled_from": (
+                "https://www.feiradesantana.ba.leg.br/"
+                "lista-presenca-vereadores/107/14-12-2020"
+            ),
+            "notes": "-",
+        }
+
+        serializer = CityCouncilAttendanceListSerializer(data=data)
+        assert serializer.is_valid() is True
+        assert serializer.validated_data["date"] == data["date"]
+        assert serializer.validated_data["description"] == data["description"]
+        assert serializer.validated_data["council_member"] == data["council_member"]
+        assert serializer.validated_data["status"] == data["status"]
+        assert serializer.validated_data["crawled_at"] == datetime.fromisoformat(
+            data["crawled_at"]
+        )
+        assert serializer.validated_data["crawled_from"] == data["crawled_from"]
+        assert serializer.validated_data["notes"] == data["notes"]
 
 
 class TestCityHallBidEventSerializer:
