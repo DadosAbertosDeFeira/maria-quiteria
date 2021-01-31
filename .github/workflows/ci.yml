@@ -51,11 +51,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Push to dokku
         uses: dokku/github-action@master
-        env:
+        with:
           branch: main
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           git_remote_url: ${{ secrets.DOKKU_REMOTE_URL }}
-
     needs: [build]
