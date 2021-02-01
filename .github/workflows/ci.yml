@@ -59,4 +59,5 @@ jobs:
           branch: main
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           git_remote_url: ${{ secrets.DOKKU_REMOTE_URL }}
+          ssh_host_key: ${{ secrets.SSH_HOST_KEY }}
     needs: [build]
