@@ -7,7 +7,7 @@ isort==5.7.0
 # until https://github.com/model-bakers/model_bakery/issues/139 is fixed and a new release is out
 git+https://github.com/model-bakers/model_bakery.git
 pre-commit
-pytest==6.2.1
+pytest==6.2.2
 pytest-django==4.1.0
 pytest-dotenv==0.5.2
 pytest-mock==3.5.1
