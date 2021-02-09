@@ -27,7 +27,6 @@ except ImproperlyConfigured:
 
 
 rabbitmq_broker = RabbitmqBroker(url=settings.BROKER_URL)
-rabbitmq_broker.add_middleware(middleware.Prometheus())
 set_broker(rabbitmq_broker)
 client = get_s3_client(settings)
 
