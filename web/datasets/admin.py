@@ -7,11 +7,7 @@ from public_admin.sites import PublicAdminSite, PublicApp
 from .models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
-    CityCouncilBid,
-    CityCouncilContract,
-    CityCouncilExpense,
     CityCouncilMinute,
-    CityCouncilRevenue,
     CityHallBid,
     File,
     Gazette,
@@ -306,11 +302,7 @@ class MariaQuiteriaPublicAdminSite(PublicAdminSite):
 models_and_admins = [
     (CityCouncilAgenda, CityCouncilAgendaAdmin),
     (CityCouncilAttendanceList, CityCouncilAttendanceListAdmin),
-    (CityCouncilBid, CityCouncilBidAdmin),
-    (CityCouncilContract, CityCouncilContractAdmin),
-    (CityCouncilExpense, CityCouncilExpenseAdmin),
     (CityCouncilMinute, CityCouncilMinuteAdmin),
-    (CityCouncilRevenue, CityCouncilRevenueAdmin),
     (Gazette, GazetteAdmin),
     (CityHallBid, CityHallBidAdmin),
 ]
