@@ -1,14 +1,15 @@
 from logging import info
 from pathlib import Path
 
+import pika
 import tika
-from web.datasets.services import get_s3_client
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import find_dotenv, load_dotenv
 from dramatiq import actor, set_broker
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from tika import parser
+from web.datasets.services import get_s3_client
 
 tika.initVM()  # noqa
 
@@ -16,8 +17,9 @@ tika.initVM()  # noqa
 try:
     from web.datasets.models import File
 except ImproperlyConfigured:
-    import configurations
     import os
+
+    import configurations
 
     os.environ.setdefault("DJANGO_CONFIGURATION", "Dev")
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "web.settings")
@@ -25,8 +27,16 @@ except ImproperlyConfigured:
     configurations.setup()
     from web.datasets.models import File
 
-
-rabbitmq_broker = RabbitmqBroker(url=settings.BROKER_URL)
+rabbitmq_broker = RabbitmqBroker(
+    host=settings.BROKER_HOST,
+    port=settings.BROKER_PORT,
+    credentials=pika.credentials.PlainCredentials(
+        settings.BROKER_USER, settings.BROKER_PASSWORD
+    ),
+    virtual_host=settings.BROKER_VHOST,
+    heartbeat=600,
+    blocked_connection_timeout=300,
+)
 set_broker(rabbitmq_broker)
 client = get_s3_client(settings)
 

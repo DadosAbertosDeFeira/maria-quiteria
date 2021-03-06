@@ -111,9 +111,11 @@ class Common(Configuration):
 
     CITY_COUNCIL_WEBSERVICE = "http://teste-transparencia.com.br/"
 
-    BROKER_HOST = os.getenv("BROKER_HOST", "rabbitmq")
-    BROKER_PORT = os.getenv("BROKER_PORT", "5672")
-    BROKER_URL = f"amqp://{BROKER_HOST}:{BROKER_PORT}"
+    BROKER_HOST = values.Value(environ_prefix=None, default="rabbitmq")
+    BROKER_PORT = values.Value(environ_prefix=None, default="5672")
+    BROKER_USER = values.Value(environ_prefix=None, default="guest")
+    BROKER_PASSWORD = values.Value(environ_prefix=None, default="guest")
+    BROKER_VHOST = values.Value(environ_prefix=None, default="/")
 
     REST_FRAMEWORK = {
         "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
@@ -151,8 +153,6 @@ class Dev(Common):
 class Prod(Common):
     SECRET_KEY = values.SecretValue()
     ALLOWED_HOSTS = values.ListValue()
-    CLOUDAMQP_URL = values.Value(environ_prefix=None)
-    BROKER_URL = CLOUDAMQP_URL
     DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=True)}
     GOOGLE_ANALYTICS_KEY = values.Value()
     CITY_COUNCIL_WEBSERVICE = values.Value()
