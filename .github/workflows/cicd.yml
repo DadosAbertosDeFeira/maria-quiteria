@@ -4,7 +4,7 @@ on: [ push, pull_request ]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
@@ -54,7 +54,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Push to dokku
-        uses: dokku/github-action@master
+        uses: dokku/github-action@v1.0.2
         with:
           branch: main
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
