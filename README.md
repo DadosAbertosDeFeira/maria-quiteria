@@ -120,3 +120,8 @@ docker-compose run --rm web python manage.py crawl --scrapy-args '{"LOG_FILE": "
 ### API
 
 Sobre acesso a API veja instruções em nossa [Wiki](https://github.com/DadosAbertosDeFeira/maria-quiteria/wiki/API).
+
+
+### Infraestrutura
+
+Essa aplicação está sendo hospedada no PaaS [Dokku](https://dokku.com/docs/) e todo código IaC está [nesse repositório](https://github.com/DadosAbertosDeFeira/iac).
