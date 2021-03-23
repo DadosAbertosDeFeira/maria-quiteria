@@ -528,3 +528,37 @@ class SyncInformation(models.Model):
     )
     succeed = models.BooleanField("Concluída com sucesso?", null=True)
     response = models.JSONField("Resposta", null=True)
+
+
+class TCMBADocument(DatasetMixin):
+    class PeriodCategory(models.TextChoices):
+        MONTHLY = "mensal", "Mensal"
+        YEARLY = "anual", "Anual"
+
+    year = models.PositiveIntegerField("Ano", db_index=True)
+    month = models.PositiveIntegerField("Mês", null=True, db_index=True)
+    period = models.CharField(
+        "Periodicidade", max_length=10, choices=PeriodCategory.choices, db_index=True
+    )
+    category = models.CharField("Categoria", max_length=200, db_index=True)
+    unit = models.CharField("Unidade", max_length=100, db_index=True)
+    inserted_at = models.DateField("Inserido em", null=True)
+    inserted_by = models.CharField("Inserido por", max_length=50, null=True, blank=True)
+    original_filename = models.CharField("Nome do arquivo", max_length=200)
+
+    files = GenericRelation(File)
+
+    class Meta:
+        verbose_name = "TCM-BA - Documento"
+        verbose_name_plural = "TCM-BA - Documentos"
+        get_latest_by = "inserted_at"
+        ordering = [F("year").desc(), F("month").desc()]
+
+    def __repr__(self):
+        time = self.year
+        if self.period == self.PeriodCategory.MONTHLY:
+            time = f"{self.month}/{self.year}"
+        return f"{time} - {self.original_filename} - {self.unit}"
+
+    def __str__(self):
+        return self.original_filename
