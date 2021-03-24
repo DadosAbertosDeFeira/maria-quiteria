@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib.admin.options import get_content_type_for_model
 from django.core.management.base import BaseCommand
 from web.datasets.models import File, TCMBADocument
+from web.datasets.parsers import from_str_to_date
 from web.datasets.services import get_s3_client
 
 client = get_s3_client(settings)
@@ -94,10 +95,10 @@ class Command(BaseCommand):
                 period=params["period"],
                 category=item["category"],
                 unit=item["unit"],
-                inserted_at=item["inserted_at"],  # FIXME datetime
+                inserted_at=from_str_to_date(item["inserted_at"]),
                 inserted_by=item["inserted_by"],
                 original_filename=item["filename"],
-                crawled_at=item["crawled_at"],  # FIXME datetime
+                crawled_at=datetime.fromisoformat(item["crawled_at"]),
                 crawled_from=public_view_url,
             )
             content_type = get_content_type_for_model(document)
