@@ -22,6 +22,9 @@ migrate:
 run:
 	docker-compose up -d
 
+stop:
+	docker-compose stop
+
 runspider:
 	docker-compose run --rm web scrapy crawl $(SPIDER) -a start_from_date=$(START_DATE)
 
