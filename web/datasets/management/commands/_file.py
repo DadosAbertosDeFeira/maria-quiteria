@@ -1,6 +1,6 @@
+from dramatiq import pipeline
 from web.datasets.models import File
 from web.datasets.tasks import backup_file, content_from_file
-from dramatiq import pipeline
 
 
 def save_file(url, content_type, object_id, checksum=None):

@@ -109,7 +109,14 @@ class Common(Configuration):
     AWS_S3_BUCKET_FOLDER = values.Value(environ_prefix=None)
     AWS_S3_REGION = values.Value(environ_prefix=None)
 
-    CITY_COUNCIL_WEBSERVICE = "http://teste-transparencia.com.br/"
+    CITY_COUNCIL_WEBSERVICE = values.Value(
+        default="http://teste.com.br/", environ_prefix=None
+    )
+    CITY_COUNCIL_WEBSERVICE_ENDPOINT = values.Value(
+        default="http://teste.com.br/webservice/",
+        environ_prefix=None,
+    )
+    CITY_COUNCIL_WEBSERVICE_TOKEN = values.Value(default="fake", environ_prefix=None)
 
     BROKER_HOST = values.Value(environ_prefix=None, default="rabbitmq")
     BROKER_PORT = values.Value(environ_prefix=None, default="5672")
@@ -150,9 +157,12 @@ class Dev(Common):
     INTERNAL_IPS = ["127.0.0.1"]
 
 
+class Test(Dev):
+    pass
+
+
 class Prod(Common):
     SECRET_KEY = values.SecretValue()
     ALLOWED_HOSTS = values.ListValue()
     DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=False)}
     GOOGLE_ANALYTICS_KEY = values.Value()
-    CITY_COUNCIL_WEBSERVICE = values.Value()

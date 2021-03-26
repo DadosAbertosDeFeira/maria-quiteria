@@ -46,6 +46,11 @@ REVENUE_TYPES = (
     ("transferencia", "Transferência"),
 )
 
+SYNC_SOURCE = (
+    ("camara", "Câmara Municipal"),
+    ("prefeitura", "Prefeitura"),
+)
+
 
 class File(models.Model):
     created_at = models.DateTimeField("Criado em", auto_now_add=True)
@@ -180,7 +185,9 @@ class CityCouncilAttendanceList(DatasetMixin):
 
 
 class CityCouncilContract(DatasetMixin):
-    external_code = models.PositiveIntegerField("Código externo", db_index=True)
+    external_code = models.PositiveIntegerField(
+        "Código externo", unique=True, db_index=True
+    )
     description = models.TextField("Descrição", null=True, blank=True, db_index=True)
     details = models.TextField(
         "Objeto do contrato", null=True, blank=True, db_index=True
@@ -191,7 +198,7 @@ class CityCouncilContract(DatasetMixin):
     company_or_person = models.TextField(
         "Empresa ou pessoa", null=True, blank=True, db_index=True
     )
-    value = models.DecimalField("Valor", max_digits=10, decimal_places=2)
+    value = models.DecimalField("Valor", max_digits=20, decimal_places=2)
     start_date = models.DateField("Data de início", db_index=True)
     end_date = models.DateField("Data final", db_index=True)
     excluded = models.BooleanField("Excluído?", default=False)
@@ -229,7 +236,7 @@ class CityCouncilExpense(DatasetMixin):
     company_or_person = models.TextField(
         "Empresa ou pessoa", null=True, blank=True, db_index=True
     )
-    value = models.DecimalField("Valor", max_digits=10, decimal_places=2)
+    value = models.DecimalField("Valor", max_digits=20, decimal_places=2)
     number = models.CharField(
         "Número", max_length=50, null=True, blank=True, db_index=True
     )
@@ -475,7 +482,9 @@ class CityCouncilBid(DatasetMixin):
 
 
 class CityCouncilRevenue(DatasetMixin):
-    external_code = models.CharField("Código externo", max_length=10, db_index=True)
+    external_code = models.PositiveIntegerField(
+        "Código externo", db_index=True, unique=True
+    )
     budget_unit = models.PositiveIntegerField("Unidade gestora", default=101)
     published_at = models.DateField("Publicado em", null=True, db_index=True)
     registered_at = models.DateField("Registrado em", null=True, db_index=True)
@@ -484,7 +493,7 @@ class CityCouncilRevenue(DatasetMixin):
     )
     modality = models.CharField("Modalidade", max_length=60, null=True, blank=True)
     description = models.TextField("Descrição")
-    value = models.DecimalField("Valor", max_digits=10, decimal_places=2)
+    value = models.DecimalField("Valor", max_digits=20, decimal_places=2)
     resource = models.CharField(
         "Fonte", max_length=200, null=True, blank=True, default="prefeitura"
     )
@@ -508,3 +517,14 @@ class CityCouncilRevenue(DatasetMixin):
     def __str__(self):
         model_name = self._meta.verbose_name
         return f"{model_name} {self.published_at} {self.modality} {self.value}"
+
+
+class SyncInformation(models.Model):
+    created_at = models.DateTimeField("Criado em", auto_now_add=True)
+    updated_at = models.DateTimeField("Atualizado em", auto_now=True)
+    date = models.DateField("Data alvo")
+    source = models.CharField(
+        "Fonte", choices=SYNC_SOURCE, max_length=20, db_index=True
+    )
+    succeed = models.BooleanField("Concluída com sucesso?", null=True)
+    response = models.JSONField("Resposta", null=True)
