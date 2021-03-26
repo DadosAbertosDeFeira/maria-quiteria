@@ -13,7 +13,7 @@ sentry_sdk.init(
     integrations=[DjangoIntegration(), DramatiqIntegration()],
 )
 
-logging.getLogger("pika").setLevel(logging.WARNING)
+logging.getLogger("pika").propagate = False
 logging.getLogger("botocore").setLevel(logging.WARNING)
 
 
