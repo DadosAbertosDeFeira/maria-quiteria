@@ -34,7 +34,7 @@ rabbitmq_broker = RabbitmqBroker(
         settings.BROKER_USER, settings.BROKER_PASSWORD
     ),
     virtual_host=settings.BROKER_VHOST,
-    heartbeat=600,
+    heartbeat=1000,
     blocked_connection_timeout=300,
 )
 set_broker(rabbitmq_broker)
