@@ -7,6 +7,7 @@ from .models import File
 
 @receiver(post_save, sender=File)
 def backup_and_extract_content(sender, instance, **kwargs):
+    """Faz backup e extrai conteúdo de um arquivo após sua criação."""
     from .tasks import backup_file, content_from_file
 
     if instance.s3_url is None or instance.content is None:
