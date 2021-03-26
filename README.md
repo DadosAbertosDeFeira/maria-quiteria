@@ -2,7 +2,8 @@
 
 ![CI](https://github.com/DadosAbertosDeFeira/maria-quiteria/workflows/CI/badge.svg)
 
-Um projeto para libertar dados do município de [Feira de Santana](https://pt.wikipedia.org/wiki/Feira_de_Santana).
+Tem a missão de libertar dados do município de [Feira de Santana](https://pt.wikipedia.org/wiki/Feira_de_Santana).
+Responsável pela raspagem e o armazenamento.
 
 Não sabe quem foi [Maria Quitéria](https://pt.wikipedia.org/wiki/Maria_Quit%C3%A9ria)?
 
@@ -10,15 +11,14 @@ Não sabe quem foi [Maria Quitéria](https://pt.wikipedia.org/wiki/Maria_Quit%C3
 
 | Base de dados | Fonte | Descrição        | Coleta          | Banco de dados | Download |
 | ------------- | ------------- | ------------- |:-------------:|:-----:|:-----:|
-| Agenda (`citycouncil.py`) | Câmara Municipal | Agenda (ordem do dia, homenagens, sessões ordinárias etc) da Câmara Municipal. | :heavy_check_mark: | :heavy_check_mark: | 🔜 |
+| Agenda (`citycouncil.py`) | Câmara Municipal | Agenda (ordem do dia, homenagens, sessões ordinárias etc) da Câmara Municipal. | :heavy_check_mark: | :heavy_check_mark: | [Kaggle](https://www.kaggle.com/dadosabertosdefeira/agenda-da-cmara-de-vereadores) |
 | Atas das sessões (`citycouncil.py`) | Câmara Municipal | Atas das sessões da Câmara Municipal. | :heavy_check_mark: | :heavy_check_mark: | 🔜 |
-| Lista de Presença (`citycouncil.py`) | Câmara Municipal | Assiduidade dos vereadores da Câmara Municipal. | :heavy_check_mark: | :heavy_check_mark: | 🔜 |
-| Despesas (`citycouncil.py`) | Câmara Municipal | Gastos realizados pela Câmara Municipal. | :heavy_check_mark: | :heavy_check_mark: | [Kaggle](https://www.kaggle.com/anapaulagomes/despesas-da-cmara-municipal) |
-| Contratos (`cityhall.py`) | Prefeitura | Contratos realizados pela prefeitura entre 2016 e 2017. | :heavy_check_mark: | 🔜 | [Kaggle](https://www.kaggle.com/anapaulagomes/contratos-da-prefeitura-de-feira-de-santana) |
-| Diário Oficial (`gazette.py`) | Prefeitura/Câmara de Vereadores | Diário oficial do executivo e legislativo desde 2015. | :heavy_check_mark: | :heavy_check_mark: | [Kaggle](https://www.kaggle.com/anapaulagomes/dirios-oficiais-de-feira-de-santana)  |
-| Diário Oficial (legado - antes de 2015) (`gazette.py`) | Prefeitura | Leis e decretos entre 1999 e 2015. | :heavy_check_mark: | :heavy_check_mark: | [Kaggle](https://www.kaggle.com/anapaulagomes/dirios-oficiais-de-feira-de-santana-at-2015) |
-| Licitações (`cityhall.py`) | Prefeitura | Licitações realizadas pela prefeitura desde 2015. | :heavy_check_mark: | 🔜 | [Kaggle](https://www.kaggle.com/anapaulagomes/licitaes-da-prefeitura-de-feira-de-santana) |
-| Pagamentos (`cityhall.py`) | Prefeitura | Pagamentos realizados pela prefeitura desde 2010. | :heavy_check_mark: | 🔜 | [Kaggle](https://www.kaggle.com/anapaulagomes/pagamentos-da-prefeitura-de-feira-de-santana) |
+| Lista de Presença (`citycouncil.py`) | Câmara Municipal | Assiduidade dos vereadores da Câmara Municipal. | :heavy_check_mark: | :heavy_check_mark: | [Kaggle](https://www.kaggle.com/dadosabertosdefeira/assiduidade-dos-vereadores) |
+| Despesas (`citycouncil.py`) | Câmara Municipal | Gastos realizados pela Câmara Municipal. | 🔜 | :heavy_check_mark: | 🔜 |
+| Contratos (`cityhall.py`) | Prefeitura | Contratos realizados pela prefeitura entre 2016 e 2017. | 🔜 | 🔜 | 🔜 |
+| Diário Oficial (`gazette.py`) | Prefeitura/Câmara de Vereadores | Diário oficial do executivo e legislativo. | :heavy_check_mark: | :heavy_check_mark: | [Kaggle](https://www.kaggle.com/dadosabertosdefeira/dirios-oficiais-do-executivo-e-do-legislativo)  |
+| Licitações (`cityhall.py`) | Prefeitura | Licitações realizadas pela prefeitura desde 2015. | :heavy_check_mark: | :heavy_check_mark: | [Kaggle](https://www.kaggle.com/dadosabertosdefeira/licitaes-da-prefeitura-de-feira-de-santana) |
+| Pagamentos (`cityhall.py`) | Prefeitura | Pagamentos realizados pela prefeitura desde 2010. | 🔜 | 🔜 | 🔜 |
 
 ## Contribuindo para o projeto
 
@@ -116,3 +116,12 @@ do comando `crawl` você pode adicionar após o parâmetro `--scrapy-args`:
 ```
 docker-compose run --rm web python manage.py crawl --scrapy-args '{"LOG_FILE": "test.log"}'
 ```
+
+### API
+
+Sobre acesso a API veja instruções em nossa [Wiki](https://github.com/DadosAbertosDeFeira/maria-quiteria/wiki/API).
+
+
+### Infraestrutura
+
+Essa aplicação está sendo hospedada no PaaS [Dokku](https://dokku.com/docs/) e todo código IaC está [nesse repositório](https://github.com/DadosAbertosDeFeira/iac).

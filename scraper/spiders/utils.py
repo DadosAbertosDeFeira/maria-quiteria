@@ -1,9 +1,12 @@
 import logging
 import re
 import unicodedata
+
+from datetime import datetime, timezone
 from urllib.parse import parse_qs, urlparse
 
-from datasets.parsers import from_str_to_date
+
+from web.datasets.parsers import from_str_to_date
 
 DOMAIN_FORMAT = re.compile(
     r"(?:^(\w{1,255}):(.{1,255})@|^)"
@@ -107,3 +110,8 @@ def strip_accents(string):
         for char in unicodedata.normalize("NFD", string)
         if unicodedata.category(char) != "Mn"
     )
+
+
+def datetime_utcnow_aware() -> datetime:
+    """Data e hora UTC com informação de timezone."""
+    return datetime.utcnow().replace(tzinfo=timezone.utc)

@@ -3,11 +3,11 @@
 Ficamos muito felizes que você está lendo este guia de contribuição, sempre precisamos
 de pessoas voluntárias que acreditem na ideia e queiram contribuir com o projeto.
 
-Se você ainda não fez isso, junte-se a nós no [nosso grupo aberto do Telegram](https://t.me/joinchat/DRT0JBcy-RUk2GJZCnH3Fg) 
-ou no nosso [Discord](https://discord.gg/BS4GNf) e participe das discussões.
+Se você ainda não fez isso, junte-se a nós no [nosso grupo aberto do Telegram](https://t.me/dadosabertosdefeira) 
+ou no nosso [Discord](https://discord.gg/bPZ9TSjdUn) e participe das discussões.
 Não hesite em nos procurar para tirar todas as suas dúvidas e conhecer mais sobre o projeto.
 
-[![Convite Discord](https://invidget.switchblade.xyz/F9RgD8k?language=pt)](https://discord.gg/F9RgD8k)
+[![Convite Discord](https://invidget.switchblade.xyz/bPZ9TSjdUn?language=pt)](https://discord.gg/bPZ9TSjdUn)
 
 ## Antes de começar
 
@@ -90,6 +90,9 @@ com os detalhes da mudança caso esta inclua uma nova base de dados ou um novo c
 * Embora o código esteja escrito em inglês, por convenção, as mensagens de _commit_,
 comentários, _pull requests_, _issues_, e demais comunicações do projeto deverão ser
 escritas em português.
+
+* Marque a opção "Permitir edição pelos mantenedores". Assim poderemos fazer modificações de emergência
+mantendo o _pull request_ aberto por você.
 
 Sentiu falta de algo nesse guia? Conta pra gente!
 
