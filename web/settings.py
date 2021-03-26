@@ -138,6 +138,8 @@ class Common(Configuration):
         "REFRESH_TOKEN_LIFETIME": timedelta(minutes=REFRESH_TOKEN_LIFETIME_IN_MINUTES),
     }
 
+    ENABLE_NEW_RELIC = False
+
 
 class Dev(Common):
     DEBUG = True
@@ -156,3 +158,7 @@ class Prod(Common):
     DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=True)}
     GOOGLE_ANALYTICS_KEY = values.Value()
     CITY_COUNCIL_WEBSERVICE = values.Value()
+    ENABLE_NEW_RELIC = True
+    NEW_RELIC_LICENSE_KEY = os.getenv("NEW_RELIC_LICENSE_KEY", None)
+    NEW_RELIC_APP_NAME = os.getenv("NEW_RELIC_APP_NAME", "vm_mariaquiteria")
+    NEW_RELIC_CONFIG_FILE = os.getenv("NEW_RELIC_CONFIG_FILE", "newrelic.ini")
