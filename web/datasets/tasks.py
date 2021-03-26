@@ -51,25 +51,22 @@ from web.datasets.adapters import (  # noqa isort:skip
     to_citycouncil_revenue,
 )
 
-rabbitmq_broker = RabbitmqBroker(
-    host=settings.BROKER_HOST,
-    port=settings.BROKER_PORT,
-    credentials=pika.credentials.PlainCredentials(
-        settings.BROKER_USER, settings.BROKER_PASSWORD
-    ),
-    virtual_host=settings.BROKER_VHOST,
-    heartbeat=1000,
-    blocked_connection_timeout=300,
-)
-set_broker(rabbitmq_broker)
 
-
-print(os.getenv("DJANGO_CONFIGURATION"))
 if os.getenv("DJANGO_CONFIGURATION") == "Test":
     broker = StubBroker()
     broker.emit_after("process_boot")
 else:
-    broker = RabbitmqBroker(url=settings.BROKER_URL)
+    broker = RabbitmqBroker(
+        host=settings.BROKER_HOST,
+        port=settings.BROKER_PORT,
+        credentials=pika.credentials.PlainCredentials(
+            settings.BROKER_USER, settings.BROKER_PASSWORD
+        ),
+        virtual_host=settings.BROKER_VHOST,
+        heartbeat=1000,
+        blocked_connection_timeout=300,
+    )
+
 set_broker(broker)
 client = get_s3_client(settings)
 

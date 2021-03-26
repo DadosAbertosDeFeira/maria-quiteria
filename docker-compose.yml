@@ -28,7 +28,6 @@ services:
             DATABASE_HOST: db
             TIKA_CLIENT_ONLY: 1
             TIKA_SERVER_ENDPOINT: http://tika:9998
-        env_file: .env
         depends_on:
             - db
             - rabbitmq
