@@ -11,6 +11,7 @@ from .models import (
     CityHallBid,
     File,
     Gazette,
+    TCMBADocument,
 )
 
 
@@ -293,6 +294,19 @@ class CityCouncilRevenueAdmin(PublicModelAdmin):
     )
 
 
+@admin.register(TCMBADocument)
+class TCMBADocumentAdmin(PublicModelAdmin):
+    search_fields = ["original_filename", "unit", "category"]
+    list_filter = ["month", "year", "period", "unit", "category"]
+    list_display = (
+        "original_filename",
+        "month",
+        "year",
+        "unit",
+        "category",
+    )
+
+
 class MariaQuiteriaPublicAdminSite(PublicAdminSite):
     site_title = "Dados Abertos de Feira"
     site_header = "Dados Abertos de Feira"
@@ -305,6 +319,7 @@ models_and_admins = [
     (CityCouncilMinute, CityCouncilMinuteAdmin),
     (Gazette, GazetteAdmin),
     (CityHallBid, CityHallBidAdmin),
+    (TCMBADocument, TCMBADocumentAdmin),
 ]
 public_app = PublicApp(
     "datasets", models=(model[0].__name__ for model in models_and_admins)
