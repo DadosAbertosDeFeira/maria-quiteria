@@ -30,14 +30,13 @@ def extract_params(s3_filepath):
 def build_s3_path(s3_filepath, unit, category, filename):
     """
     Input:
-    s3://dadosabertosdefeira/maria-quiteria/files/tcmbapublicconsultation/2020/mensal/12/consulta-publica-12-2020.json
+    maria-quiteria/files/tcmbapublicconsultation/2020/mensal/12/consulta-publica-12-2020.json
 
     Output:
     s3://dadosabertosdefeira/maria-quiteria/files/tcmbapublicconsultation/2020/mensal/12/<unit>/<category>/<filename>
     """
-    prefix = "s3://"
-    s3_path = Path(s3_filepath[len(prefix) :])
-    parts = list(s3_path.parts)
+    prefix = "s3://dadosabertosdefeira/"
+    parts = s3_filepath.split("/")
     parts.pop()  # remove json da lista
     parts.extend([unit, category, filename])
     return f"{prefix}{'/'.join(parts)}"
@@ -46,23 +45,21 @@ def build_s3_path(s3_filepath, unit, category, filename):
 def build_s3_url(s3_filepath):
     """
     Input:
-    s3://dadosabertosdefeira/
     maria-quiteria/files/tcmbapublicconsultation/2020/mensal/12/<unit>/<category>/<filename>
 
     Output:
     https://dadosabertosdefeira.s3.eu-central-1.amazonaws.com/
     maria-quiteria/files/tcmbapublicconsultation/2020/mensal/12/<unit>/<category>/<filename>
     """
-    s3_url = "https://dadosabertosdefeira.s3.eu-central-1.amazonaws.com"
-    url = s3_filepath.replace("s3://dadosabertosdefeira", s3_url)
-    return urllib.parse.quote_plus(url)
+    s3_url = "https://dadosabertosdefeira.s3.eu-central-1.amazonaws.com/"
+    return urllib.parse.quote_plus(f"{s3_url}{s3_filepath}")
 
 
 class Command(BaseCommand):
     help = "Importa documentos do TCM-BA em um bucket S3."
 
     def add_arguments(self, parser):
-        parser.add_argument("bucket")
+        parser.add_argument("s3_path")
         parser.add_argument("--drop-all", action="store_true")
 
     def echo(self, text, style=None):
@@ -75,10 +72,10 @@ class Command(BaseCommand):
         return self.echo(text, self.style.SUCCESS)
 
     def handle(self, *args, **options):
-        self.echo(f"Bucket: {options.get('bucket')}")
-        params = extract_params(options.get("bucket"))
+        self.echo(f"Caminho no S3: {options.get('s3_path')}")
+        params = extract_params(options.get("s3_path"))
 
-        file_items = client.download_file(options.get("bucket"))  # FIXME need s3 path without bucket
+        file_items = client.download_file(options.get("s3_path"))
         json_items = json.loads(open(file_items).read())
 
         public_view_url = "https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam"
@@ -91,9 +88,9 @@ class Command(BaseCommand):
         for item in json_items:
             print(item)
             s3_file_path = build_s3_path(
-                options.get("bucket"), item["unit"], item["category"], item["filename"]
+                options.get("s3_path"), item["unit"], item["category"], item["filename"]
             )
-            s3_url = build_s3_url(s3_file_path)
+            s3_url = build_s3_url(options.get("s3_path"))
 
             document = TCMBADocument.objects.create(
                 year=params["year"],
@@ -112,7 +109,6 @@ class Command(BaseCommand):
                 url=public_view_url,
                 content_type=content_type,
                 object_id=document.pk,
-                # checksum=checksum,  # TODO checar se é possível pegar do S3
                 s3_url=s3_url,
-                s3_file_path=s3_file_path,  # TODO check
+                s3_file_path=s3_file_path,
             )
