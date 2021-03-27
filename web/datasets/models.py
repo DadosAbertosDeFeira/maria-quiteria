@@ -61,8 +61,10 @@ class File(models.Model):
     object_id = models.PositiveIntegerField(db_index=True)
     content_object = GenericForeignKey("content_type", "object_id")
     checksum = models.CharField(max_length=128, null=True, blank=True)
-    s3_url = models.URLField("URL externa", max_length=400, null=True, blank=True)
-    s3_file_path = models.CharField(max_length=300, null=True, blank=True)
+    s3_url = models.URLField("URL externa", max_length=600, null=True, blank=True)
+    s3_file_path = models.CharField(
+        "Caminho interno", max_length=400, null=True, blank=True
+    )
     external_code = models.CharField(
         "Código externo", max_length=10, null=True, blank=True, db_index=True
     )
