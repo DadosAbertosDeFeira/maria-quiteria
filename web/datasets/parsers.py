@@ -34,6 +34,7 @@ def from_str_to_datetime(date_str, supported_formats=None):
             "%d/%m/%y %H:%M",
             "%d/%m/%Y %H:%M:%S",
             "%d/%m/%y %H:%M:%S",
+            "%Y-%m-%d %H:%M:%S",
             "%d/%m/%Y %Hh%M",
         ]
     if date_str:
@@ -48,7 +49,7 @@ def from_str_to_datetime(date_str, supported_formats=None):
                     return converted_date
 
 
-def from_str_to_date(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y"]):
+def from_str_to_date(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y", "%Y-%m-%d"]):
     if date_str is None:
         return
     datetime_obj = from_str_to_datetime(date_str, supported_formats)

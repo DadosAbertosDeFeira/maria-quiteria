@@ -1,5 +1,6 @@
 from datetime import date
 
+from model_bakery.recipe import Recipe, foreign_key
 from web.datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
@@ -9,10 +10,11 @@ from web.datasets.models import (
     CityCouncilMinute,
     CityCouncilRevenue,
     CityHallBid,
+    File,
     Gazette,
     GazetteEvent,
+    SyncInformation,
 )
-from model_bakery.recipe import Recipe, foreign_key
 
 CityCouncilAgenda = Recipe(
     CityCouncilAgenda,
@@ -56,3 +58,13 @@ Gazette = Recipe(
 
 
 GazetteEvent = Recipe(GazetteEvent, gazette=foreign_key(Gazette))
+
+
+File = Recipe(
+    File,
+)
+
+
+SyncInformation = Recipe(
+    SyncInformation,
+)
