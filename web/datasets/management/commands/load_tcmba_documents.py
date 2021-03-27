@@ -63,6 +63,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("bucket")
+        parser.add_argument("--drop-all", action="store_true")
 
     def echo(self, text, style=None):
         self.stdout.write(style(text) if style else text)
@@ -77,10 +78,15 @@ class Command(BaseCommand):
         self.echo(f"Bucket: {options.get('bucket')}")
         params = extract_params(options.get("bucket"))
 
-        file_items = client.download_file(options.get("bucket"))
+        file_items = client.download_file(options.get("bucket"))  # FIXME need s3 path without bucket
         json_items = json.loads(open(file_items).read())
 
         public_view_url = "https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam"
+
+        if options.get("drop_all"):
+            confirmation = input("Tem certeza? s/n ")
+            if confirmation.lower() in ["s", "y"]:
+                TCMBADocument.objects.all().delete()
 
         for item in json_items:
             print(item)
