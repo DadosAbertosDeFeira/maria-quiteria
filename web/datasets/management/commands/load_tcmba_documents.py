@@ -55,6 +55,15 @@ def build_s3_url(s3_filepath):
     return urllib.parse.quote_plus(f"{s3_url}{s3_filepath}")
 
 
+def get_original_filename(item):
+    if item.get("original_filename"):
+        return item["original_filename"]
+    else:
+        # exemplo: 1a35fd41-e463-488a-936e-a526d3afa72a-OF\u00cdCIO.pdf
+        uuid4_len = 36
+        return item["filename"][uuid4_len + 1 :]
+
+
 class Command(BaseCommand):
     help = "Importa documentos do TCM-BA em um bucket S3."
 
@@ -81,18 +90,18 @@ class Command(BaseCommand):
         public_view_url = "https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam"
 
         if options.get("drop_all"):
-            confirmation = input("Tem certeza? s/n ")
+            confirmation = input("Apagar todos os arquivos do TCM-BA? s/n ")
             if confirmation.lower() in ["s", "y"]:
                 TCMBADocument.objects.all().delete()
 
         for item in json_items:
-            print(item)
+            self.echo(str(item))
             s3_file_path = build_s3_path(
                 options.get("s3_path"), item["unit"], item["category"], item["filename"]
             )
             s3_url = build_s3_url(options.get("s3_path"))
 
-            document = TCMBADocument.objects.create(
+            document, _ = TCMBADocument.objects.get_or_create(
                 year=params["year"],
                 month=params["month"],
                 period=params["period"],
@@ -100,12 +109,12 @@ class Command(BaseCommand):
                 unit=item["unit"],
                 inserted_at=from_str_to_date(item["inserted_at"]),
                 inserted_by=item["inserted_by"],
-                original_filename=item["filename"],
+                original_filename=get_original_filename(item),
                 crawled_at=datetime.fromisoformat(item["crawled_at"]),
                 crawled_from=public_view_url,
             )
             content_type = get_content_type_for_model(document)
-            File.objects.create(
+            File.objects.get_or_create(
                 url=public_view_url,
                 content_type=content_type,
                 object_id=document.pk,
