@@ -63,7 +63,6 @@ else:
             settings.BROKER_USER, settings.BROKER_PASSWORD
         ),
         virtual_host=settings.BROKER_VHOST,
-        heartbeat=1000,
         blocked_connection_timeout=300,
     )
 
