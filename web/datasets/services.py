@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import boto3
@@ -89,7 +90,7 @@ def get_s3_client(settings):
     use_local_file = all(
         [settings.AWS_ACCESS_KEY_ID is None, settings.AWS_SECRET_ACCESS_KEY is None]
     )
-    if use_local_file:
+    if use_local_file or os.getenv("DJANGO_CONFIGURATION") != "Prod":
         return FakeS3Client("teste", "maria-quiteria-local", "brasil")
     else:
         return S3Client(
