@@ -1,5 +1,7 @@
 import logging
+import urllib
 from datetime import datetime
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -91,3 +93,54 @@ def city_council_revenue_type_mapping(code):
         return found
     else:
         logger.warning(f"Código da tipo de receita não encontrado: {code}")
+
+
+def extract_params(s3_filepath):
+    """Extrai mês, ano e periodicidade do caminho do bucket."""
+    prefix = "tcmbapublicconsultation/"
+    start_index = s3_filepath.find(prefix) + len(prefix)
+    relative_path = Path(s3_filepath[start_index:])
+    folders = relative_path.parts
+    year = folders[0]
+    period = folders[1]
+    month = None
+    if period == "mensal":
+        month = folders[2]
+    return {"year": year, "period": period, "month": month}
+
+
+def build_s3_path(s3_filepath, unit, category, filename):
+    """
+    Input:
+    maria-quiteria/files/tcmbapublicconsultation/2020/mensal/12/consulta-publica-12-2020.json
+
+    Output:
+    s3://dadosabertosdefeira/maria-quiteria/files/tcmbapublicconsultation/2020/mensal/12/<unit>/<category>/<filename>
+    """
+    prefix = "s3://dadosabertosdefeira/"
+    parts = s3_filepath.split("/")
+    parts.pop()  # remove json da lista
+    parts.extend([unit, category, filename])
+    return f"{prefix}{'/'.join(parts)}"
+
+
+def build_s3_url(s3_filepath):
+    """
+    Input:
+    maria-quiteria/files/tcmbapublicconsultation/2020/mensal/12/<unit>/<category>/<filename>
+
+    Output:
+    https://dadosabertosdefeira.s3.eu-central-1.amazonaws.com/
+    maria-quiteria/files/tcmbapublicconsultation/2020/mensal/12/<unit>/<category>/<filename>
+    """
+    s3_url = "https://dadosabertosdefeira.s3.eu-central-1.amazonaws.com/"
+    return urllib.parse.quote_plus(f"{s3_url}{s3_filepath}")
+
+
+def get_original_filename(item):
+    if item.get("original_filename"):
+        return item["original_filename"]
+    else:
+        # exemplo: 1a35fd41-e463-488a-936e-a526d3afa72a-OF\u00cdCIO.pdf
+        uuid4_len = 36
+        return item["filename"][uuid4_len + 1 :]

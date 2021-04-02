@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import datetime
 from logging import info
@@ -14,6 +15,13 @@ from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from dramatiq.brokers.stub import StubBroker
 from requests import HTTPError
 from tika import parser
+from web.datasets.parsers import (
+    build_s3_path,
+    build_s3_url,
+    extract_params,
+    from_str_to_date,
+    get_original_filename,
+)
 from web.datasets.services import get_s3_client
 
 # Esse bloco (feio) faz com que esse módulo funcione dentro ou fora do Django
@@ -25,6 +33,7 @@ try:
         CityCouncilRevenue,
         File,
         SyncInformation,
+        TCMBADocument,
     )
 except ImproperlyConfigured:
     import configurations
@@ -40,6 +49,7 @@ except ImproperlyConfigured:
         CityCouncilRevenue,
         File,
         SyncInformation,
+        TCMBADocument,
     )
 
 # models precisam ser importados depois das configurações
@@ -317,3 +327,41 @@ def remove_citycouncil_expense(record):
         external_file_code=record["codArquivo"],
         external_file_line=record["codLinha"],
     ).update(excluded=True)
+
+
+@actor
+def load_tcmba_documents(items_s3_path):
+    info(f"Carregando documentos do TCM-BA. Caminho no S3: {items_s3_path}")
+    params = extract_params(items_s3_path)
+
+    file_items = client.download_file(items_s3_path)
+    json_items = json.loads(open(file_items).read())
+
+    public_view_url = "https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam"
+
+    for item in json_items:
+        s3_file_path = build_s3_path(
+            items_s3_path, item["unit"], item["category"], item["filename"]
+        )
+        s3_url = build_s3_url(s3_file_path)
+
+        document, _ = TCMBADocument.objects.get_or_create(
+            year=params["year"],
+            month=params["month"],
+            period=params["period"],
+            category=item["category"],
+            unit=item["unit"],
+            inserted_at=from_str_to_date(item["inserted_at"]),
+            inserted_by=item["inserted_by"],
+            original_filename=get_original_filename(item),
+            crawled_at=datetime.fromisoformat(item["crawled_at"]),
+            crawled_from=public_view_url,
+        )
+        content_type = get_content_type_for_model(document)
+        File.objects.get_or_create(
+            url=public_view_url,
+            content_type=content_type,
+            object_id=document.pk,
+            s3_url=s3_url,
+            s3_file_path=s3_file_path,
+        )
