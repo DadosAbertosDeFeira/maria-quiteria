@@ -55,7 +55,7 @@ SYNC_SOURCE = (
 class File(models.Model):
     created_at = models.DateTimeField("Criado em", auto_now_add=True)
     updated_at = models.DateTimeField("Atualizado em", auto_now=True)
-    url = models.URLField("Arquivo", db_index=True)
+    url = models.URLField("URL do arquivo", db_index=True)
     content = models.TextField("Conteúdo", null=True, blank=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(db_index=True)
@@ -68,6 +68,9 @@ class File(models.Model):
     external_code = models.CharField(
         "Código externo", max_length=10, null=True, blank=True, db_index=True
     )
+    original_filename = models.CharField(
+        "Nome do arquivo", max_length=200, null=True, blank=True, db_index=True
+    )
 
     search_vector = SearchVectorField(null=True, editable=False)
 
@@ -75,14 +78,15 @@ class File(models.Model):
         verbose_name = "Arquivo"
         verbose_name_plural = "Arquivos"
         indexes = [GinIndex(fields=["search_vector"])]
-        unique_together = ("url", "content_type", "object_id")
+        unique_together = ("url", "content_type", "object_id", "original_filename")
         ordering = ["-created_at"]
 
     def __repr__(self):
-        return f"[{self.content_type}] {self.url}"
+        return f"[{self.content_type}] {self.original_filename} {self.url}"
 
     def __str__(self):
-        return f"Arquivo ({self.pk}) de {self.content_type} ({self.object_id})"
+        obj_label = f"{self.content_type} ({self.object_id})"
+        return f"Arquivo {self.original_filename} ({self.pk}) de {obj_label}"
 
 
 class DatasetMixin(models.Model):
