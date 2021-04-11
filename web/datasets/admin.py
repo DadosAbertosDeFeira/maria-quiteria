@@ -294,7 +294,6 @@ class CityCouncilRevenueAdmin(PublicModelAdmin):
     )
 
 
-@admin.register(TCMBADocument)
 class TCMBADocumentAdmin(PublicModelAdmin):
     search_fields = ["original_filename", "unit", "category"]
     list_filter = ["month", "year", "period", "unit", "category"]
