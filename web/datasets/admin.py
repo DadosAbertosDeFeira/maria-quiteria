@@ -304,6 +304,16 @@ class TCMBADocumentAdmin(PublicModelAdmin):
         "unit",
         "category",
     )
+    readonly_fields = ["url"]
+
+    @mark_safe
+    def url(self, obj):
+        file_ = obj.files.first()
+        if file_:
+            return f'<a href="{file_.s3_url}" target="_blank">{file_.s3_url}</a>'
+        return ""
+
+    url.short_description = "Endereço (URL)"
 
 
 class MariaQuiteriaPublicAdminSite(PublicAdminSite):
