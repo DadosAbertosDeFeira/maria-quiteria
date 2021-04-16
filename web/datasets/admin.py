@@ -7,7 +7,11 @@ from public_admin.sites import PublicAdminSite, PublicApp
 from .models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
+    CityCouncilBid,
+    CityCouncilContract,
+    CityCouncilExpense,
     CityCouncilMinute,
+    CityCouncilRevenue,
     CityHallBid,
     File,
     Gazette,
@@ -106,7 +110,7 @@ class CityCouncilAttendanceListAdmin(PublicModelAdmin):
     )
 
 
-class CityCouncilContractAdmin(PublicModelAdmin):
+class CityCouncilContractAdmin(FileURLsMixin, PublicModelAdmin):
     search_fields = ["details", "description", "company_or_person"]
     list_filter = [
         "start_date",
@@ -255,7 +259,7 @@ class FileAdmin(admin.ModelAdmin):
         return queryset, False
 
 
-class CityCouncilBidAdmin(PublicModelAdmin):
+class CityCouncilBidAdmin(FileURLsMixin, PublicModelAdmin):
     search_fields = ["description", "code", "code_type"]
     list_filter = ["session_at", "modality"]
     list_display = (
@@ -314,6 +318,10 @@ class MariaQuiteriaPublicAdminSite(PublicAdminSite):
 models_and_admins = [
     (CityCouncilAgenda, CityCouncilAgendaAdmin),
     (CityCouncilAttendanceList, CityCouncilAttendanceListAdmin),
+    (CityCouncilBid, CityCouncilBidAdmin),
+    (CityCouncilContract, CityCouncilContractAdmin),
+    (CityCouncilExpense, CityCouncilExpenseAdmin),
+    (CityCouncilRevenue, CityCouncilRevenueAdmin),
     (CityCouncilMinute, CityCouncilMinuteAdmin),
     (Gazette, GazetteAdmin),
     (CityHallBid, CityHallBidAdmin),
