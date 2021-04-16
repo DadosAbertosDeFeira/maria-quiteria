@@ -15,7 +15,31 @@ from .models import (
 )
 
 
-class GazetteAdmin(PublicModelAdmin):
+class FileURLsMixin:
+    readonly_fields = ["file_urls", "alternative_urls"]
+
+    @mark_safe
+    def file_urls(self, obj):
+        return "<br>".join(
+            f"<a href={file_.url}>{file_.url}</a>"
+            for file_ in obj.files.all()
+            if file_.url
+        )
+
+    file_urls.short_description = "Endereços (URLs)"
+
+    @mark_safe
+    def alternative_urls(self, obj):
+        return "<br>".join(
+            f"<a href={file_.s3_url}>{file_.s3_url}</a>"
+            for file_ in obj.files.all()
+            if file_.s3_url
+        )
+
+    alternative_urls.short_description = "Endereços alternativos (URLs)"
+
+
+class GazetteAdmin(FileURLsMixin, PublicModelAdmin):
     search_fields = ["year_and_edition", "events__summary", "files__search_vector"]
     list_filter = ["power", "date"]
     list_display = (
@@ -23,7 +47,7 @@ class GazetteAdmin(PublicModelAdmin):
         "power",
         "year_and_edition",
         "events",
-        "url",
+        "file_urls",
         "crawled_at",
         "crawled_from",
     )
@@ -55,15 +79,6 @@ class GazetteAdmin(PublicModelAdmin):
         )
 
     events.short_description = "Eventos"
-
-    @mark_safe
-    def url(self, obj):
-        file_ = obj.files.first()
-        if file_:
-            return f"<a href={file_.url}>{file_.url}</a>"
-        return ""
-
-    url.short_description = "Endereço (URL)"
 
 
 class CityCouncilAgendaAdmin(PublicModelAdmin):
@@ -137,14 +152,14 @@ class CityCouncilExpenseAdmin(PublicModelAdmin):
     )
 
 
-class CityCouncilMinuteAdmin(PublicModelAdmin):
+class CityCouncilMinuteAdmin(FileURLsMixin, PublicModelAdmin):
     search_fields = ["title", "files__search_vector"]
     list_filter = ["date", "event_type"]
     list_display = (
         "date",
         "title",
         "event_type",
-        "files",
+        "file_urls",
         "crawled_at",
         "crawled_from",
     )
@@ -166,16 +181,8 @@ class CityCouncilMinuteAdmin(PublicModelAdmin):
 
         return queryset, False
 
-    @mark_safe
-    def files(self, obj):
-        return "<br>".join(
-            f"<a href={file_.url}>{file_.url}</a>" for file_ in obj.files.all()
-        )
 
-    files.short_description = "Arquivos"
-
-
-class CityHallBidAdmin(PublicModelAdmin):
+class CityHallBidAdmin(FileURLsMixin, PublicModelAdmin):
     search_fields = ["description", "codes", "files__search_vector"]
     list_filter = ["session_at", "public_agency", "modality"]
     list_display = (
@@ -185,7 +192,7 @@ class CityHallBidAdmin(PublicModelAdmin):
         "modality",
         "description",
         "events",
-        "files",
+        "file_urls",
     )
 
     def get_queryset(self, request):
@@ -204,14 +211,6 @@ class CityHallBidAdmin(PublicModelAdmin):
         queryset = queryset.filter(files__search_vector=query)
 
         return queryset, False
-
-    @mark_safe
-    def files(self, obj):
-        return "<br>".join(
-            f"<a href={file_.url}>{file_.url}</a>" for file_ in obj.files.all()
-        )
-
-    files.short_description = "Arquivos"
 
     @mark_safe
     def events(self, obj):
@@ -294,7 +293,7 @@ class CityCouncilRevenueAdmin(PublicModelAdmin):
     )
 
 
-class TCMBADocumentAdmin(PublicModelAdmin):
+class TCMBADocumentAdmin(FileURLsMixin, PublicModelAdmin):
     search_fields = ["original_filename", "unit", "category"]
     list_filter = ["month", "year", "period", "unit", "category"]
     list_display = (
@@ -304,16 +303,6 @@ class TCMBADocumentAdmin(PublicModelAdmin):
         "unit",
         "category",
     )
-    readonly_fields = ["url"]
-
-    @mark_safe
-    def url(self, obj):
-        file_ = obj.files.first()
-        if file_:
-            return f'<a href="{file_.s3_url}" target="_blank">{file_.s3_url}</a>'
-        return ""
-
-    url.short_description = "Endereço (URL)"
 
 
 class MariaQuiteriaPublicAdminSite(PublicAdminSite):
