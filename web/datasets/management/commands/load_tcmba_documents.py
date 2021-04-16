@@ -1,5 +1,4 @@
 import json
-import urllib
 from datetime import datetime, timezone
 
 from django.conf import settings
@@ -12,32 +11,11 @@ from web.datasets.services import get_s3_client
 client = get_s3_client(settings)
 
 
-def build_s3_path(s3_filepath, unit, category, filename):
-    """
-    Input:
-    maria-quiteria/files/tcmbapublicconsultation/2020/mensal/12/consulta-publica-12-2020.json
-
-    Output:
-    s3://dadosabertosdefeira/maria-quiteria/files/tcmbapublicconsultation/2020/mensal/12/<unit>/<category>/<filename>
-    """
-    prefix = "s3://dadosabertosdefeira/"
+def build_path(s3_filepath, unit, category, filename):
     parts = s3_filepath.split("/")
     parts.pop()  # remove json da lista
     parts.extend([unit, category, filename])
-    return f"{prefix}{'/'.join(parts)}"
-
-
-def build_s3_url(s3_filepath):
-    """
-    Input:
-    maria-quiteria/files/tcmbapublicconsultation/2020/mensal/12/<unit>/<category>/<filename>
-
-    Output:
-    https://dadosabertosdefeira.s3.eu-central-1.amazonaws.com/
-    maria-quiteria/files/tcmbapublicconsultation/2020/mensal/12/<unit>/<category>/<filename>
-    """
-    s3_url = "https://dadosabertosdefeira.s3.eu-central-1.amazonaws.com/"
-    return urllib.parse.quote_plus(f"{s3_url}{s3_filepath}")
+    return "/".join(parts)
 
 
 class Command(BaseCommand):
@@ -71,15 +49,16 @@ class Command(BaseCommand):
 
         failed = 0
         for item in json_items:
-            s3_file_path = build_s3_path(
+            path = build_path(
                 options.get("s3_path"), item["unit"], item["category"], item["filename"]
             )
-            s3_url = build_s3_url(s3_file_path)
+            s3_url = f"https://dadosabertosdefeira.s3.eu-central-1.amazonaws.com/{path}"
+            s3_file_path = f"s3://dadosabertosdefeira/{path}"
 
             document, created = TCMBADocument.objects.get_or_create(
                 year=item["year"],
                 month=item["month"],
-                period=item["period"],
+                period=item["period"].lower(),
                 category=item["category"],
                 unit=item["unit"],
                 inserted_at=from_str_to_date(item["inserted_at"]),
