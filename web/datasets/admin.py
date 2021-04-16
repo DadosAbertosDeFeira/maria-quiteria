@@ -21,7 +21,7 @@ class FileURLsMixin:
     @mark_safe
     def file_urls(self, obj):
         return "<br>".join(
-            f"<a href={file_.url}>{file_.url}</a>"
+            f'<a href="{file_.url}">{file_.url}</a>'
             for file_ in obj.files.all()
             if file_.url
         )
@@ -31,7 +31,7 @@ class FileURLsMixin:
     @mark_safe
     def alternative_urls(self, obj):
         return "<br>".join(
-            f"<a href={file_.s3_url}>{file_.s3_url}</a>"
+            f'<a href="{file_.s3_url}">{file_.s3_url}</a>'
             for file_ in obj.files.all()
             if file_.s3_url
         )
