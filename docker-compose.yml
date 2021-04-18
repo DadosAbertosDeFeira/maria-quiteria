@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
     db:
-        image: library/postgres:12.4-alpine
+        image: library/postgres:11-alpine
         environment:
             POSTGRES_DB: mariaquiteria
             POSTGRES_USER: postgres
