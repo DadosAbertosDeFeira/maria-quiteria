@@ -34,7 +34,7 @@ jobs:
           pytest
     services:
       postgres:
-        image: postgres:10.8
+        image: library/postgres:11-alpine
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: mariaquiteria
