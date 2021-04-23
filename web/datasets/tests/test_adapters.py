@@ -209,12 +209,12 @@ def test_adapt_citycouncil_contract_file(settings):
     file_obj = to_citycouncil_contract_file(item)
 
     assert file_obj["content_type"] == get_content_type_for_model(contract)
-    assert file_obj["url"] == f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHO']}"
+    assert file_obj["url"] == item["CAMINHO"]
     assert file_obj["external_code"] == item["CODARQCON"]
 
 
 @pytest.mark.django_db
-def test_deal_with_contract_not_found_for_file(caplog):
+def test_log_error_when_contract_is_not_found_when_adapting_file(caplog):
     item = {
         "CODARQCON": "39",
         "CODCON": "45",
@@ -223,7 +223,7 @@ def test_deal_with_contract_not_found_for_file(caplog):
     file_obj = to_citycouncil_contract_file(item)
 
     assert file_obj is None
-    assert "Arquivo do contrato não encontrado" in caplog.text
+    assert "Contrato não encontrado" in caplog.text
 
 
 @pytest.mark.django_db
@@ -238,14 +238,12 @@ def test_adapt_citycouncil_bid_file(settings):
     file_obj = to_citycouncil_bid_file(item)
 
     assert file_obj["content_type"] == get_content_type_for_model(bid)
-    assert (
-        file_obj["url"] == f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHOARQLIC']}"
-    )
+    assert file_obj["url"] == item["CAMINHOARQLIC"]
     assert file_obj["external_code"] == item["CODARQLIC"]
 
 
 @pytest.mark.django_db
-def test_deal_with_bid_not_found_for_file(caplog):
+def test_log_error_when_bid_is_not_found_when_adapting_file(caplog):
     item = {
         "CODARQLIC": "113",
         "CODLIC": "60",
@@ -254,4 +252,4 @@ def test_deal_with_bid_not_found_for_file(caplog):
     file_obj = to_citycouncil_bid_file(item)
 
     assert file_obj is None
-    assert "Arquivo da licitação não encontrado" in caplog.text
+    assert "Licitação não encontrada" in caplog.text

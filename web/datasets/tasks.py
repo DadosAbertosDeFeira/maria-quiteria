@@ -137,9 +137,9 @@ def get_city_council_updates(formatted_date):
         date=target_date, source="camara", defaults={"succeed": False}
     )
 
-    response = requests.post(
+    response = requests.get(
         settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT,
-        data={
+        params={
             "data": formatted_date,  # formato aaaa-mm-dd
             "token": settings.CITY_COUNCIL_WEBSERVICE_TOKEN,
         },
