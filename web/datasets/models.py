@@ -535,6 +535,12 @@ class SyncInformation(models.Model):
     succeed = models.BooleanField("Concluída com sucesso?", null=True)
     response = models.JSONField("Resposta", null=True)
 
+    def __repr__(self):
+        return f"{self.created_at.strftime('%d-%m-%Y')} {self.source} ({self.succeed})"
+
+    def __str__(self):
+        return f"{self.created_at.strftime('%d-%m-%Y')} {self.source} ({self.succeed})"
+
 
 class TCMBADocument(DatasetMixin):
     class PeriodCategory(models.TextChoices):

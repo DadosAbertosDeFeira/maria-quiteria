@@ -15,6 +15,7 @@ from .models import (
     CityHallBid,
     File,
     Gazette,
+    SyncInformation,
     TCMBADocument,
 )
 
@@ -230,6 +231,11 @@ class CityHallBidAdmin(FileURLsMixin, PublicModelAdmin):
         return "<br><br>".join(formatted_events)
 
     events.short_description = "Histórico"
+
+
+@admin.register(SyncInformation)
+class SyncInformationAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(File)
