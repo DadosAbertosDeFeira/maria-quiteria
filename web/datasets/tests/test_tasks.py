@@ -140,7 +140,7 @@ class TestGetCityCouncilUpdates:
             "alteracoesDespesa": [],
             "exclusoesDespesa": [],
         }
-        post_mock = mocker.patch("web.datasets.tasks.requests.post")
+        post_mock = mocker.patch("web.datasets.tasks.requests.get")
         post_mock.return_value.status_code = 200
         post_mock.return_value.json.return_value = expected_payload
         yesterday = date.today() - timedelta(days=1)
@@ -149,7 +149,7 @@ class TestGetCityCouncilUpdates:
         assert get_city_council_updates(formatted_yesterday) == expected_payload
 
         assert post_mock.called
-        assert post_mock.call_args_list[0][1]["data"]["data"] == formatted_yesterday
+        assert post_mock.call_args_list[0][1]["params"]["data"] == formatted_yesterday
 
         sync_info = SyncInformation.objects.get()
         assert sync_info.date == yesterday
@@ -159,7 +159,7 @@ class TestGetCityCouncilUpdates:
 
     def test_handle_with_error_when_parameters_are_invalid(self, mocker):
         expected_payload = {"erro": "Os parametros enviados são inválidos."}
-        post_mock = mocker.patch("web.datasets.tasks.requests.post")
+        post_mock = mocker.patch("web.datasets.tasks.requests.get")
         post_mock.return_value.json.return_value = expected_payload
         tomorrow = date.today() + timedelta(days=1)
 
@@ -174,7 +174,7 @@ class TestGetCityCouncilUpdates:
         assert sync_info.response == expected_payload
 
     def test_raise_exception_if_request_is_not_successful(self, mocker):
-        post_mock = mocker.patch("web.datasets.tasks.requests.post")
+        post_mock = mocker.patch("web.datasets.tasks.requests.get")
         post_mock.return_value.raise_for_status.side_effect = HTTPError()
         yesterday = date.today() - timedelta(days=1)
 

@@ -1,6 +1,5 @@
 import logging
 
-from django.conf import settings
 from django.contrib.admin.options import get_content_type_for_model
 from web.datasets.models import CityCouncilBid, CityCouncilContract
 from web.datasets.parsers import (
@@ -157,13 +156,12 @@ def to_citycouncil_contract_file(item):
     try:
         contract = CityCouncilContract.objects.get(external_code=item["CODCON"])
     except CityCouncilContract.DoesNotExist:
-        logger.error(f"Arquivo do contrato não encontrado: {item}")
+        logger.error(f"Contrato não encontrado: {item}")
         return
 
     content_type = get_content_type_for_model(contract)
-    url = f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHO']}"
     return {
-        "url": url,
+        "url": item["CAMINHO"],
         "content_type": content_type,
         "object_id": contract.pk,
         "external_code": item["CODARQCON"],
@@ -174,13 +172,12 @@ def to_citycouncil_bid_file(item):
     try:
         bid = CityCouncilBid.objects.get(external_code=item["CODLIC"])
     except CityCouncilBid.DoesNotExist:
-        logger.error(f"Arquivo da licitação não encontrado: {item}")
+        logger.error(f"Licitação não encontrada: {item}")
         return
 
     content_type = get_content_type_for_model(bid)
-    url = f"{settings.CITY_COUNCIL_WEBSERVICE}{item['CAMINHOARQLIC']}"
     return {
-        "url": url,
+        "url": item["CAMINHOARQLIC"],
         "content_type": content_type,
         "object_id": bid.pk,
         "external_code": item["CODARQLIC"],
