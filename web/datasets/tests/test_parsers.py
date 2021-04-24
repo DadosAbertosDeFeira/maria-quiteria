@@ -17,6 +17,9 @@ from web.datasets.parsers import (
         ("1,70", 1.70),
         ("00,00", 0),
         ("Random", None),
+        ("37500.36", 37500.36),
+        ("'37500.36", 37500.36),
+        ("R$ 37.500,36", 37500.36),
     ],
 )
 def test_currency_to_float(original_value, expected_value):

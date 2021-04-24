@@ -16,10 +16,15 @@ def get_phase(value):
 def currency_to_float(value):
     """Converte de R$ 69.848,70 (str) para 69848.70 (float)."""
     try:
-        cleaned_value = value.replace("R$", "").replace(".", "").replace(",", ".")
-        return float(cleaned_value)
+        # format 37500.36 or '37500.36
+        return float(value.replace("'", ""))
     except ValueError:
-        pass
+        # format R$ 37.500,36 or 37.500,36
+        cleaned_value = value.replace("R$", "").replace(".", "").replace(",", ".")
+        try:
+            return float(cleaned_value)
+        except ValueError:
+            pass
     return
 
 
