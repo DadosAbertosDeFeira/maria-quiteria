@@ -68,7 +68,9 @@ class Command(BaseCommand):
         model = source_map["model"]
 
         if options.get("drop_all"):
-            if os.getenv("DJANGO_CONFIGURATION") == "Prod":
+            if os.getenv("DJANGO_CONFIGURATION") == "Prod" and not options.get(
+                "source"
+            ).endswith("_files"):
                 self.warn(
                     "VOCÊ ESTÁ EM AMBIENTE DE PRODUÇÃO E TODOS OS DADOS SERÃO APAGADOS."
                 )
