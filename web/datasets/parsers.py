@@ -1,4 +1,5 @@
 import logging
+import unicodedata
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -63,10 +64,16 @@ def from_str_to_date(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y", "%Y-%m
 
 
 def lower(value):
-    return value.lower()
+    if value:
+        return value.lower()
 
 
-def modality_mapping_from_city_council_db(code):
+def lower_without_spaces(value):
+    if value:
+        return strip_accents(value.lower()).replace(" ", "_")
+
+
+def city_council_bid_modality_mapping(code):
     mapping = {
         "1": "pregao_eletronico",
         "2": "convite",
@@ -75,8 +82,8 @@ def modality_mapping_from_city_council_db(code):
         "5": "concurso",
         "6": "leilao",
         "7": "pregao_presencial",
-        "9": "inexigibilidade",
         "8": "dispensada",
+        "9": "inexigibilidade",
     }
     found = mapping.get(code)
     if found:
@@ -96,3 +103,13 @@ def city_council_revenue_type_mapping(code):
         return found
     else:
         logger.warning(f"Código da tipo de receita não encontrado: {code}")
+
+
+def strip_accents(string):
+    if string is None:
+        return
+    return "".join(
+        char
+        for char in unicodedata.normalize("NFD", string)
+        if unicodedata.category(char) != "Mn"
+    )

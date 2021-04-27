@@ -2,9 +2,11 @@ from datetime import date, datetime
 
 import pytest
 from web.datasets.parsers import (
+    city_council_bid_modality_mapping,
     currency_to_float,
     from_str_to_date,
     from_str_to_datetime,
+    lower_without_spaces,
 )
 
 
@@ -109,3 +111,34 @@ def test_dates_older_than_city_creation(datetime_str, expected_obj):
     formats = ["%d/%m/%Y", "%d/%m/%y"]
 
     assert from_str_to_datetime(datetime_str, formats) == expected_obj
+
+
+@pytest.mark.parametrize(
+    "value,expected_modality",
+    [
+        ("1", "pregao_eletronico"),
+        ("2", "convite"),
+        ("3", "concorrencia"),
+        ("4", "tomada_de_precos"),
+        ("5", "concurso"),
+        ("6", "leilao"),
+        ("7", "pregao_presencial"),
+        ("8", "dispensada"),
+        ("9", "inexigibilidade"),
+    ],
+)
+def test_modality_mapping_from_city_council_db(value, expected_modality):
+    assert city_council_bid_modality_mapping(value) == expected_modality
+
+
+@pytest.mark.parametrize(
+    "value,expected",
+    [
+        ("Tomada de Preço", "tomada_de_preco"),
+        ("concorrencia", "concorrencia"),
+        ("", None),
+        (None, None),
+    ],
+)
+def test_lower_without_spaces(value, expected):
+    assert lower_without_spaces(value) == expected
