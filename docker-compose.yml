@@ -10,11 +10,6 @@ services:
         volumes:
             - ./db:/var/lib/postgresql
 
-    tika:
-        image: apache/tika
-        ports:
-            - "9998:9998"
-
     rabbitmq:
         image: rabbitmq
         ports:
@@ -22,17 +17,10 @@ services:
           - "15672:15672"
         restart: always
 
-    dramatiq:
-        build: .
-        command: ["dramatiq", "web.datasets.tasks", "-p3", "-t2", "-v"]
-        environment:
-            DATABASE_HOST: db
-            TIKA_CLIENT_ONLY: 1
-            TIKA_SERVER_ENDPOINT: http://tika:9998
-        depends_on:
-            - db
-            - rabbitmq
-            - tika
+    tika:
+        image: apache/tika
+        ports:
+            - "9998:9998"
 
     web:
         build: .
@@ -47,3 +35,16 @@ services:
         depends_on:
             - db
             - dramatiq
+
+    dramatiq:
+        build: .
+        command: ["dramatiq", "web.datasets.tasks", "-p3", "-t2", "-v"]
+        environment:
+            DATABASE_HOST: db
+            TIKA_CLIENT_ONLY: 1
+            TIKA_SERVER_ENDPOINT: http://tika:9998
+        env_file: .env
+        depends_on:
+            - tika
+            - db
+            - rabbitmq
