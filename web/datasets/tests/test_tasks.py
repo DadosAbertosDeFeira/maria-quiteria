@@ -245,15 +245,12 @@ class TestDistributeCityCouncilObjectsToSync:
     @pytest.mark.parametrize(
         "payload_filename",
         [
-            "fixtures/response-20042021.json",
-            "fixtures/response-22042021.json",
-            "fixtures/response-23042021.json",
+            "web/datasets/tests/fixtures/response-20042021.json",
+            "web/datasets/tests/fixtures/response-22042021.json",
+            "web/datasets/tests/fixtures/response-23042021.json",
         ],
     )
     def test_distribution_with_real_payloads(self, payload_filename):
-        import os
-
-        print(os.getcwd())
         payload = json.loads(open(payload_filename).read())
         distribute_city_council_objects_to_sync(payload)
 

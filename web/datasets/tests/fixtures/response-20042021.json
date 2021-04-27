@@ -1,0 +1,21 @@
+{
+	"inclusoesContrato": [],
+	"alteracoesContrato": [],
+	"exclusoesContrato": [],
+	"inclusoesLicitacao": [],
+	"alteracoesLicitacao": [{
+		"codLic": "214",
+		"codTipoLic": "7",
+		"numLic": "004/2020",
+		"numTipoLic": "004/2020",
+		"objetoLic": "Contratação de pessoa jurídica do ramo de atividade pertinente para fornecimento, por demanda, de medalhas de condecorações para homenagens prestadas pela Câmara Municipal de Feira de Santana-BA, conforme condições, quantidades e especificações constantes no Edital e seus Anexos.",
+		"dtLic": "2020-03-26 09:00:00"
+	}],
+	"exclusoesLicitacao": [],
+	"inclusoesReceita": [],
+	"alteracoesReceita": [],
+	"exclusoesReceita": [],
+	"inclusoesDespesa": [],
+	"alteracoesDespesa": [],
+	"exclusoesDespesa": [{"codigo":  "1"}]
+}
