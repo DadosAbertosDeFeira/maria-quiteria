@@ -1,3 +1,4 @@
+import json
 from datetime import date, datetime, timedelta
 
 import pytest
@@ -240,6 +241,21 @@ class TestDistributeCityCouncilObjectsToSync:
         distribute_city_council_objects_to_sync(payload)
 
         assert task.called is False
+
+    @pytest.mark.parametrize(
+        "payload_filename",
+        [
+            "fixtures/response-20042021.json",
+            "fixtures/response-22042021.json",
+            "fixtures/response-23042021.json",
+        ],
+    )
+    def test_distribution_with_real_payloads(self, payload_filename):
+        import os
+
+        print(os.getcwd())
+        payload = json.loads(open(payload_filename).read())
+        distribute_city_council_objects_to_sync(payload)
 
 
 @pytest.mark.django_db
@@ -660,7 +676,7 @@ class TestCityCouncilExpense:
             external_file_line=2,
             excluded=False,
         )
-        record = {"codArquivo": "253", "codLinha": "2"}
+        record = {"codigo": "253"}
         remove_citycouncil_expense(record)
 
         expense.refresh_from_db()
