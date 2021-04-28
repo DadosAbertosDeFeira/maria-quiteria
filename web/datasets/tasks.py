@@ -204,8 +204,7 @@ def save_citycouncil_files(files, object, url_key):
 
     if files:
         for file_ in files:
-            url = f"{settings.CITY_COUNCIL_WEBSERVICE}{file_[url_key]}"
-            save_file(url, content_type, object.pk)
+            save_file(file_[url_key], content_type, object.pk)
 
 
 @actor(max_retries=1)
@@ -213,9 +212,10 @@ def add_citycouncil_bid(record):
     new_item = to_citycouncil_bid(record)
     new_item["crawled_at"] = datetime.now()
     new_item["crawled_from"] = settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT
-    bid = CityCouncilBid.objects.create(**new_item)
+    bid, _ = CityCouncilBid.objects.get_or_create(
+        external_code=new_item["external_code"], defaults=new_item
+    )
     save_citycouncil_files(record.get("arquivos"), bid, "caminhoArqLic")
-
     return bid
 
 
@@ -241,9 +241,10 @@ def add_citycouncil_contract(record):
     new_item = to_citycouncil_contract(record)
     new_item["crawled_at"] = datetime.now()
     new_item["crawled_from"] = settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT
-    contract = CityCouncilContract.objects.create(**new_item)
+    contract, _ = CityCouncilContract.objects.get_or_create(
+        external_code=new_item["external_code"], defaults=new_item
+    )
     save_citycouncil_files(record.get("arquivos"), contract, "caminho")
-
     return contract
 
 
@@ -271,7 +272,10 @@ def add_citycouncil_revenue(record):
     new_item = to_citycouncil_revenue(record)
     new_item["crawled_at"] = datetime.now()
     new_item["crawled_from"] = settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT
-    return CityCouncilRevenue.objects.create(**new_item)
+    revenue, _ = CityCouncilRevenue.objects.get_or_create(
+        external_code=new_item["external_code"], defaults=new_item
+    )
+    return revenue
 
 
 @actor(max_retries=1)
@@ -296,7 +300,14 @@ def add_citycouncil_expense(record):
     new_item = to_citycouncil_expense(record)
     new_item["crawled_at"] = datetime.now()
     new_item["crawled_from"] = settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT
-    return CityCouncilExpense.objects.create(**new_item)
+    expense, _ = CityCouncilExpense.objects.get_or_create(
+        external_file_code=new_item["external_file_code"],
+        external_file_line=new_item["external_file_line"],
+        number=new_item["number"],
+        phase=new_item["phase"],
+        defaults=new_item,
+    )
+    return expense
 
 
 @actor(max_retries=1)
