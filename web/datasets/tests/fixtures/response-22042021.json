@@ -1,0 +1,60 @@
+{
+    "inclusoesContrato": [],
+    "alteracoesContrato": [],
+    "exclusoesContrato": [],
+    "inclusoesLicitacao": [
+        {
+            "codLic": "229",
+            "codTipoLic": "7",
+            "numLic": "001\/2021",
+            "numTipoLic": "001\/2021",
+            "objetoLic": "Contratacao de empresa especializada na prestacao de servicos tecnicos na area de Solucoes Integradas em Tecnologia, para fornecimento de licenca de uso de Software de Gerenciamento de Processo Legislativo (sistema de protocolo legislativo WEB e DESK, sistema de tramitacao legislativa WEB e DESK, sistema de bancos de leis WEB, sistema inibidor de multiplicidade de materias, sistema de transparencia legislativa, sistema de painel eletronico, sistema em plataforma mobile de votacao em plenario e sistema em plataforma mobile de consulta de projetos e seus tramites), incluindo instalacao, configuracao, treinamento e parametrizacao, atendendo as caracteristicas da Camara Municipal de Feira de Santana ? Bahia, conforme especificacoes, quantitativos e condicoes estabelecidas no Edital e seus Anexos",
+            "dtLic": "2021-05-05 09:00:00",
+            "arquivos": [
+                {
+                    "codArqLic": "1588",
+                    "codLic": "229",
+                    "dsArqLic": "Aviso PP 001-2021 - Publicacao.doc",
+                    "caminhoArqLic": "https:\/\/www.transparencia.feiradesantana.ba.leg.br\/adm\/upload\/licitacao\/Aviso PP 001-2021 - Publicacao.doc"
+                },
+                {
+                    "codArqLic": "1590",
+                    "codLic": "229",
+                    "dsArqLic": "Edital Lic 001-2021 - Sist Gerenc Legislativo - PP 001-2021.doc",
+                    "caminhoArqLic": "https:\/\/www.transparencia.feiradesantana.ba.leg.br\/adm\/upload\/licitacao\/Edital Lic 001-2021 - Sist Gerenc Legislativo - PP 001-2021.doc"
+                }
+            ]
+        }
+    ],
+    "alteracoesLicitacao": [
+        {
+            "codLic": "229",
+            "codTipoLic": "7",
+            "numLic": "001\/2021",
+            "numTipoLic": "001\/2021",
+            "objetoLic": "Contratacao de empresa especializada na prestacao de servicos tecnicos na area de Solucoes Integradas em Tecnologia, para fornecimento de licenca de uso de Software de Gerenciamento de Processo Legislativo (sistema de protocolo legislativo WEB e DESK, sistema de tramitacao legislativa WEB e DESK, sistema de bancos de leis WEB, sistema inibidor de multiplicidade de materias, sistema de transparencia legislativa, sistema de painel eletronico, sistema em plataforma mobile de votacao em plenario e sistema em plataforma mobile de consulta de projetos e seus tramites), incluindo instalacao, configuracao, treinamento e parametrizacao, atendendo as caracteristicas da Camara Municipal de Feira de Santana ? Bahia, conforme especificacoes, quantitativos e condicoes estabelecidas no Edital e seus Anexos",
+            "dtLic": "2021-05-05 09:00:00",
+            "arquivos": [
+                {
+                    "codArqLic": "1588",
+                    "codLic": "229",
+                    "dsArqLic": "Aviso PP 001-2021 - Publicacao.doc",
+                    "caminhoArqLic": "https:\/\/www.transparencia.feiradesantana.ba.leg.br\/adm\/upload\/licitacao\/Aviso PP 001-2021 - Publicacao.doc"
+                },
+                {
+                    "codArqLic": "1590",
+                    "codLic": "229",
+                    "dsArqLic": "Edital Lic 001-2021 - Sist Gerenc Legislativo - PP 001-2021.doc",
+                    "caminhoArqLic": "https:\/\/www.transparencia.feiradesantana.ba.leg.br\/adm\/upload\/licitacao\/Edital Lic 001-2021 - Sist Gerenc Legislativo - PP 001-2021.doc"
+                }
+            ]
+        }
+    ],
+    "exclusoesLicitacao": [],
+    "inclusoesReceita": [],
+    "alteracoesReceita": [],
+    "exclusoesReceita": [],
+    "inclusoesDespesa": [],
+    "alteracoesDespesa": [],
+    "exclusoesDespesa": []
+}

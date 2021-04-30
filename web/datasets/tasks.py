@@ -195,6 +195,7 @@ def distribute_city_council_objects_to_sync(payload):
             broker.enqueue(task.message(record))
 
 
+@actor(max_retries=1)
 def save_citycouncil_files(files, object, url_key):
     if not files:
         return
@@ -203,22 +204,22 @@ def save_citycouncil_files(files, object, url_key):
 
     if files:
         for file_ in files:
-            url = f"{settings.CITY_COUNCIL_WEBSERVICE}{file_[url_key]}"
-            save_file(url, content_type, object.pk)
+            save_file(file_[url_key], content_type, object.pk)
 
 
-@actor
+@actor(max_retries=1)
 def add_citycouncil_bid(record):
     new_item = to_citycouncil_bid(record)
     new_item["crawled_at"] = datetime.now()
     new_item["crawled_from"] = settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT
-    bid = CityCouncilBid.objects.create(**new_item)
+    bid, _ = CityCouncilBid.objects.get_or_create(
+        external_code=new_item["external_code"], defaults=new_item
+    )
     save_citycouncil_files(record.get("arquivos"), bid, "caminhoArqLic")
-
     return bid
 
 
-@actor
+@actor(max_retries=1)
 def update_citycouncil_bid(record):
     bid = CityCouncilBid.objects.get(external_code=record["codLic"])
     updated_item = to_citycouncil_bid(record)
@@ -230,23 +231,24 @@ def update_citycouncil_bid(record):
     return bid
 
 
-@actor
+@actor(max_retries=1)
 def remove_citycouncil_bid(record):
     CityCouncilBid.objects.filter(external_code=record["codLic"]).update(excluded=True)
 
 
-@actor
+@actor(max_retries=1)
 def add_citycouncil_contract(record):
     new_item = to_citycouncil_contract(record)
     new_item["crawled_at"] = datetime.now()
     new_item["crawled_from"] = settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT
-    contract = CityCouncilContract.objects.create(**new_item)
+    contract, _ = CityCouncilContract.objects.get_or_create(
+        external_code=new_item["external_code"], defaults=new_item
+    )
     save_citycouncil_files(record.get("arquivos"), contract, "caminho")
-
     return contract
 
 
-@actor
+@actor(max_retries=1)
 def update_citycouncil_contract(record):
     contract = CityCouncilContract.objects.get(external_code=record["codCon"])
     updated_item = to_citycouncil_contract(record)
@@ -258,22 +260,25 @@ def update_citycouncil_contract(record):
     return contract
 
 
-@actor
+@actor(max_retries=1)
 def remove_citycouncil_contract(record):
     CityCouncilContract.objects.filter(external_code=record["codCon"]).update(
         excluded=True
     )
 
 
-@actor
+@actor(max_retries=1)
 def add_citycouncil_revenue(record):
     new_item = to_citycouncil_revenue(record)
     new_item["crawled_at"] = datetime.now()
     new_item["crawled_from"] = settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT
-    return CityCouncilRevenue.objects.create(**new_item)
+    revenue, _ = CityCouncilRevenue.objects.get_or_create(
+        external_code=new_item["external_code"], defaults=new_item
+    )
+    return revenue
 
 
-@actor
+@actor(max_retries=1)
 def update_citycouncil_revenue(record):
     revenue = CityCouncilRevenue.objects.get(external_code=record["codLinha"])
     updated_item = to_citycouncil_revenue(record)
@@ -283,22 +288,29 @@ def update_citycouncil_revenue(record):
     return revenue
 
 
-@actor
+@actor(max_retries=1)
 def remove_citycouncil_revenue(record):
     CityCouncilRevenue.objects.filter(external_code=record["codLinha"]).update(
         excluded=True
     )
 
 
-@actor
+@actor(max_retries=1)
 def add_citycouncil_expense(record):
     new_item = to_citycouncil_expense(record)
     new_item["crawled_at"] = datetime.now()
     new_item["crawled_from"] = settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT
-    return CityCouncilExpense.objects.create(**new_item)
+    expense, _ = CityCouncilExpense.objects.get_or_create(
+        external_file_code=new_item["external_file_code"],
+        external_file_line=new_item["external_file_line"],
+        number=new_item["number"],
+        phase=new_item["phase"],
+        defaults=new_item,
+    )
+    return expense
 
 
-@actor
+@actor(max_retries=1)
 def update_citycouncil_expense(record):
     expense = CityCouncilExpense.objects.get(
         external_file_code=record["codArquivo"],
@@ -311,9 +323,8 @@ def update_citycouncil_expense(record):
     return expense
 
 
-@actor
+@actor(max_retries=1)
 def remove_citycouncil_expense(record):
     CityCouncilExpense.objects.filter(
-        external_file_code=record["codArquivo"],
-        external_file_line=record["codLinha"],
+        external_file_code=record["codigo"], external_file_line=record["linha"]
     ).update(excluded=True)

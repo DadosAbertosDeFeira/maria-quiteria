@@ -3,13 +3,14 @@ import logging
 from django.contrib.admin.options import get_content_type_for_model
 from web.datasets.models import CityCouncilBid, CityCouncilContract
 from web.datasets.parsers import (
+    city_council_bid_modality_mapping,
     city_council_revenue_type_mapping,
     currency_to_float,
     from_str_to_date,
     from_str_to_datetime,
     get_phase,
     lower,
-    modality_mapping_from_city_council_db,
+    lower_without_spaces,
     to_boolean,
 )
 
@@ -30,7 +31,7 @@ CITYCOUNCIL_BID_FIELDS_MAPPING = {
 CITYCOUNCIL_BID_FUNCTIONS = {
     "excluded": to_boolean,
     "session_at": from_str_to_datetime,
-    "modality": modality_mapping_from_city_council_db,
+    "modality": city_council_bid_modality_mapping,
 }
 
 
@@ -114,7 +115,7 @@ CITYCOUNCIL_EXPENSE_FUNCTIONS = {
     "published_at": from_str_to_date,
     "date": from_str_to_date,
     "phase": get_phase,
-    "modality": lower,
+    "modality": lower_without_spaces,
 }
 
 

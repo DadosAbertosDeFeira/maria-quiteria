@@ -10,6 +10,7 @@ __pycache__
 
 # data
 *.json
+!**/fixtures/*.json
 *.csv
 *.xls
 *.zip

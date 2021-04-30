@@ -1,3 +1,4 @@
+import json
 from datetime import date, datetime, timedelta
 
 import pytest
@@ -241,6 +242,18 @@ class TestDistributeCityCouncilObjectsToSync:
 
         assert task.called is False
 
+    @pytest.mark.parametrize(
+        "payload_filename",
+        [
+            "web/datasets/tests/fixtures/response-20042021.json",
+            "web/datasets/tests/fixtures/response-22042021.json",
+            "web/datasets/tests/fixtures/response-23042021.json",
+        ],
+    )
+    def test_distribution_with_real_payloads(self, payload_filename):
+        payload = json.loads(open(payload_filename).read())
+        distribute_city_council_objects_to_sync(payload)
+
 
 @pytest.mark.django_db
 class TestCityCouncilBid:
@@ -268,6 +281,24 @@ class TestCityCouncilBid:
         assert bid.session_at == datetime(2020, 3, 26, 9, 0, 0)
         assert bid.excluded is False
         assert bid.files.count() == 0
+
+    def test_do_not_duplicate_existent_citycouncil_bid(self):
+        assert CityCouncilBid.objects.count() == 0
+
+        record = {
+            "codLic": "214",
+            "codTipoLic": "7",
+            "numLic": "004/2020",
+            "numTipoLic": "004/2020",
+            "objetoLic": "Contratação de pessoa jurídica",
+            "dtLic": "2020-03-26 09:00:00",
+            "arquivos": [],
+        }
+        add_citycouncil_bid(record)
+        add_citycouncil_bid(record)
+        add_citycouncil_bid(record)
+
+        assert CityCouncilBid.objects.count() == 1
 
     def test_add_citycouncil_bid_with_files(self, mock_save_file):
         assert CityCouncilBid.objects.count() == 0
@@ -391,6 +422,26 @@ class TestCityCouncilContract:
         assert contract_obj.start_date == expected_contract["start_date"]
         assert contract_obj.end_date == expected_contract["end_date"]
         assert contract_obj.excluded == expected_contract["excluded"]
+
+    def test_do_not_duplicate_existent_citycouncil_contract(self):
+        assert CityCouncilContract.objects.count() == 0
+        record = {
+            "codCon": "43",
+            "dsCon": "CONTRATO Nº 004/2014 - PRESTAÇÃO DE SERVIÇO",
+            "objetoCon": "Contratação conforme Licitação 01/2014, Pregão 01/2014.",
+            "cpfCnpjCon": "92.559.830/0001-71",
+            "nmCon": "GREEN CARD S/A REFEIÇÕES COMÉRCIO E SERVIÇOS",
+            "valorCon": "1157115,96",
+            "dtCon": "28/3/2014",
+            "dtConfim": "27/3/2015",
+            "excluido": "N",
+            "arquivos": [],
+        }
+        add_citycouncil_contract(record)
+        add_citycouncil_contract(record)
+        add_citycouncil_contract(record)
+
+        assert CityCouncilContract.objects.count() == 1
 
     def test_add_citycouncil_contract_with_files(self, mock_save_file):
         assert CityCouncilContract.objects.count() == 0
@@ -516,6 +567,27 @@ class TestCityCouncilRevenue:
         assert revenue_obj.destination == expected_revenue["destination"]
         assert revenue_obj.excluded == expected_revenue["excluded"]
 
+    def test_do_not_duplicate_existent_citycouncil_revenue(self):
+        assert CityCouncilRevenue.objects.count() == 0
+        record = {
+            "codLinha": "240",
+            "codUnidGestora": "101",
+            "dtPublicacao": "2021-04-19",
+            "dtRegistro": "2021-04-19",
+            "tipoRec": "TRANSF",
+            "modalidade": "TRANSFERENCIA DUODECIMO",
+            "dsReceita": "Repasse Efetuado nesta Data",
+            "valor": "2568658.68",
+            "fonte": "PREFEITURA",
+            "dsNatureza": "4.5.1.2.2.02.02.01.000.0000 - Transferencias Recebidas",
+            "destinacao": "ORÇAMENTO",
+        }
+        add_citycouncil_revenue(record)
+        add_citycouncil_revenue(record)
+        add_citycouncil_revenue(record)
+
+        assert CityCouncilRevenue.objects.count() == 1
+
     def test_update_citycouncil_revenue(self):
         revenue = baker.make_recipe("datasets.CityCouncilRevenue", external_code=43)
         record = {
@@ -619,6 +691,38 @@ class TestCityCouncilExpense:
         assert expense_obj.process_number == expected_expense["process_number"]
         assert expense_obj.value == expected_expense["value"]
 
+    def test_do_not_duplicate_existent_citycouncil_expense(self):
+        assert CityCouncilExpense.objects.count() == 0
+        record = {
+            "codArquivo": "253",
+            "codEtapa": "EMP",
+            "codLinha": "2",
+            "codUnidOrcam": "101",
+            "dsDespesa": "IMPORTE DESTINADO A PAGAMENTO DE SUBSIDIOS DURANTE O "
+            "PERIODO.                                         ",
+            "dsFonteRec": "0000 - " "TESOURO",
+            "dsFuncao": "01 - " "LEGISLATIVA",
+            "dsNatureza": "319011010000000000 - V.Vant.Fixas P.Civil(Ve.Base "
+            "Folha)                2003 - Administracao da acao "
+            "legislativa                          ",
+            "dsSubfuncao": "031 - " "ACAO",
+            "dtPublicacao": "2/1/2014",
+            "dtRegistro": "2/1/2014",
+            "excluido": "N",
+            "modalidade": "ISENTO        ",
+            "nmCredor": "VEREADORES      ",
+            "nuCpfCnpj": "14.488.415/0001-60",
+            "numEtapa": "14000001        ",
+            "numProcadm": "001/2014      ",
+            "numProclic": "              ",
+            "valor": "3790000,00",
+        }
+        add_citycouncil_expense(record)
+        add_citycouncil_expense(record)
+        add_citycouncil_expense(record)
+
+        assert CityCouncilExpense.objects.count() == 1
+
     def test_update_citycouncil_expense(self):
         expense = baker.make_recipe(
             "datasets.CityCouncilExpense",
@@ -660,7 +764,7 @@ class TestCityCouncilExpense:
             external_file_line=2,
             excluded=False,
         )
-        record = {"codArquivo": "253", "codLinha": "2"}
+        record = {"codigo": "253", "linha": "2"}
         remove_citycouncil_expense(record)
 
         expense.refresh_from_db()
