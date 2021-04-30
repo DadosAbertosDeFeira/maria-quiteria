@@ -325,6 +325,6 @@ def update_citycouncil_expense(record):
 
 @actor(max_retries=1)
 def remove_citycouncil_expense(record):
-    CityCouncilExpense.objects.filter(external_file_code=record["codigo"]).update(
-        excluded=True
-    )
+    CityCouncilExpense.objects.filter(
+        external_file_code=record["codigo"], external_file_line=record["linha"]
+    ).update(excluded=True)

@@ -764,7 +764,7 @@ class TestCityCouncilExpense:
             external_file_line=2,
             excluded=False,
         )
-        record = {"codigo": "253"}
+        record = {"codigo": "253", "linha": "2"}
         remove_citycouncil_expense(record)
 
         expense.refresh_from_db()
