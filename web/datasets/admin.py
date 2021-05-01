@@ -235,7 +235,12 @@ class CityHallBidAdmin(FileURLsMixin, PublicModelAdmin):
 
 @admin.register(SyncInformation)
 class SyncInformationAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        "source",
+        "date",
+        "created_at",
+        "succeed",
+    )
 
 
 @admin.register(File)

@@ -535,11 +535,18 @@ class SyncInformation(models.Model):
     succeed = models.BooleanField("Concluída com sucesso?", null=True)
     response = models.JSONField("Resposta", null=True)
 
+    class Meta:
+        verbose_name = "Sincronização"
+        verbose_name_plural = "Sincronizações"
+        ordering = ["-created_at"]
+
     def __repr__(self):
-        return f"{self.created_at.strftime('%d-%m-%Y')} {self.source} ({self.succeed})"
+        return f"{self.source} {self.created_at} {self.date}"
 
     def __str__(self):
-        return f"{self.created_at.strftime('%d-%m-%Y')} {self.source} ({self.succeed})"
+        created_at_label = self.created_at.strftime("%d-%m-%Y")
+        date_label = self.date.strftime("%d-%m-%Y")
+        return f"{self.source.title()} em {created_at_label} para {date_label}"
 
 
 class TCMBADocument(DatasetMixin):
