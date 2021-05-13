@@ -190,6 +190,7 @@ def distribute_city_council_objects_to_sync(payload):
     }
     broker = get_broker()
     for action_name, records in payload.items():
+        info(f"{action_name}: {len(records)} registros")
         task = action_methods.get(action_name)
         for record in records:
             broker.enqueue(task.message(record))
