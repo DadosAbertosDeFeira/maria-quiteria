@@ -28,6 +28,7 @@ class Common(Configuration):
 
     ALLOWED_HOSTS = []
     INSTALLED_APPS = [
+        "django_dramatiq",
         "web.home.apps.HomeConfig",
         "public_admin",
         "django.contrib.admin",
@@ -122,9 +123,26 @@ class Common(Configuration):
 
     BROKER_HOST = values.Value(environ_prefix=None, default="rabbitmq")
     BROKER_PORT = values.Value(environ_prefix=None, default="5672")
-    BROKER_USER = values.Value(environ_prefix=None, default="guest")
-    BROKER_PASSWORD = values.Value(environ_prefix=None, default="guest")
-    BROKER_VHOST = values.Value(environ_prefix=None, default="/")
+
+    DRAMATIQ_BROKER = {
+        "BROKER": "dramatiq.brokers.rabbitmq.RabbitmqBroker",
+        "OPTIONS": {
+            "host": BROKER_HOST,
+            "port": BROKER_PORT,
+            "heartbeat": 0,
+            "connection_attempts": 5,
+        },
+        "MIDDLEWARE": [
+            "dramatiq.middleware.Prometheus",
+            "dramatiq.middleware.AgeLimit",
+            "dramatiq.middleware.TimeLimit",
+            "dramatiq.middleware.Callbacks",
+            "dramatiq.middleware.Retries",
+            "django_dramatiq.middleware.DbConnectionsMiddleware",
+            "django_dramatiq.middleware.AdminMiddleware",
+        ],
+    }
+    DRAMATIQ_TASKS_DATABASE = "default"
 
     REST_FRAMEWORK = {
         "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
