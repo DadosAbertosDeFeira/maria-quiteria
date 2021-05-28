@@ -119,6 +119,7 @@ class CityCouncilContractAdmin(FileURLsMixin, PublicModelAdmin):
         "company_or_person",
     ]
     list_display = (
+        "crawled_at",
         "start_date",
         "end_date",
         "company_or_person",
@@ -144,6 +145,7 @@ class CityCouncilExpenseAdmin(PublicModelAdmin):
         "company_or_person",
     ]
     list_display = (
+        "crawled_at",
         "date",
         "phase",
         "company_or_person",
@@ -274,6 +276,7 @@ class CityCouncilBidAdmin(FileURLsMixin, PublicModelAdmin):
     search_fields = ["description", "code", "code_type"]
     list_filter = ["session_at", "modality"]
     list_display = (
+        "crawled_at",
         "session_at",
         "modality",
         "code",
@@ -297,6 +300,7 @@ class CityCouncilRevenueAdmin(PublicModelAdmin):
         "destination",
     ]
     list_display = (
+        "crawled_at",
         "published_at",
         "registered_at",
         "revenue_type",
