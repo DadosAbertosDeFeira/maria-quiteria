@@ -121,12 +121,10 @@ class Common(Configuration):
     )
     CITY_COUNCIL_WEBSERVICE_TOKEN = values.Value(default="fake", environ_prefix=None)
 
-    BROKER_URL = values.Value(environ_prefix=None, default="amqp://rabbitmq:5672")
-
     DRAMATIQ_BROKER = {
         "BROKER": "dramatiq.brokers.rabbitmq.RabbitmqBroker",
         "OPTIONS": {
-            "url": BROKER_URL,
+            "url": os.getenv("CLOUDAMQP_URL", "amqp://rabbitmq:5672"),
         },
         "MIDDLEWARE": [
             "dramatiq.middleware.Prometheus",
@@ -174,7 +172,19 @@ class Dev(Common):
 
 
 class Test(Dev):
-    pass
+    DRAMATIQ_BROKER = {
+        "BROKER": "dramatiq.brokers.stub.StubBroker",
+        "OPTIONS": {},
+        "MIDDLEWARE": [
+            "dramatiq.middleware.AgeLimit",
+            "dramatiq.middleware.TimeLimit",
+            "dramatiq.middleware.Callbacks",
+            "dramatiq.middleware.Pipelines",
+            "dramatiq.middleware.Retries",
+            "django_dramatiq.middleware.DbConnectionsMiddleware",
+            "django_dramatiq.middleware.AdminMiddleware",
+        ],
+    }
 
 
 class Prod(Common):

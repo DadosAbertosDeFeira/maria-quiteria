@@ -1,5 +1,5 @@
-import django
-from configurations.importer import install
+import configurations
+from dotenv import find_dotenv, load_dotenv
 
-install(check_options=True)
-django.setup()
+load_dotenv(find_dotenv())
+configurations.setup()
