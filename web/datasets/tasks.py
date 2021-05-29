@@ -1,72 +1,29 @@
-import os
 from datetime import datetime
 from logging import info
 from pathlib import Path
 
-import pika
 import requests
 from django.conf import settings
 from django.contrib.admin.options import get_content_type_for_model
-from django.core.exceptions import ImproperlyConfigured
-from dotenv import find_dotenv, load_dotenv
-from dramatiq import actor, get_broker, set_broker
-from dramatiq.brokers.rabbitmq import RabbitmqBroker
-from dramatiq.brokers.stub import StubBroker
+from dramatiq import actor, get_broker
 from requests import HTTPError
 from tika import parser
-from web.datasets.services import get_s3_client
-
-# Esse bloco (feio) faz com que esse módulo funcione dentro ou fora do Django
-try:
-    from web.datasets.models import (
-        CityCouncilBid,
-        CityCouncilContract,
-        CityCouncilExpense,
-        CityCouncilRevenue,
-        File,
-        SyncInformation,
-    )
-except ImproperlyConfigured:
-    import configurations
-
-    os.environ.setdefault("DJANGO_CONFIGURATION", "Dev")
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "web.settings")
-    load_dotenv(find_dotenv())
-    configurations.setup()
-    from web.datasets.models import (
-        CityCouncilBid,
-        CityCouncilContract,
-        CityCouncilExpense,
-        CityCouncilRevenue,
-        File,
-        SyncInformation,
-    )
-
-# models precisam ser importados depois das configurações
-# para manter compatibilidade com o scraper
-from web.datasets.adapters import (  # noqa isort:skip
+from web.datasets.adapters import (
     to_citycouncil_bid,
     to_citycouncil_contract,
     to_citycouncil_expense,
     to_citycouncil_revenue,
 )
+from web.datasets.models import (
+    CityCouncilBid,
+    CityCouncilContract,
+    CityCouncilExpense,
+    CityCouncilRevenue,
+    File,
+    SyncInformation,
+)
+from web.datasets.services import get_s3_client
 
-
-if os.getenv("DJANGO_CONFIGURATION") == "Test":
-    broker = StubBroker()
-    broker.emit_after("process_boot")
-else:
-    broker = RabbitmqBroker(
-        host=settings.BROKER_HOST,
-        port=settings.BROKER_PORT,
-        credentials=pika.credentials.PlainCredentials(
-            settings.BROKER_USER, settings.BROKER_PASSWORD
-        ),
-        virtual_host=settings.BROKER_VHOST,
-        blocked_connection_timeout=300,
-    )
-
-set_broker(broker)
 client = get_s3_client(settings)
 
 
@@ -194,6 +151,10 @@ def distribute_city_council_objects_to_sync(payload):
         task = action_methods.get(action_name)
         for record in records:
             broker.enqueue(task.message(record))
+
+            # necessário por causa do StubBroker, utilizado nos testes
+            if hasattr(broker, "connection"):
+                broker.connection.close()
 
 
 @actor(max_retries=1)
