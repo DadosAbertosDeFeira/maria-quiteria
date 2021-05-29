@@ -121,16 +121,12 @@ class Common(Configuration):
     )
     CITY_COUNCIL_WEBSERVICE_TOKEN = values.Value(default="fake", environ_prefix=None)
 
-    BROKER_HOST = values.Value(environ_prefix=None, default="rabbitmq")
-    BROKER_PORT = values.Value(environ_prefix=None, default="5672")
+    BROKER_URL = values.Value(environ_prefix=None, default="amqp://rabbitmq:5672")
 
     DRAMATIQ_BROKER = {
         "BROKER": "dramatiq.brokers.rabbitmq.RabbitmqBroker",
         "OPTIONS": {
-            "host": BROKER_HOST,
-            "port": BROKER_PORT,
-            "heartbeat": 0,
-            "connection_attempts": 5,
+            "url": BROKER_URL,
         },
         "MIDDLEWARE": [
             "dramatiq.middleware.Prometheus",
