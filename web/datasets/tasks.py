@@ -151,7 +151,10 @@ def distribute_city_council_objects_to_sync(payload):
         task = action_methods.get(action_name)
         for record in records:
             broker.enqueue(task.message(record))
-            broker.connection.close()
+
+            # necessário por causa do StubBroker, utilizado nos testes
+            if hasattr(broker, "connection"):
+                broker.connection.close()
 
 
 @actor(max_retries=1)
