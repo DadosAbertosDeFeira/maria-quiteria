@@ -195,6 +195,10 @@ def distribute_city_council_objects_to_sync(payload):
         for record in records:
             broker.enqueue(task.message(record))
 
+            # necessário por causa do StubBroker, utilizado nos testes
+            if hasattr(broker, "connection"):
+                broker.connection.close()
+
 
 @actor(max_retries=1)
 def save_citycouncil_files(files, object, url_key):
