@@ -28,7 +28,6 @@ class Common(Configuration):
 
     ALLOWED_HOSTS = []
     INSTALLED_APPS = [
-        "django_dramatiq",
         "web.home.apps.HomeConfig",
         "public_admin",
         "django.contrib.admin",
@@ -121,22 +120,11 @@ class Common(Configuration):
     )
     CITY_COUNCIL_WEBSERVICE_TOKEN = values.Value(default="fake", environ_prefix=None)
 
-    DRAMATIQ_BROKER = {
-        "BROKER": "dramatiq.brokers.rabbitmq.RabbitmqBroker",
-        "OPTIONS": {
-            "url": os.getenv("CLOUDAMQP_URL", "amqp://rabbitmq:5672"),
-        },
-        "MIDDLEWARE": [
-            "dramatiq.middleware.Prometheus",
-            "dramatiq.middleware.AgeLimit",
-            "dramatiq.middleware.TimeLimit",
-            "dramatiq.middleware.Callbacks",
-            "dramatiq.middleware.Retries",
-            "django_dramatiq.middleware.DbConnectionsMiddleware",
-            "django_dramatiq.middleware.AdminMiddleware",
-        ],
-    }
-    DRAMATIQ_TASKS_DATABASE = "default"
+    BROKER_HOST = values.Value(environ_prefix=None, default="rabbitmq")
+    BROKER_PORT = values.Value(environ_prefix=None, default="5672")
+    BROKER_USER = values.Value(environ_prefix=None, default="guest")
+    BROKER_PASSWORD = values.Value(environ_prefix=None, default="guest")
+    BROKER_VHOST = values.Value(environ_prefix=None, default="/")
 
     REST_FRAMEWORK = {
         "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
@@ -172,19 +160,7 @@ class Dev(Common):
 
 
 class Test(Dev):
-    DRAMATIQ_BROKER = {
-        "BROKER": "dramatiq.brokers.stub.StubBroker",
-        "OPTIONS": {},
-        "MIDDLEWARE": [
-            "dramatiq.middleware.AgeLimit",
-            "dramatiq.middleware.TimeLimit",
-            "dramatiq.middleware.Callbacks",
-            "dramatiq.middleware.Pipelines",
-            "dramatiq.middleware.Retries",
-            "django_dramatiq.middleware.DbConnectionsMiddleware",
-            "django_dramatiq.middleware.AdminMiddleware",
-        ],
-    }
+    pass
 
 
 class Prod(Common):

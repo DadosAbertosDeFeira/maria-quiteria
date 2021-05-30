@@ -38,7 +38,7 @@ services:
 
     dramatiq:
         build: .
-        command: ["python", "manage.py", "rundramatiq_dc"]
+        command: ["dramatiq", "web.datasets.tasks", "-p3", "-t2", "-v"]
         environment:
             DATABASE_HOST: db
             TIKA_CLIENT_ONLY: 1
