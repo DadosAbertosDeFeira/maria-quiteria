@@ -29,4 +29,4 @@ shell:
 	docker-compose run --rm web python manage.py shell_plus
 
 tests:
-	docker-compose run --rm web pytest
+	docker-compose run --rm web pytest --dc Test
