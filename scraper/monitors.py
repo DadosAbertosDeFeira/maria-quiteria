@@ -8,6 +8,8 @@ def find_exceptions(stats):
     for key, value in stats.items():
         if key.startswith("spider_exceptions"):
             exceptions.append(f"`{key}` ({value})")
+        elif key.startswith("downloader/response_status_count/4"):
+            exceptions.append(f"Página não encontrada ({value})")
     return exceptions
 
 
