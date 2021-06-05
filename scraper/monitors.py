@@ -25,12 +25,19 @@ class CustomSendTelegramMessage(SendTelegramMessage):
 
         number_of_failures = len(self.result.failures)
         number_of_exceptions = len(exceptions)
-        emoji = "💀" if number_of_failures > 0 or number_of_exceptions > 0 else "🎉"
+        failed = any(
+            [
+                number_of_failures > 0,
+                number_of_exceptions > 0,
+                (n_scraped_items - number_of_exceptions) < 0,
+            ]
+        )
+        emoji = "💀" if failed else "🎉"
 
         message = "\n".join(
             [
                 f"{emoji} Spider `{self.data.spider.name}` {stats['finish_reason']}",
-                f"- Duração em segundos: {stats['elapsed_time_seconds']}",
+                f"- Duração em segundos: {round(stats['elapsed_time_seconds'], 1)}",
                 f"- Itens raspados: {n_scraped_items}",
                 f"- Erros: {number_of_failures}",
                 f"- Exceções: {number_of_exceptions}\n{exceptions_message}",
