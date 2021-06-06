@@ -28,7 +28,6 @@ class CustomSendTelegramMessage(SendTelegramMessage):
         failed = any(
             [
                 number_of_failures > 0,
-                number_of_exceptions > 0,
                 (n_scraped_items - number_of_exceptions) < 0,
             ]
         )
