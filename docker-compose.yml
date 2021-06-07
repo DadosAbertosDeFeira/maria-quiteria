@@ -15,7 +15,11 @@ services:
         ports:
           - "5672:5672"
           - "15672:15672"
-        restart: always
+        healthcheck:
+          test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+          interval: 5s
+          timeout: 15s
+          retries: 1
 
     tika:
         image: apache/tika
@@ -34,16 +38,17 @@ services:
         env_file: .env
         depends_on:
             - db
-            - dramatiq
+            - worker
 
-    dramatiq:
+    worker:
         build: .
-        command: ["dramatiq", "web.datasets.tasks", "-p3", "-t2", "-v"]
+        command: ["celery", "-A", "web", "worker", "-l", "INFO"]
         environment:
             DATABASE_HOST: db
             TIKA_CLIENT_ONLY: 1
             TIKA_SERVER_ENDPOINT: http://tika:9998
         env_file: .env
+        restart: on-failure
         depends_on:
             - tika
             - db

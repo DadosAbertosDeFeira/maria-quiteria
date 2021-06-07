@@ -126,6 +126,10 @@ class Common(Configuration):
     BROKER_PASSWORD = values.Value(environ_prefix=None, default="guest")
     BROKER_VHOST = values.Value(environ_prefix=None, default="/")
 
+    CELERY_BROKER_URL = values.Value(
+        environ_prefix=None, default="amqp://guest:guest@rabbitmq:5672/"
+    )
+
     REST_FRAMEWORK = {
         "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
         "DEFAULT_AUTHENTICATION_CLASSES": (

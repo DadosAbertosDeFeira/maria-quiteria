@@ -14,6 +14,7 @@ def backup_and_extract_content(sender, instance, **kwargs):
         from .tasks import backup_file, content_from_file
 
         if instance.s3_url is None or instance.content is None:
+            # FIXME
             pipeline(
                 [
                     backup_file.message(instance.pk),

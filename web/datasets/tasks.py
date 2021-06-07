@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pika
 import requests
+from celery import shared_task
 from django.conf import settings
 from django.contrib.admin.options import get_content_type_for_model
 from django.core.exceptions import ImproperlyConfigured
@@ -74,7 +75,7 @@ class WebserviceException(Exception):
     pass
 
 
-@actor(max_retries=5)
+@shared_task
 def content_from_file(file_pk=None, path=None, keep_file=True):
     if not any([file_pk, path]):
         raise Exception("Ou `file_pk` ou `path` devem ser informados.")
@@ -105,7 +106,7 @@ def content_from_file(file_pk=None, path=None, keep_file=True):
     return raw["content"]
 
 
-@actor(max_retries=5)
+@shared_task
 def backup_file(file_id):
     try:
         file_obj = File.objects.get(pk=file_id, s3_url__isnull=True)
