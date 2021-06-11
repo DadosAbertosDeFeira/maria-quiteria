@@ -210,7 +210,7 @@ class TestDistributeCityCouncilObjectsToSync:
             "alteracoesDespesa": [],
             "exclusoesDespesa": [],
         }
-        task = mocker.patch("web.datasets.tasks.update_citycouncil_bid.message")
+        task = mocker.patch("web.datasets.tasks.update_citycouncil_bid.delay")
         task.return_value.queue_name = "default"
 
         distribute_city_council_objects_to_sync(payload)
@@ -235,7 +235,7 @@ class TestDistributeCityCouncilObjectsToSync:
             "exclusoesDespesa": [],
         }
 
-        task = mocker.patch("web.datasets.tasks.update_citycouncil_bid.message")
+        task = mocker.patch("web.datasets.tasks.update_citycouncil_bid.delay")
         task.return_value.queue_name = "default"
 
         distribute_city_council_objects_to_sync(payload)

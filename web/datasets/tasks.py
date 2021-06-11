@@ -3,71 +3,33 @@ from datetime import datetime
 from logging import info
 from pathlib import Path
 
-import pika
 import requests
 from celery import shared_task
 from django.conf import settings
 from django.contrib.admin.options import get_content_type_for_model
-from django.core.exceptions import ImproperlyConfigured
-from dotenv import find_dotenv, load_dotenv
-from dramatiq import actor, get_broker, set_broker
-from dramatiq.brokers.rabbitmq import RabbitmqBroker
-from dramatiq.brokers.stub import StubBroker
 from requests import HTTPError
 from tika import parser
-from web.datasets.services import get_s3_client
-
-# Esse bloco (feio) faz com que esse módulo funcione dentro ou fora do Django
-try:
-    from web.datasets.models import (
-        CityCouncilBid,
-        CityCouncilContract,
-        CityCouncilExpense,
-        CityCouncilRevenue,
-        File,
-        SyncInformation,
-    )
-except ImproperlyConfigured:
-    import configurations
-
-    os.environ.setdefault("DJANGO_CONFIGURATION", "Dev")
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "web.settings")
-    load_dotenv(find_dotenv())
-    configurations.setup()
-    from web.datasets.models import (
-        CityCouncilBid,
-        CityCouncilContract,
-        CityCouncilExpense,
-        CityCouncilRevenue,
-        File,
-        SyncInformation,
-    )
-
-# models precisam ser importados depois das configurações
-# para manter compatibilidade com o scraper
-from web.datasets.adapters import (  # noqa isort:skip
+from web.datasets.adapters import (
     to_citycouncil_bid,
     to_citycouncil_contract,
     to_citycouncil_expense,
     to_citycouncil_revenue,
 )
-
+from web.datasets.models import (
+    CityCouncilBid,
+    CityCouncilContract,
+    CityCouncilExpense,
+    CityCouncilRevenue,
+    File,
+    SyncInformation,
+)
+from web.datasets.services import get_s3_client
 
 if os.getenv("DJANGO_CONFIGURATION") == "Test":
-    broker = StubBroker()
-    broker.emit_after("process_boot")
+    pass  # FIXME
 else:
-    broker = RabbitmqBroker(
-        host=settings.BROKER_HOST,
-        port=settings.BROKER_PORT,
-        credentials=pika.credentials.PlainCredentials(
-            settings.BROKER_USER, settings.BROKER_PASSWORD
-        ),
-        virtual_host=settings.BROKER_VHOST,
-        blocked_connection_timeout=300,
-    )
+    pass
 
-set_broker(broker)
 client = get_s3_client(settings)
 
 
@@ -130,7 +92,7 @@ def backup_file(file_id):
     return s3_url
 
 
-@actor(max_retries=5)
+@shared_task
 def get_city_council_updates(formatted_date):
     """Solicita atualizações ao webservice da Câmara."""
     target_date = datetime.strptime(formatted_date, "%Y-%m-%d").date()
@@ -166,7 +128,7 @@ def get_city_council_updates(formatted_date):
     return response
 
 
-@actor(max_retries=0)
+@shared_task
 def distribute_city_council_objects_to_sync(payload):
     """Recebe o payload e dispara uma task para cada registro.
 
@@ -189,19 +151,14 @@ def distribute_city_council_objects_to_sync(payload):
         "alteracoesDespesa": update_citycouncil_expense,
         "exclusoesDespesa": remove_citycouncil_expense,
     }
-    broker = get_broker()
     for action_name, records in payload.items():
         info(f"{action_name}: {len(records)} registros")
         task = action_methods.get(action_name)
         for record in records:
-            broker.enqueue(task.message(record))
-
-            # necessário por causa do StubBroker, utilizado nos testes
-            if hasattr(broker, "connection"):
-                broker.connection.close()
+            task.delay(record)
 
 
-@actor(max_retries=1)
+@shared_task(retry_kwargs={"max_retries": 1})
 def save_citycouncil_files(files, object, url_key):
     if not files:
         return
@@ -213,7 +170,7 @@ def save_citycouncil_files(files, object, url_key):
             save_file(file_[url_key], content_type, object.pk)
 
 
-@actor(max_retries=1)
+@shared_task(retry_kwargs={"max_retries": 1})
 def add_citycouncil_bid(record):
     new_item = to_citycouncil_bid(record)
     new_item["crawled_at"] = datetime.now()
@@ -225,7 +182,8 @@ def add_citycouncil_bid(record):
     return bid
 
 
-@actor(max_retries=1)
+# TODO tentar novamente se não existe apenas
+@shared_task(retry_kwargs={"max_retries": 1})
 def update_citycouncil_bid(record):
     bid = CityCouncilBid.objects.get(external_code=record["codLic"])
     updated_item = to_citycouncil_bid(record)
@@ -237,12 +195,12 @@ def update_citycouncil_bid(record):
     return bid
 
 
-@actor(max_retries=1)
+@shared_task(retry_kwargs={"max_retries": 1})
 def remove_citycouncil_bid(record):
     CityCouncilBid.objects.filter(external_code=record["codLic"]).update(excluded=True)
 
 
-@actor(max_retries=1)
+@shared_task(retry_kwargs={"max_retries": 1})
 def add_citycouncil_contract(record):
     new_item = to_citycouncil_contract(record)
     new_item["crawled_at"] = datetime.now()
@@ -254,7 +212,7 @@ def add_citycouncil_contract(record):
     return contract
 
 
-@actor(max_retries=1)
+@shared_task(retry_kwargs={"max_retries": 1})
 def update_citycouncil_contract(record):
     contract = CityCouncilContract.objects.get(external_code=record["codCon"])
     updated_item = to_citycouncil_contract(record)
@@ -266,14 +224,14 @@ def update_citycouncil_contract(record):
     return contract
 
 
-@actor(max_retries=1)
+@shared_task(retry_kwargs={"max_retries": 1})
 def remove_citycouncil_contract(record):
     CityCouncilContract.objects.filter(external_code=record["codCon"]).update(
         excluded=True
     )
 
 
-@actor(max_retries=1)
+@shared_task(retry_kwargs={"max_retries": 1})
 def add_citycouncil_revenue(record):
     new_item = to_citycouncil_revenue(record)
     new_item["crawled_at"] = datetime.now()
@@ -284,7 +242,7 @@ def add_citycouncil_revenue(record):
     return revenue
 
 
-@actor(max_retries=1)
+@shared_task(retry_kwargs={"max_retries": 1})
 def update_citycouncil_revenue(record):
     revenue = CityCouncilRevenue.objects.get(external_code=record["codLinha"])
     updated_item = to_citycouncil_revenue(record)
@@ -294,14 +252,14 @@ def update_citycouncil_revenue(record):
     return revenue
 
 
-@actor(max_retries=1)
+@shared_task(retry_kwargs={"max_retries": 1})
 def remove_citycouncil_revenue(record):
     CityCouncilRevenue.objects.filter(external_code=record["codLinha"]).update(
         excluded=True
     )
 
 
-@actor(max_retries=1)
+@shared_task(retry_kwargs={"max_retries": 1})
 def add_citycouncil_expense(record):
     new_item = to_citycouncil_expense(record)
     new_item["crawled_at"] = datetime.now()
@@ -316,7 +274,7 @@ def add_citycouncil_expense(record):
     return expense
 
 
-@actor(max_retries=1)
+@shared_task(retry_kwargs={"max_retries": 1})
 def update_citycouncil_expense(record):
     expense = CityCouncilExpense.objects.get(
         external_file_code=record["codArquivo"],
@@ -329,7 +287,7 @@ def update_citycouncil_expense(record):
     return expense
 
 
-@actor(max_retries=1)
+@shared_task(retry_kwargs={"max_retries": 1})
 def remove_citycouncil_expense(record):
     CityCouncilExpense.objects.filter(
         external_file_code=record["codigo"], external_file_line=record["linha"]
