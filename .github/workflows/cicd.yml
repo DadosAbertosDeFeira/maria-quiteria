@@ -47,11 +47,11 @@ jobs:
           --health-retries 5
       rabbitmq:
         image: rabbitmq
-      env:
-          RABBITMQ_DEFAULT_USER: guest
-          RABBITMQ_DEFAULT_PASS: guest
-        ports:
-          - 5672:5672
+        env:
+            RABBITMQ_DEFAULT_USER: guest
+            RABBITMQ_DEFAULT_PASS: guest
+          ports:
+            - 5672:5672
   deploy:
     runs-on: ubuntu-18.04
     if: github.ref == 'refs/heads/main'
