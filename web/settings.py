@@ -154,7 +154,7 @@ class Dev(Common):
 
 
 class Test(Dev):
-    pass
+    CELERY_TASK_ALWAYS_EAGER = True
 
 
 class Prod(Common):

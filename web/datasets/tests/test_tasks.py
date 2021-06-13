@@ -62,12 +62,12 @@ class TestContentFromFile:
             content=None,
         )
 
-        result = content_from_file(a_file.pk)
+        result = content_from_file.delay(a_file.pk)
 
         a_file.refresh_from_db()
         assert parser.from_file.called
         assert a_file.content == "quarenta e dois"
-        assert result == "quarenta e dois"
+        assert result.get() == "quarenta e dois"
 
     def test_content_from_files_not_saving_to_db(self, parser, path):
         result = content_from_file(path="/tmp/README.md")
@@ -93,7 +93,7 @@ class TestBackupFile:
             f"https://teste.s3.brasil.amazonaws.com/{expected_s3_file_path}"
         )
 
-        backup_file(a_file.pk)
+        backup_file.delay(a_file.pk)
 
         a_file.refresh_from_db()
 
@@ -112,7 +112,8 @@ class TestBackupFile:
             checksum="random",
             s3_url="https://s3url.com",
         )
-        assert backup_file(a_file.pk) is None
+        result = backup_file.delay(a_file.pk)
+        assert result.get() is None
 
 
 @pytest.mark.django_db
@@ -147,7 +148,8 @@ class TestGetCityCouncilUpdates:
         yesterday = date.today() - timedelta(days=1)
         formatted_yesterday = yesterday.strftime("%Y-%m-%d")
 
-        assert get_city_council_updates(formatted_yesterday) == expected_payload
+        result = get_city_council_updates.delay(formatted_yesterday)
+        assert result.get() == expected_payload
 
         assert post_mock.called
         assert post_mock.call_args_list[0][1]["params"]["data"] == formatted_yesterday
@@ -164,9 +166,11 @@ class TestGetCityCouncilUpdates:
         post_mock.return_value.json.return_value = expected_payload
         tomorrow = date.today() + timedelta(days=1)
 
-        with pytest.raises(WebserviceException) as exception:
-            get_city_council_updates(tomorrow.strftime("%Y-%m-%d"))
-        assert "Os parametros enviados são inválidos." in str(exception.value)
+        with pytest.raises(WebserviceException):
+            result = get_city_council_updates.delay(tomorrow.strftime("%Y-%m-%d"))
+            result.get()
+            assert result.failed() is True
+            assert "Os parametros enviados são inválidos." in result.traceback
 
         sync_info = SyncInformation.objects.get()
         assert sync_info.date == tomorrow
@@ -180,7 +184,9 @@ class TestGetCityCouncilUpdates:
         yesterday = date.today() - timedelta(days=1)
 
         with pytest.raises(HTTPError):
-            get_city_council_updates(yesterday.strftime("%Y-%m-%d"))
+            result = get_city_council_updates.delay(yesterday.strftime("%Y-%m-%d"))
+            result.get()
+            assert result.failed() is True
 
         sync_info = SyncInformation.objects.get()
         assert sync_info.date == yesterday
@@ -213,7 +219,7 @@ class TestDistributeCityCouncilObjectsToSync:
         task = mocker.patch("web.datasets.tasks.update_citycouncil_bid.delay")
         task.return_value.queue_name = "default"
 
-        distribute_city_council_objects_to_sync(payload)
+        distribute_city_council_objects_to_sync.delay(payload)
 
         assert task.called is True
         assert task.call_count == 1
@@ -238,7 +244,7 @@ class TestDistributeCityCouncilObjectsToSync:
         task = mocker.patch("web.datasets.tasks.update_citycouncil_bid.delay")
         task.return_value.queue_name = "default"
 
-        distribute_city_council_objects_to_sync(payload)
+        distribute_city_council_objects_to_sync.delay(payload)
 
         assert task.called is False
 
@@ -252,7 +258,7 @@ class TestDistributeCityCouncilObjectsToSync:
     )
     def test_distribution_with_real_payloads(self, payload_filename):
         payload = json.loads(open(payload_filename).read())
-        distribute_city_council_objects_to_sync(payload)
+        distribute_city_council_objects_to_sync.delay(payload)
 
 
 @pytest.mark.django_db
@@ -269,7 +275,8 @@ class TestCityCouncilBid:
             "dtLic": "2020-03-26 09:00:00",
             "arquivos": [],
         }
-        bid = add_citycouncil_bid(record)
+        result = add_citycouncil_bid.delay(record)
+        bid = result.get()
         assert CityCouncilBid.objects.count() == 1
         assert isinstance(bid.crawled_at, datetime)
         assert bid.crawled_from == settings.CITY_COUNCIL_WEBSERVICE_ENDPOINT
@@ -294,9 +301,9 @@ class TestCityCouncilBid:
             "dtLic": "2020-03-26 09:00:00",
             "arquivos": [],
         }
-        add_citycouncil_bid(record)
-        add_citycouncil_bid(record)
-        add_citycouncil_bid(record)
+        add_citycouncil_bid.delay(record)
+        add_citycouncil_bid.delay(record)
+        add_citycouncil_bid.delay(record)
 
         assert CityCouncilBid.objects.count() == 1
 
@@ -325,7 +332,8 @@ class TestCityCouncilBid:
                 },
             ],
         }
-        bid = add_citycouncil_bid(record)
+        result = add_citycouncil_bid.delay(record)
+        bid = result.get()
         assert CityCouncilBid.objects.count() == 1
         assert bid.files.count() == 2
 
@@ -340,7 +348,8 @@ class TestCityCouncilBid:
             "dtLic": "2020-03-26 09:00:00",
             "arquivos": [],
         }
-        updated_bid = update_citycouncil_bid(record)
+        result = update_citycouncil_bid.delay(record)
+        updated_bid = result.get()
         assert bid.pk == updated_bid.pk
         assert updated_bid.modality == "pregao_presencial"
         assert updated_bid.code == record["numLic"]
@@ -354,7 +363,7 @@ class TestCityCouncilBid:
             "datasets.CityCouncilBid", external_code=214, excluded=False
         )
         record = {"codLic": "214"}
-        remove_citycouncil_bid(record)
+        remove_citycouncil_bid.delay(record)
 
         bid.refresh_from_db()
         assert bid.excluded is True
@@ -374,7 +383,8 @@ class TestCityCouncilBid:
                 }
             ],
         }
-        updated_bid = update_citycouncil_bid(record)
+        result = update_citycouncil_bid.delay(record)
+        updated_bid = result.get()
         assert bid.pk == updated_bid.pk
         assert bid.files.count() == 1
 
@@ -395,7 +405,8 @@ class TestCityCouncilContract:
             "excluido": "N",
             "arquivos": [],
         }
-        contract_obj = add_citycouncil_contract(record)
+        result = add_citycouncil_contract.delay(record)
+        contract_obj = result.get()
 
         expected_contract = {
             "external_code": "43",
@@ -437,9 +448,9 @@ class TestCityCouncilContract:
             "excluido": "N",
             "arquivos": [],
         }
-        add_citycouncil_contract(record)
-        add_citycouncil_contract(record)
-        add_citycouncil_contract(record)
+        add_citycouncil_contract.delay(record)
+        add_citycouncil_contract.delay(record)
+        add_citycouncil_contract.delay(record)
 
         assert CityCouncilContract.objects.count() == 1
 
@@ -464,7 +475,8 @@ class TestCityCouncilContract:
                 }
             ],
         }
-        contract_obj = add_citycouncil_contract(record)
+        result = add_citycouncil_contract.delay(record)
+        contract_obj = result.get()
 
         assert CityCouncilContract.objects.count() == 1
         assert contract_obj.files.count() == 1
@@ -483,7 +495,8 @@ class TestCityCouncilContract:
             "excluido": "N",
             "arquivos": [],
         }
-        updated_contract = update_citycouncil_contract(record)
+        result = update_citycouncil_contract.delay(record)
+        updated_contract = result.get()
 
         assert contract.pk == updated_contract.pk
 
@@ -501,7 +514,8 @@ class TestCityCouncilContract:
                 }
             ],
         }
-        updated_contract = update_citycouncil_contract(record)
+        result = update_citycouncil_contract.delay(record)
+        updated_contract = result.get()
 
         assert contract.pk == updated_contract.pk
         assert updated_contract.files.count() == 1
@@ -511,7 +525,7 @@ class TestCityCouncilContract:
             "datasets.CityCouncilContract", external_code=214, excluded=False
         )
         record = {"codCon": "214"}
-        remove_citycouncil_contract(record)
+        remove_citycouncil_contract.delay(record)
 
         contract.refresh_from_db()
         assert contract.excluded is True
@@ -535,7 +549,8 @@ class TestCityCouncilRevenue:
             "destinacao": "1.7.1.3.01.00.00 - Transferências Correntes",
             "excluido": "N",
         }
-        revenue_obj = add_citycouncil_revenue(record)
+        result = add_citycouncil_revenue.delay(record)
+        revenue_obj = result.get()
 
         expected_revenue = {
             "external_code": "27",
@@ -582,9 +597,9 @@ class TestCityCouncilRevenue:
             "dsNatureza": "4.5.1.2.2.02.02.01.000.0000 - Transferencias Recebidas",
             "destinacao": "ORÇAMENTO",
         }
-        add_citycouncil_revenue(record)
-        add_citycouncil_revenue(record)
-        add_citycouncil_revenue(record)
+        add_citycouncil_revenue.delay(record)
+        add_citycouncil_revenue.delay(record)
+        add_citycouncil_revenue.delay(record)
 
         assert CityCouncilRevenue.objects.count() == 1
 
@@ -604,7 +619,8 @@ class TestCityCouncilRevenue:
             "destinacao": "1.7.1.3.01.00.00 - Transferências Correntes",
             "excluido": "N",
         }
-        updated_revenue = update_citycouncil_revenue(record)
+        result = update_citycouncil_revenue.delay(record)
+        updated_revenue = result.get()
 
         assert revenue.pk == updated_revenue.pk
 
@@ -613,7 +629,7 @@ class TestCityCouncilRevenue:
             "datasets.CityCouncilRevenue", external_code=214, excluded=False
         )
         record = {"codLinha": "214"}
-        remove_citycouncil_revenue(record)
+        remove_citycouncil_revenue.delay(record)
 
         revenue.refresh_from_db()
         assert revenue.excluded is True
@@ -647,7 +663,8 @@ class TestCityCouncilExpense:
             "numProclic": "              ",
             "valor": "3790000,00",
         }
-        expense_obj = add_citycouncil_expense(record)
+        result = add_citycouncil_expense.delay(record)
+        expense_obj = result.get()
 
         expected_expense = {
             "phase": "empenho",
@@ -717,9 +734,9 @@ class TestCityCouncilExpense:
             "numProclic": "              ",
             "valor": "3790000,00",
         }
-        add_citycouncil_expense(record)
-        add_citycouncil_expense(record)
-        add_citycouncil_expense(record)
+        add_citycouncil_expense.delay(record)
+        add_citycouncil_expense.delay(record)
+        add_citycouncil_expense.delay(record)
 
         assert CityCouncilExpense.objects.count() == 1
 
@@ -753,7 +770,8 @@ class TestCityCouncilExpense:
             "numProclic": "              ",
             "valor": "3790000,00",
         }
-        updated_expense = update_citycouncil_expense(record)
+        result = update_citycouncil_expense.delay(record)
+        updated_expense = result.get()
 
         assert expense.pk == updated_expense.pk
 
@@ -765,7 +783,7 @@ class TestCityCouncilExpense:
             excluded=False,
         )
         record = {"codigo": "253", "linha": "2"}
-        remove_citycouncil_expense(record)
+        remove_citycouncil_expense.delay(record)
 
         expense.refresh_from_db()
         assert expense.excluded is True
