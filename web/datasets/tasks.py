@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 from logging import info
 from pathlib import Path
@@ -24,11 +23,6 @@ from web.datasets.models import (
     SyncInformation,
 )
 from web.datasets.services import get_s3_client
-
-if os.getenv("DJANGO_CONFIGURATION") == "Test":
-    pass  # FIXME
-else:
-    pass
 
 client = get_s3_client(settings)
 
