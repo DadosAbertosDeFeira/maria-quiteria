@@ -1,6 +1,11 @@
 import pytest
 
 
+@pytest.fixture(scope="session")
+def celery_config():
+    return {"broker_url": "amqp://", "result_backend": "redis://"}
+
+
 @pytest.fixture
 def mock_save_file(mocker, monkeypatch):
     monkeypatch.setenv("ENABLE_SIGNAL_FOR_FILE_TASKS", True)

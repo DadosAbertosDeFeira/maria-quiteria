@@ -1,4 +1,3 @@
-import logging
 import os
 from datetime import timedelta
 from socket import gethostbyname, gethostname
@@ -6,16 +5,13 @@ from socket import gethostbyname, gethostname
 import dj_database_url
 import sentry_sdk
 from configurations import Configuration, values
-from sentry_dramatiq import DramatiqIntegration
+from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
-    integrations=[DjangoIntegration(), DramatiqIntegration()],
+    integrations=[DjangoIntegration(), CeleryIntegration()],
 )
-
-logging.getLogger("pika").propagate = False
-logging.getLogger("botocore").setLevel(logging.WARNING)
 
 
 class Common(Configuration):
@@ -119,12 +115,6 @@ class Common(Configuration):
         environ_prefix=None,
     )
     CITY_COUNCIL_WEBSERVICE_TOKEN = values.Value(default="fake", environ_prefix=None)
-
-    BROKER_HOST = values.Value(environ_prefix=None, default="rabbitmq")
-    BROKER_PORT = values.Value(environ_prefix=None, default="5672")
-    BROKER_USER = values.Value(environ_prefix=None, default="guest")
-    BROKER_PASSWORD = values.Value(environ_prefix=None, default="guest")
-    BROKER_VHOST = values.Value(environ_prefix=None, default="/")
 
     CELERY_BROKER_URL = values.Value(
         environ_prefix=None, default="amqp://guest:guest@rabbitmq:5672/"

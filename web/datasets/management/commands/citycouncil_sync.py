@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta
 
+from celery import chain
 from django.core.management.base import BaseCommand
-from dramatiq import pipeline
 from web.datasets.tasks import (
     distribute_city_council_objects_to_sync,
     get_city_council_updates,
@@ -21,12 +21,11 @@ class Command(BaseCommand):
         else:
             # ontem
             target_date = date.today() - timedelta(days=1)
-        pipeline(
-            [
-                get_city_council_updates.message(target_date.strftime("%Y-%m-%d")),
-                distribute_city_council_objects_to_sync.message(),
-            ]
-        ).run()
+
+        chain(
+            get_city_council_updates.s(target_date.strftime("%Y-%m-%d")),
+            distribute_city_council_objects_to_sync.s(),
+        )()
 
         self.stdout.write(
             f"Syncronização com a Câmara iniciada (data alvo: {target_date})."
