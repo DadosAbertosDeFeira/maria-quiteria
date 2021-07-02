@@ -10,7 +10,7 @@ djangorestframework==3.12.4
 djangorestframework-simplejwt==4.7.1
 gunicorn==20.1.0
 jinja2==3.0.1
-psycopg2-binary==2.8.6
+psycopg2-binary==2.9.1
 python-dotenv==0.18.0
 schematics==2.1.0
 scrapy==2.5.0
