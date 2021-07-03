@@ -143,7 +143,6 @@ class MinuteSpider(BaseSpider):
 
         for month, year in months_and_years(self.start_date, today):
             for event_type, type_url in self.pages_by_type.items():
-                print(year, month, event_type)
                 # formato esperado 2021-07-01
                 next_month = month + 1 if month < 12 else 1
                 next_month_year = year + 1 if month == 12 else year
@@ -153,7 +152,9 @@ class MinuteSpider(BaseSpider):
                 url = f"{self.base_url}/{type_url}&txtbus={from_date}&txtbus1={to_date}"
 
                 yield scrapy.Request(
-                    url, callback=self.parse, meta={"event_type": event_type}
+                    url,
+                    callback=self.parse,
+                    meta={"event_type": event_type, "url_without_page": url},
                 )
 
     def parse(self, response):
@@ -174,6 +175,16 @@ class MinuteSpider(BaseSpider):
                 files=[response.urljoin(file_url)],
             )
 
-        # TODO check pagination
-        # section div ul.pagination li a
-        # ?p=3&txtbus=2020-12-31&nma=Sessão Ordinária&txtbus1=2021-07-01&ida=1
+        pagination = response.css("section div ul.pagination li a")
+        if pagination:
+            current_page = response.css(
+                "section div ul.pagination li.active ::text"
+            ).get()
+            if not current_page:
+                current_page = response.css(
+                    "section div ul.pagination li.current ::text"
+                ).get()
+            if current_page:
+                next_page = int(current_page) + 1
+                url = f"{response.meta['url_without_page']}&p={next_page}"
+                yield scrapy.Request(url, callback=self.parse, meta=response.meta)
