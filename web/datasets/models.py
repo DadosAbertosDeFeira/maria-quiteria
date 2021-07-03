@@ -14,6 +14,8 @@ CITY_COUNCIL_EVENT_TYPE = (
     ("sessao_solene", "Sessão Solene"),
     ("sessao_especial", "Sessão Especial"),
     ("audiencia_publica", "Audiência Pública"),
+    ("sessao_extraordinaria", "Sessão Extraordinária"),
+    ("termo_de_encerramento", "Termo de Encerramento"),
 )
 
 BID_MODALITIES = (
@@ -123,7 +125,7 @@ class CityCouncilAgenda(DatasetMixin):
     details = models.TextField("Detalhes", null=True, blank=True)
     event_type = models.CharField(
         "Tipo do evento",
-        max_length=20,
+        max_length=30,
         choices=CITY_COUNCIL_EVENT_TYPE,
         null=True,
         blank=True,
@@ -318,7 +320,7 @@ class CityCouncilMinute(DatasetMixin):
     )
     event_type = models.CharField(
         "Tipo de evento",
-        max_length=20,
+        max_length=30,
         choices=CITY_COUNCIL_EVENT_TYPE,
         null=True,
         blank=True,
