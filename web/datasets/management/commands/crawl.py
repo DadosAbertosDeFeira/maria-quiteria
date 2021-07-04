@@ -1,25 +1,15 @@
 import json
 import os
 
-from web.datasets.models import (
-    CityCouncilAgenda,
-    CityCouncilAttendanceList,
-    CityCouncilMinute,
-    CityHallBid,
-    File,
-    Gazette,
-    GazetteEvent,
-)
 from django.core.management.base import BaseCommand
 from scraper.items import (
-    CityCouncilAgendaItem,
     CityCouncilAttendanceListItem,
     CityCouncilMinuteItem,
     CityHallBidItem,
     GazetteItem,
     LegacyGazetteItem,
 )
-from scraper.spiders.citycouncil import AgendaSpider, AttendanceListSpider, MinuteSpider
+from scraper.spiders.citycouncil import AttendanceListSpider, MinuteSpider
 from scraper.spiders.cityhall import BidsSpider
 from scraper.spiders.gazette import (
     ExecutiveAndLegislativeGazetteSpider,
@@ -29,8 +19,16 @@ from scrapy import signals
 from scrapy.crawler import CrawlerProcess
 from scrapy.signalmanager import dispatcher
 from scrapy.utils.project import get_project_settings
+from web.datasets.models import (
+    CityCouncilAttendanceList,
+    CityCouncilMinute,
+    CityHallBid,
+    File,
+    Gazette,
+    GazetteEvent,
+)
 
-from ._citycouncil import save_agenda, save_attendance_list, save_minute
+from ._citycouncil import save_attendance_list, save_minute
 from ._cityhall import save_bid
 from ._gazette import save_gazette, save_legacy_gazette
 
@@ -53,8 +51,6 @@ class Command(BaseCommand):
         return self.echo(text, self.style.SUCCESS)
 
     def save(self, signal, sender, item, response, spider):
-        if isinstance(item, CityCouncilAgendaItem):
-            save_agenda(item)
         if isinstance(item, CityCouncilAttendanceListItem):
             save_attendance_list(item)
         if isinstance(item, CityCouncilMinuteItem):
@@ -69,7 +65,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options.get("drop_all"):
             self.warn("Apagando registros...")
-            CityCouncilAgenda.objects.all().delete()
             CityCouncilAttendanceList.objects.all().delete()
             CityCouncilMinute.objects.all().delete()
             CityHallBid.objects.all().delete()
@@ -86,10 +81,6 @@ class Command(BaseCommand):
             settings.update(scrapy_args)
 
         process = CrawlerProcess(settings=settings)
-        process.crawl(
-            AgendaSpider,
-            start_from_date=CityCouncilAgenda.last_collected_item_date(),
-        )
         process.crawl(
             AttendanceListSpider,
             start_from_date=CityCouncilAttendanceList.last_collected_item_date(),
