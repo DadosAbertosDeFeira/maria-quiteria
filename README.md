@@ -9,12 +9,14 @@ Não sabe quem foi [Maria Quitéria](https://pt.wikipedia.org/wiki/Maria_Quit%C3
 
 ## Dados
 
+Você pode visualizar e fazer buscas nossos dados [aqui](https://www.dadosabertosdefeira.com.br/painel/).
+
 | Base de dados | Fonte | Descrição        | Coleta          | Banco de dados | Download |
 | ------------- | ------------- | ------------- |:-------------:|:-----:|:-----:|
 | Agenda (`citycouncil.py`) | Câmara Municipal | Agenda (ordem do dia, homenagens, sessões ordinárias etc) da Câmara Municipal. | :heavy_check_mark: | :heavy_check_mark: | [Kaggle](https://www.kaggle.com/dadosabertosdefeira/agenda-da-cmara-de-vereadores) |
 | Atas das sessões (`citycouncil.py`) | Câmara Municipal | Atas das sessões da Câmara Municipal. | :heavy_check_mark: | :heavy_check_mark: | 🔜 |
 | Lista de Presença (`citycouncil.py`) | Câmara Municipal | Assiduidade dos vereadores da Câmara Municipal. | :heavy_check_mark: | :heavy_check_mark: | [Kaggle](https://www.kaggle.com/dadosabertosdefeira/assiduidade-dos-vereadores) |
-| Despesas (`citycouncil.py`) | Câmara Municipal | Gastos realizados pela Câmara Municipal. | 🔜 | :heavy_check_mark: | 🔜 |
+| Despesas (`citycouncil.py`) | Câmara Municipal | Gastos realizados pela Câmara Municipal. | :heavy_check_mark: | :heavy_check_mark: | 🔜 |
 | Contratos (`cityhall.py`) | Prefeitura | Contratos realizados pela prefeitura entre 2016 e 2017. | 🔜 | 🔜 | 🔜 |
 | Diário Oficial (`gazette.py`) | Prefeitura/Câmara de Vereadores | Diário oficial do executivo e legislativo. | :heavy_check_mark: | :heavy_check_mark: | [Kaggle](https://www.kaggle.com/dadosabertosdefeira/dirios-oficiais-do-executivo-e-do-legislativo)  |
 | Licitações (`cityhall.py`) | Prefeitura | Licitações realizadas pela prefeitura desde 2015. | :heavy_check_mark: | :heavy_check_mark: | [Kaggle](https://www.kaggle.com/dadosabertosdefeira/licitaes-da-prefeitura-de-feira-de-santana) |
@@ -120,3 +122,8 @@ docker-compose run --rm web python manage.py crawl --scrapy-args '{"LOG_FILE": "
 ### API
 
 Sobre acesso a API veja instruções em nossa [Wiki](https://github.com/DadosAbertosDeFeira/maria-quiteria/wiki/API).
+
+
+### Infraestrutura
+
+Essa aplicação está sendo hospedada no PaaS [Dokku](https://dokku.com/docs/) e todo código IaC está [nesse repositório](https://github.com/DadosAbertosDeFeira/iac).

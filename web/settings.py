@@ -1,20 +1,17 @@
-import logging
 import os
 from datetime import timedelta
+from socket import gethostbyname, gethostname
 
 import dj_database_url
 import sentry_sdk
 from configurations import Configuration, values
-from sentry_dramatiq import DramatiqIntegration
+from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
-    integrations=[DjangoIntegration(), DramatiqIntegration()],
+    integrations=[DjangoIntegration(), CeleryIntegration()],
 )
-
-logging.getLogger("pika").setLevel(logging.WARNING)
-logging.getLogger("botocore").setLevel(logging.WARNING)
 
 
 class Common(Configuration):
@@ -36,6 +33,7 @@ class Common(Configuration):
         "django.contrib.messages",
         "django.contrib.staticfiles",
         "web.datasets.apps.DatasetsConfig",
+        "django_extensions",
         "rest_framework",
         "simple_history",
         "django_filters",
@@ -110,13 +108,18 @@ class Common(Configuration):
     AWS_S3_BUCKET_FOLDER = values.Value(environ_prefix=None)
     AWS_S3_REGION = values.Value(environ_prefix=None)
 
-    CITY_COUNCIL_WEBSERVICE = "http://teste-transparencia.com.br/"
+    CITY_COUNCIL_WEBSERVICE = values.Value(
+        default="http://teste.com.br/", environ_prefix=None
+    )
+    CITY_COUNCIL_WEBSERVICE_ENDPOINT = values.Value(
+        default="http://teste.com.br/webservice/",
+        environ_prefix=None,
+    )
+    CITY_COUNCIL_WEBSERVICE_TOKEN = values.Value(default="fake", environ_prefix=None)
 
-    BROKER_HOST = values.Value(environ_prefix=None, default="rabbitmq")
-    BROKER_PORT = values.Value(environ_prefix=None, default="5672")
-    BROKER_USER = values.Value(environ_prefix=None, default="guest")
-    BROKER_PASSWORD = values.Value(environ_prefix=None, default="guest")
-    BROKER_VHOST = values.Value(environ_prefix=None, default="/")
+    CELERY_BROKER_URL = values.Value(
+        environ_prefix=None, default="amqp://guest:guest@rabbitmq:5672/"
+    )
 
     REST_FRAMEWORK = {
         "SEARCH_PARAM": "query",
@@ -155,9 +158,13 @@ class Dev(Common):
     INTERNAL_IPS = ["127.0.0.1"]
 
 
+class Test(Dev):
+    CELERY_TASK_ALWAYS_EAGER = True
+
+
 class Prod(Common):
     SECRET_KEY = values.SecretValue()
-    ALLOWED_HOSTS = values.ListValue()
-    DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=True)}
+    ALLOWED_HOSTS = values.ListValue([], environ_name="ALLOWED_HOSTS")
+    ALLOWED_HOSTS.extend((gethostname(), gethostbyname(gethostname())))
+    DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=False)}
     GOOGLE_ANALYTICS_KEY = values.Value()
-    CITY_COUNCIL_WEBSERVICE = values.Value()

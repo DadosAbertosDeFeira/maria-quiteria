@@ -7,14 +7,44 @@ from public_admin.sites import PublicAdminSite, PublicApp
 from .models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
+    CityCouncilBid,
+    CityCouncilContract,
+    CityCouncilExpense,
     CityCouncilMinute,
+    CityCouncilRevenue,
     CityHallBid,
     File,
     Gazette,
+    SyncInformation,
+    TCMBADocument,
 )
 
 
-class GazetteAdmin(PublicModelAdmin):
+class FileURLsMixin:
+    readonly_fields = ["file_urls", "alternative_urls"]
+
+    @mark_safe
+    def file_urls(self, obj):
+        return "<br>".join(
+            f'<a href="{file_.url}">{file_.url}</a>'
+            for file_ in obj.files.all()
+            if file_.url
+        )
+
+    file_urls.short_description = "Endereços (URLs)"
+
+    @mark_safe
+    def alternative_urls(self, obj):
+        return "<br>".join(
+            f'<a href="{file_.s3_url}">{file_.s3_url}</a>'
+            for file_ in obj.files.all()
+            if file_.s3_url
+        )
+
+    alternative_urls.short_description = "Endereços alternativos (URLs)"
+
+
+class GazetteAdmin(FileURLsMixin, PublicModelAdmin):
     search_fields = ["year_and_edition", "events__summary", "files__search_vector"]
     list_filter = ["power", "date"]
     list_display = (
@@ -22,7 +52,7 @@ class GazetteAdmin(PublicModelAdmin):
         "power",
         "year_and_edition",
         "events",
-        "url",
+        "file_urls",
         "crawled_at",
         "crawled_from",
     )
@@ -55,15 +85,6 @@ class GazetteAdmin(PublicModelAdmin):
 
     events.short_description = "Eventos"
 
-    @mark_safe
-    def url(self, obj):
-        file_ = obj.files.first()
-        if file_:
-            return f"<a href={file_.url}>{file_.url}</a>"
-        return ""
-
-    url.short_description = "Endereço (URL)"
-
 
 class CityCouncilAgendaAdmin(PublicModelAdmin):
     search_fields = ["title", "details"]
@@ -90,7 +111,7 @@ class CityCouncilAttendanceListAdmin(PublicModelAdmin):
     )
 
 
-class CityCouncilContractAdmin(PublicModelAdmin):
+class CityCouncilContractAdmin(FileURLsMixin, PublicModelAdmin):
     search_fields = ["details", "description", "company_or_person"]
     list_filter = [
         "start_date",
@@ -98,6 +119,7 @@ class CityCouncilContractAdmin(PublicModelAdmin):
         "company_or_person",
     ]
     list_display = (
+        "crawled_at",
         "start_date",
         "end_date",
         "company_or_person",
@@ -123,6 +145,7 @@ class CityCouncilExpenseAdmin(PublicModelAdmin):
         "company_or_person",
     ]
     list_display = (
+        "crawled_at",
         "date",
         "phase",
         "company_or_person",
@@ -136,14 +159,14 @@ class CityCouncilExpenseAdmin(PublicModelAdmin):
     )
 
 
-class CityCouncilMinuteAdmin(PublicModelAdmin):
+class CityCouncilMinuteAdmin(FileURLsMixin, PublicModelAdmin):
     search_fields = ["title", "files__search_vector"]
     list_filter = ["date", "event_type"]
     list_display = (
         "date",
         "title",
         "event_type",
-        "files",
+        "file_urls",
         "crawled_at",
         "crawled_from",
     )
@@ -165,16 +188,8 @@ class CityCouncilMinuteAdmin(PublicModelAdmin):
 
         return queryset, False
 
-    @mark_safe
-    def files(self, obj):
-        return "<br>".join(
-            f"<a href={file_.url}>{file_.url}</a>" for file_ in obj.files.all()
-        )
 
-    files.short_description = "Arquivos"
-
-
-class CityHallBidAdmin(PublicModelAdmin):
+class CityHallBidAdmin(FileURLsMixin, PublicModelAdmin):
     search_fields = ["description", "codes", "files__search_vector"]
     list_filter = ["session_at", "public_agency", "modality"]
     list_display = (
@@ -184,7 +199,7 @@ class CityHallBidAdmin(PublicModelAdmin):
         "modality",
         "description",
         "events",
-        "files",
+        "file_urls",
     )
 
     def get_queryset(self, request):
@@ -205,14 +220,6 @@ class CityHallBidAdmin(PublicModelAdmin):
         return queryset, False
 
     @mark_safe
-    def files(self, obj):
-        return "<br>".join(
-            f"<a href={file_.url}>{file_.url}</a>" for file_ in obj.files.all()
-        )
-
-    files.short_description = "Arquivos"
-
-    @mark_safe
     def events(self, obj):
         formatted_events = []
         for event in obj.events.all():
@@ -226,6 +233,16 @@ class CityHallBidAdmin(PublicModelAdmin):
         return "<br><br>".join(formatted_events)
 
     events.short_description = "Histórico"
+
+
+@admin.register(SyncInformation)
+class SyncInformationAdmin(admin.ModelAdmin):
+    list_display = (
+        "source",
+        "date",
+        "created_at",
+        "succeed",
+    )
 
 
 @admin.register(File)
@@ -255,10 +272,11 @@ class FileAdmin(admin.ModelAdmin):
         return queryset, False
 
 
-class CityCouncilBidAdmin(PublicModelAdmin):
+class CityCouncilBidAdmin(FileURLsMixin, PublicModelAdmin):
     search_fields = ["description", "code", "code_type"]
     list_filter = ["session_at", "modality"]
     list_display = (
+        "crawled_at",
         "session_at",
         "modality",
         "code",
@@ -282,6 +300,7 @@ class CityCouncilRevenueAdmin(PublicModelAdmin):
         "destination",
     ]
     list_display = (
+        "crawled_at",
         "published_at",
         "registered_at",
         "revenue_type",
@@ -290,6 +309,18 @@ class CityCouncilRevenueAdmin(PublicModelAdmin):
         "value",
         "legal_status",
         "destination",
+    )
+
+
+class TCMBADocumentAdmin(FileURLsMixin, PublicModelAdmin):
+    search_fields = ["original_filename", "unit", "category"]
+    list_filter = ["month", "year", "period", "unit", "category"]
+    list_display = (
+        "original_filename",
+        "month",
+        "year",
+        "unit",
+        "category",
     )
 
 
@@ -302,9 +333,14 @@ class MariaQuiteriaPublicAdminSite(PublicAdminSite):
 models_and_admins = [
     (CityCouncilAgenda, CityCouncilAgendaAdmin),
     (CityCouncilAttendanceList, CityCouncilAttendanceListAdmin),
+    (CityCouncilBid, CityCouncilBidAdmin),
+    (CityCouncilContract, CityCouncilContractAdmin),
+    (CityCouncilExpense, CityCouncilExpenseAdmin),
+    (CityCouncilRevenue, CityCouncilRevenueAdmin),
     (CityCouncilMinute, CityCouncilMinuteAdmin),
     (Gazette, GazetteAdmin),
     (CityHallBid, CityHallBidAdmin),
+    (TCMBADocument, TCMBADocumentAdmin),
 ]
 public_app = PublicApp(
     "datasets", models=(model[0].__name__ for model in models_and_admins)

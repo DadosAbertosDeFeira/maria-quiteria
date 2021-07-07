@@ -1,4 +1,5 @@
 venv/
+.venv/
 __pycache__
 .idea
 .scrapy/
@@ -9,6 +10,7 @@ __pycache__
 
 # data
 *.json
+!**/fixtures/*.json
 *.csv
 *.xls
 *.zip

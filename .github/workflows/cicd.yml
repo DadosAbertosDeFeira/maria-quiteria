@@ -4,7 +4,7 @@ on: [ push, pull_request ]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
@@ -27,14 +27,14 @@ jobs:
       - name: Run Tests
         env:
           DJANGO_SETTINGS_MODULE: "web.settings"
-          DJANGO_CONFIGURATION: "Dev"
+          DJANGO_CONFIGURATION: "Test"
           DATABASE_URL: "postgres://postgres:postgres@localhost:5432/mariaquiteria"
         run: |
           python manage.py collectstatic
           pytest
     services:
       postgres:
-        image: postgres:10.8
+        image: library/postgres:11-alpine
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: mariaquiteria
@@ -45,6 +45,13 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      rabbitmq:
+        image: rabbitmq
+        env:
+          RABBITMQ_DEFAULT_USER: guest
+          RABBITMQ_DEFAULT_PASS: guest
+        ports:
+          - 5672:5672
   deploy:
     runs-on: ubuntu-18.04
     if: github.ref == 'refs/heads/main'
@@ -54,7 +61,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Push to dokku
-        uses: dokku/github-action@master
+        uses: dokku/github-action@v1.0.2
         with:
           branch: main
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}

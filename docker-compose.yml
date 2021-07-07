@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
     db:
-        image: library/postgres:12.4-alpine
+        image: library/postgres:11-alpine
         environment:
             POSTGRES_DB: mariaquiteria
             POSTGRES_USER: postgres
@@ -10,28 +10,21 @@ services:
         volumes:
             - ./db:/var/lib/postgresql
 
-    tika:
-        image: apache/tika
-        ports:
-            - "9998:9998"
-
     rabbitmq:
         image: rabbitmq
         ports:
           - "5672:5672"
-        restart: always
+          - "15672:15672"
+        healthcheck:
+          test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+          interval: 5s
+          timeout: 15s
+          retries: 1
 
-    dramatiq:
-        build: .
-        command: ["dramatiq", "web.datasets.tasks", "-p3", "-t2", "-v"]
-        environment:
-            DATABASE_HOST: db
-            TIKA_CLIENT_ONLY: 1
-            TIKA_SERVER_ENDPOINT: http://tika:9998
-        depends_on:
-            - db
-            - rabbitmq
-            - tika
+    tika:
+        image: apache/tika
+        ports:
+            - "9998:9998"
 
     web:
         build: .
@@ -45,4 +38,18 @@ services:
         env_file: .env
         depends_on:
             - db
-            - dramatiq
+            - worker
+
+    worker:
+        build: .
+        command: ["celery", "-A", "web", "worker", "-l", "INFO"]
+        environment:
+            DATABASE_HOST: db
+            TIKA_CLIENT_ONLY: 1
+            TIKA_SERVER_ENDPOINT: http://tika:9998
+        env_file: .env
+        restart: on-failure
+        depends_on:
+            - tika
+            - db
+            - rabbitmq

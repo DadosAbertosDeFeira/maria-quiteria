@@ -1,4 +1,5 @@
 import logging
+import unicodedata
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -16,10 +17,15 @@ def get_phase(value):
 def currency_to_float(value):
     """Converte de R$ 69.848,70 (str) para 69848.70 (float)."""
     try:
-        cleaned_value = value.replace("R$", "").replace(".", "").replace(",", ".")
-        return float(cleaned_value)
+        # format 37500.36 or '37500.36
+        return float(value.replace("'", ""))
     except ValueError:
-        pass
+        # format R$ 37.500,36 or 37.500,36
+        cleaned_value = value.replace("R$", "").replace(".", "").replace(",", ".")
+        try:
+            return float(cleaned_value)
+        except ValueError:
+            pass
     return
 
 
@@ -34,6 +40,7 @@ def from_str_to_datetime(date_str, supported_formats=None):
             "%d/%m/%y %H:%M",
             "%d/%m/%Y %H:%M:%S",
             "%d/%m/%y %H:%M:%S",
+            "%Y-%m-%d %H:%M:%S",
             "%d/%m/%Y %Hh%M",
         ]
     if date_str:
@@ -48,7 +55,7 @@ def from_str_to_datetime(date_str, supported_formats=None):
                     return converted_date
 
 
-def from_str_to_date(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y"]):
+def from_str_to_date(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y", "%Y-%m-%d"]):
     if date_str is None:
         return
     datetime_obj = from_str_to_datetime(date_str, supported_formats)
@@ -57,10 +64,16 @@ def from_str_to_date(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y"]):
 
 
 def lower(value):
-    return value.lower()
+    if value:
+        return value.lower()
 
 
-def modality_mapping_from_city_council_db(code):
+def lower_without_spaces(value):
+    if value:
+        return strip_accents(value.lower()).replace(" ", "_")
+
+
+def city_council_bid_modality_mapping(code):
     mapping = {
         "1": "pregao_eletronico",
         "2": "convite",
@@ -69,8 +82,8 @@ def modality_mapping_from_city_council_db(code):
         "5": "concurso",
         "6": "leilao",
         "7": "pregao_presencial",
-        "9": "inexigibilidade",
         "8": "dispensada",
+        "9": "inexigibilidade",
     }
     found = mapping.get(code)
     if found:
@@ -90,3 +103,13 @@ def city_council_revenue_type_mapping(code):
         return found
     else:
         logger.warning(f"Código da tipo de receita não encontrado: {code}")
+
+
+def strip_accents(string):
+    if string is None:
+        return
+    return "".join(
+        char
+        for char in unicodedata.normalize("NFD", string)
+        if unicodedata.category(char) != "Mn"
+    )

@@ -2,7 +2,6 @@ from datetime import date, datetime
 
 import pytest
 from django.utils.timezone import make_aware
-
 from web.datasets.management.commands._gazette import (
     _extract_date,
     save_gazette,
@@ -42,6 +41,9 @@ class TestSaveGazette:
         assert event.secretariat == item["events"][0]["secretariat"]
         assert event.summary == item["events"][0]["summary"]
 
+        assert mock_save_file.called is True
+        assert mock_save_file.call_count == 1
+
     def test_save_different_events_to_same_gazette(self, mock_save_file):
         item = {
             "date": date(2019, 11, 5),
@@ -66,6 +68,9 @@ class TestSaveGazette:
 
         gazette = save_gazette(item)
         assert gazette.events.count() == 2
+
+        assert mock_save_file.called is True
+        assert mock_save_file.call_count == 1
 
 
 @pytest.mark.django_db

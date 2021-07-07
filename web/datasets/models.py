@@ -14,6 +14,8 @@ CITY_COUNCIL_EVENT_TYPE = (
     ("sessao_solene", "Sessão Solene"),
     ("sessao_especial", "Sessão Especial"),
     ("audiencia_publica", "Audiência Pública"),
+    ("sessao_extraordinaria", "Sessão Extraordinária"),
+    ("termo_de_encerramento", "Termo de Encerramento"),
 )
 
 BID_MODALITIES = (
@@ -46,20 +48,30 @@ REVENUE_TYPES = (
     ("transferencia", "Transferência"),
 )
 
+SYNC_SOURCE = (
+    ("camara", "Câmara Municipal"),
+    ("prefeitura", "Prefeitura"),
+)
+
 
 class File(models.Model):
     created_at = models.DateTimeField("Criado em", auto_now_add=True)
     updated_at = models.DateTimeField("Atualizado em", auto_now=True)
-    url = models.URLField("Arquivo", db_index=True)
+    url = models.URLField("URL do arquivo", db_index=True)
     content = models.TextField("Conteúdo", null=True, blank=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(db_index=True)
     content_object = GenericForeignKey("content_type", "object_id")
     checksum = models.CharField(max_length=128, null=True, blank=True)
-    s3_url = models.URLField("URL externa", max_length=400, null=True, blank=True)
-    s3_file_path = models.CharField(max_length=300, null=True, blank=True)
+    s3_url = models.URLField("URL externa", max_length=600, null=True, blank=True)
+    s3_file_path = models.CharField(
+        "Caminho interno", max_length=400, null=True, blank=True
+    )
     external_code = models.CharField(
         "Código externo", max_length=10, null=True, blank=True, db_index=True
+    )
+    original_filename = models.CharField(
+        "Nome do arquivo", max_length=200, null=True, blank=True, db_index=True
     )
 
     search_vector = SearchVectorField(null=True, editable=False)
@@ -68,14 +80,15 @@ class File(models.Model):
         verbose_name = "Arquivo"
         verbose_name_plural = "Arquivos"
         indexes = [GinIndex(fields=["search_vector"])]
-        unique_together = ("url", "content_type", "object_id")
+        unique_together = ("url", "content_type", "object_id", "original_filename")
         ordering = ["-created_at"]
 
     def __repr__(self):
-        return f"[{self.content_type}] {self.url}"
+        return f"[{self.content_type}] {self.original_filename} {self.url}"
 
     def __str__(self):
-        return f"Arquivo ({self.pk}) de {self.content_type} ({self.object_id})"
+        obj_label = f"{self.content_type} ({self.object_id})"
+        return f"Arquivo {self.original_filename} ({self.pk}) de {obj_label}"
 
 
 class DatasetMixin(models.Model):
@@ -112,7 +125,7 @@ class CityCouncilAgenda(DatasetMixin):
     details = models.TextField("Detalhes", null=True, blank=True)
     event_type = models.CharField(
         "Tipo do evento",
-        max_length=20,
+        max_length=30,
         choices=CITY_COUNCIL_EVENT_TYPE,
         null=True,
         blank=True,
@@ -180,7 +193,9 @@ class CityCouncilAttendanceList(DatasetMixin):
 
 
 class CityCouncilContract(DatasetMixin):
-    external_code = models.PositiveIntegerField("Código externo", db_index=True)
+    external_code = models.PositiveIntegerField(
+        "Código externo", unique=True, db_index=True
+    )
     description = models.TextField("Descrição", null=True, blank=True, db_index=True)
     details = models.TextField(
         "Objeto do contrato", null=True, blank=True, db_index=True
@@ -191,7 +206,7 @@ class CityCouncilContract(DatasetMixin):
     company_or_person = models.TextField(
         "Empresa ou pessoa", null=True, blank=True, db_index=True
     )
-    value = models.DecimalField("Valor", max_digits=10, decimal_places=2)
+    value = models.DecimalField("Valor", max_digits=20, decimal_places=2)
     start_date = models.DateField("Data de início", db_index=True)
     end_date = models.DateField("Data final", db_index=True)
     excluded = models.BooleanField("Excluído?", default=False)
@@ -229,7 +244,7 @@ class CityCouncilExpense(DatasetMixin):
     company_or_person = models.TextField(
         "Empresa ou pessoa", null=True, blank=True, db_index=True
     )
-    value = models.DecimalField("Valor", max_digits=10, decimal_places=2)
+    value = models.DecimalField("Valor", max_digits=20, decimal_places=2)
     number = models.CharField(
         "Número", max_length=50, null=True, blank=True, db_index=True
     )
@@ -305,7 +320,7 @@ class CityCouncilMinute(DatasetMixin):
     )
     event_type = models.CharField(
         "Tipo de evento",
-        max_length=20,
+        max_length=30,
         choices=CITY_COUNCIL_EVENT_TYPE,
         null=True,
         blank=True,
@@ -475,7 +490,9 @@ class CityCouncilBid(DatasetMixin):
 
 
 class CityCouncilRevenue(DatasetMixin):
-    external_code = models.CharField("Código externo", max_length=10, db_index=True)
+    external_code = models.PositiveIntegerField(
+        "Código externo", db_index=True, unique=True
+    )
     budget_unit = models.PositiveIntegerField("Unidade gestora", default=101)
     published_at = models.DateField("Publicado em", null=True, db_index=True)
     registered_at = models.DateField("Registrado em", null=True, db_index=True)
@@ -484,7 +501,7 @@ class CityCouncilRevenue(DatasetMixin):
     )
     modality = models.CharField("Modalidade", max_length=60, null=True, blank=True)
     description = models.TextField("Descrição")
-    value = models.DecimalField("Valor", max_digits=10, decimal_places=2)
+    value = models.DecimalField("Valor", max_digits=20, decimal_places=2)
     resource = models.CharField(
         "Fonte", max_length=200, null=True, blank=True, default="prefeitura"
     )
@@ -508,3 +525,61 @@ class CityCouncilRevenue(DatasetMixin):
     def __str__(self):
         model_name = self._meta.verbose_name
         return f"{model_name} {self.published_at} {self.modality} {self.value}"
+
+
+class SyncInformation(models.Model):
+    created_at = models.DateTimeField("Criado em", auto_now_add=True)
+    updated_at = models.DateTimeField("Atualizado em", auto_now=True)
+    date = models.DateField("Data alvo")
+    source = models.CharField(
+        "Fonte", choices=SYNC_SOURCE, max_length=20, db_index=True
+    )
+    succeed = models.BooleanField("Concluída com sucesso?", null=True)
+    response = models.JSONField("Resposta", null=True)
+
+    class Meta:
+        verbose_name = "Sincronização"
+        verbose_name_plural = "Sincronizações"
+        ordering = ["-created_at"]
+
+    def __repr__(self):
+        return f"{self.source} {self.created_at} {self.date}"
+
+    def __str__(self):
+        created_at_label = self.created_at.strftime("%d-%m-%Y")
+        date_label = self.date.strftime("%d-%m-%Y")
+        return f"{self.source.title()} em {created_at_label} para {date_label}"
+
+
+class TCMBADocument(DatasetMixin):
+    class PeriodCategory(models.TextChoices):
+        MONTHLY = "mensal", "Mensal"
+        YEARLY = "anual", "Anual"
+
+    year = models.PositiveIntegerField("Ano", db_index=True)
+    month = models.PositiveIntegerField("Mês", null=True, db_index=True)
+    period = models.CharField(
+        "Periodicidade", max_length=10, choices=PeriodCategory.choices, db_index=True
+    )
+    category = models.CharField("Categoria", max_length=200, db_index=True)
+    unit = models.CharField("Unidade", max_length=100, db_index=True)
+    inserted_at = models.DateField("Inserido em", null=True)
+    inserted_by = models.CharField("Inserido por", max_length=50, null=True, blank=True)
+    original_filename = models.CharField("Nome do arquivo", max_length=200)
+
+    files = GenericRelation(File)
+
+    class Meta:
+        verbose_name = "TCM-BA - Documento"
+        verbose_name_plural = "TCM-BA - Documentos"
+        get_latest_by = "inserted_at"
+        ordering = [F("year").desc(), F("month").desc()]
+
+    def __repr__(self):
+        time = self.year
+        if self.period == self.PeriodCategory.MONTHLY:
+            time = f"{self.month}/{self.year}"
+        return f"{time} - {self.original_filename} - {self.unit}"
+
+    def __str__(self):
+        return self.original_filename
