@@ -76,5 +76,4 @@ class GazetteView(ReadOnlyModelViewSet):
         "events__secretariat",
         "events__summary",
         "year_and_edition",
-        "files__search_vector",
     ]
