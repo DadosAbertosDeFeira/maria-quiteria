@@ -1,8 +1,8 @@
 from datetime import date, datetime
 
-from web.datasets.parsers import from_str_to_date
 from scraper.items import GazetteItem, LegacyGazetteItem
 from scrapy import Request
+from web.datasets.parsers import from_str_to_date
 
 from . import BaseSpider
 from .utils import datetime_utcnow_aware, replace_query_param
@@ -105,7 +105,7 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
         gazettes_links = gazette_table.xpath("a//@href").extract()
         dates = gazette_table.css("a::text").extract()
 
-        limit_date_by_power = {}
+        found_date_by_power = response.meta.get("found_date_by_power", {})
         for url, gazette_date in zip(gazettes_links, dates):
             date_obj = datetime.strptime(gazette_date, "%d/%m/%Y")
             if date_obj.date() >= self.start_date:
@@ -114,7 +114,7 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
                 power_id = self.powers[power]
 
                 if date_obj.date() == self.start_date:
-                    limit_date_by_power[power] = date_obj.date()
+                    found_date_by_power[power] = date_obj.date()
 
                 gazette = dict(
                     date=gazette_date,
@@ -130,7 +130,7 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
                 )
 
         # as datas do legislativo e do executivo podem não estar na mesma página
-        if len(limit_date_by_power) < 2:
+        if len(found_date_by_power) < 2:
             current_page_selector = "#pages ul li.current::text"
             current_page = response.css(current_page_selector).extract_first()
             if current_page:
@@ -139,7 +139,9 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
 
                 if next_page > self.last_page:
                     self.last_page = next_page
-                    yield Request(next_page_url)
+                    yield Request(
+                        next_page_url, meta={"found_date_by_power": found_date_by_power}
+                    )
 
     def parse_details(self, response):
         gazette = response.meta["gazette"]
@@ -196,18 +198,20 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
                     meta={"gazette": gazette_item},
                 )
 
-    def parse_document_url(self, response):
+    @staticmethod
+    def parse_document_url(response):
         gazette = response.meta["gazette"]
         url = response.headers["Location"].decode("utf-8")
         gazette["files"] = [url.replace("https", "http")]
         return gazette
 
-    def extract_power(self, url):
+    @staticmethod
+    def extract_power(url):
         if url.find("st=1") != -1:
             return "executivo"
         return "legislativo"
 
-    def extract_edition(self, url):
+    @staticmethod
+    def extract_edition(url):
         edition_index = url.find("edicao=") + len("edicao=")
-        edition = url[edition_index:]
-        return edition
+        return url[edition_index:]
