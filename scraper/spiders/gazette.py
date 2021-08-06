@@ -105,16 +105,18 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
         gazettes_links = gazette_table.xpath("a//@href").extract()
         dates = gazette_table.css("a::text").extract()
 
-        found_date_by_power = response.meta.get("found_date_by_power", {})
+        go_to_next_page = False
+
         for url, gazette_date in zip(gazettes_links, dates):
             date_obj = datetime.strptime(gazette_date, "%d/%m/%Y")
             if date_obj.date() >= self.start_date:
+                # visita mais uma página porque as datas do legislativo
+                # e do executivo podem não estar na mesma página
+                go_to_next_page = True
+
                 edition = self.extract_edition(url)
                 power = self.extract_power(url)
                 power_id = self.powers[power]
-
-                if date_obj.date() == self.start_date:
-                    found_date_by_power[power] = date_obj.date()
 
                 gazette = dict(
                     date=gazette_date,
@@ -129,8 +131,7 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
                     meta={"gazette": gazette},
                 )
 
-        # as datas do legislativo e do executivo podem não estar na mesma página
-        if len(found_date_by_power) < 2:
+        if go_to_next_page:
             current_page_selector = "#pages ul li.current::text"
             current_page = response.css(current_page_selector).extract_first()
             if current_page:
@@ -139,9 +140,7 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
 
                 if next_page > self.last_page:
                     self.last_page = next_page
-                    yield Request(
-                        next_page_url, meta={"found_date_by_power": found_date_by_power}
-                    )
+                    yield Request(next_page_url)
 
     def parse_details(self, response):
         gazette = response.meta["gazette"]
