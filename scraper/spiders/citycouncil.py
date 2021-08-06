@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 import scrapy
 from scraper.items import (
@@ -74,7 +74,7 @@ class AgendaSpider(BaseSpider):
 
 class AttendanceListSpider(BaseSpider):
     name = "citycouncil_attendancelist"
-    initial_date = date(2020, 1, 1)
+    initial_date = date(2021, 4, 20)
     start_urls = ["https://www.feiradesantana.ba.leg.br/listadepresenca.asp"]
 
     @staticmethod
@@ -86,23 +86,34 @@ class AttendanceListSpider(BaseSpider):
         return status.lower().replace(" ", "_")
 
     def parse(self, response):
-        boxes = response.css("div.row div.col-lg-3 div.box")
-        current_page = response.css("ul.pagination li.current ::text").get()
+        boxes = response.css("div.row div div")
+        current_page = response.meta.get("current_page", 1)
+        last_page = response.css("ul.pagination li:last-child ::text").get()
+        found = False
 
         for box in boxes:
             list_date = box.css("ul li ::text").get()
-            list_url = box.css("div a::attr(href)").get()
-            yield scrapy.Request(
-                url=response.urljoin(list_url),
-                callback=self.parse_list_page,
-                meta={"date": list_date},
-            )
+            if list_date:
+                date_obj = datetime.strptime(list_date, "%d/%m/%Y")
+                print(date_obj.date(), self.start_date)
+                if date_obj.date() >= self.start_date:
+                    found = True
+                    list_url = box.css("div a::attr(href)").get()
+                    yield scrapy.Request(
+                        url=response.urljoin(list_url),
+                        callback=self.parse_list_page,
+                        meta={"date": list_date},
+                    )
 
-        if current_page:
-            next_page = int(current_page) + 1
-            yield scrapy.Request(
-                url=response.urljoin(f"/?p={next_page}"), callback=self.parse
-            )
+        if found and last_page:  # deve continuar checando até não encontrar mais
+            last_page = int(last_page)
+            next_page = current_page + 1
+            if next_page <= last_page:
+                yield scrapy.Request(
+                    url=response.urljoin(f"listadepresenca.asp?p={next_page}"),
+                    callback=self.parse,
+                    meta={"current_page": next_page},
+                )
 
     def parse_list_page(self, response):
         council_members = response.css("div.row div div ul li a::text").extract()
