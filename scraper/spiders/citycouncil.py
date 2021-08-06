@@ -9,7 +9,7 @@ from scraper.items import (
 from web.datasets.parsers import from_str_to_date
 
 from . import BaseSpider
-from .utils import datetime_utcnow_aware, extract_date, months_and_years
+from .utils import datetime_utcnow_aware, months_and_years, strip_accents
 
 
 class AgendaSpider(BaseSpider):
@@ -75,51 +75,45 @@ class AgendaSpider(BaseSpider):
 class AttendanceListSpider(BaseSpider):
     name = "citycouncil_attendancelist"
     initial_date = date(2020, 1, 1)
+    start_urls = ["https://www.feiradesantana.ba.leg.br/listadepresenca.asp"]
 
     @staticmethod
     def get_status(status):
-        """"Retorna label dos status. Consultado em 20/03/2020."""
-        status_labels = {
-            "P": "presente",
-            "FJ": "falta_justificada",
-            "LJ": "licenca_justificada",
-            "A": "ausente",
-        }
-
-        return status_labels.get(status.upper().strip())
-
-    def start_requests(self):
-        today = datetime_utcnow_aware().date()
-        self.logger.info(f"Data inicial: {self.start_date}")
-
-        for month, year in months_and_years(self.start_date, today):
-            url = (
-                "https://www.feiradesantana.ba.leg.br/lista-presenca"
-                f"?mes={month}&ano={year}&Acessar=OK"
-            )
-            yield scrapy.Request(url=url, callback=self.parse)
+        """"Retorna label dos status. Consultado em 06/08/2021."""
+        if not status:
+            return ""
+        status = strip_accents(status.strip())
+        return status.lower().replace(" ", "_")
 
     def parse(self, response):
-        list_page = response.xpath("//p/a/@href").extract()
+        boxes = response.css("div.row div.col-lg-3 div.box")
+        current_page = response.css("ul.pagination li.current ::text").get()
 
-        for page in list_page:
+        for box in boxes:
+            list_date = box.css("ul li ::text").get()
+            list_url = box.css("div a::attr(href)").get()
             yield scrapy.Request(
-                url=response.urljoin(page), callback=self.parse_list_page
+                url=response.urljoin(list_url),
+                callback=self.parse_list_page,
+                meta={"date": list_date},
+            )
+
+        if current_page:
+            next_page = int(current_page) + 1
+            yield scrapy.Request(
+                url=response.urljoin(f"/?p={next_page}"), callback=self.parse
             )
 
     def parse_list_page(self, response):
-        title = response.css("div.center h3 ::text").extract_first()
-        description = response.css("div.center p strong ::text").extract_first()
-        council_members = response.xpath("//tr/td[1]/div/text()").extract()
-        status = response.xpath("//tr/td[2]/div/text()").extract()
+        council_members = response.css("div.row div div ul li a::text").extract()
+        status = response.css("div.row div div div a::text").extract()
 
         for council_member, status in zip(council_members, status):
             yield CityCouncilAttendanceListItem(
                 crawled_at=datetime_utcnow_aware(),
                 crawled_from=response.url,
-                date=extract_date(title),
-                description=description.strip() if description else "",
-                council_member=council_member,
+                date=from_str_to_date(response.meta["date"]),
+                council_member=council_member.strip(),
                 status=self.get_status(status),
             )
 
