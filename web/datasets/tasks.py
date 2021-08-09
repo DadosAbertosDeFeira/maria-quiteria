@@ -1,6 +1,7 @@
 from datetime import datetime
 from logging import info
 from pathlib import Path
+from typing import List
 
 import requests
 from celery import shared_task
@@ -148,8 +149,11 @@ def distribute_city_council_objects_to_sync(payload):
     for action_name, records in payload.items():
         info(f"{action_name}: {len(records)} registros")
         task = action_methods.get(action_name)
-        for record in records:
-            task.delay(record)
+        if action_name.startswith("exclusoes"):
+            task.delay(records)
+        else:
+            for record in records:
+                task.delay(record)
 
 
 @shared_task(retry_kwargs={"max_retries": 1})
@@ -190,8 +194,9 @@ def update_citycouncil_bid(record):
 
 
 @shared_task(retry_kwargs={"max_retries": 1})
-def remove_citycouncil_bid(record):
-    CityCouncilBid.objects.filter(external_code=record["codLic"]).update(excluded=True)
+def remove_citycouncil_bid(records: List[dict]):
+    to_be_removed = [record["codLic"] for record in records]
+    CityCouncilBid.objects.filter(external_code__in=to_be_removed).update(excluded=True)
 
 
 @shared_task(retry_kwargs={"max_retries": 1})
@@ -219,8 +224,9 @@ def update_citycouncil_contract(record):
 
 
 @shared_task(retry_kwargs={"max_retries": 1})
-def remove_citycouncil_contract(record):
-    CityCouncilContract.objects.filter(external_code=record["codCon"]).update(
+def remove_citycouncil_contract(records: List[dict]):
+    to_be_removed = [record["codCon"] for record in records]
+    CityCouncilContract.objects.filter(external_code__in=to_be_removed).update(
         excluded=True
     )
 
@@ -247,8 +253,9 @@ def update_citycouncil_revenue(record):
 
 
 @shared_task(retry_kwargs={"max_retries": 1})
-def remove_citycouncil_revenue(record):
-    CityCouncilRevenue.objects.filter(external_code=record["codLinha"]).update(
+def remove_citycouncil_revenue(records: List[dict]):
+    to_be_removed = [record["codLinha"] for record in records]
+    CityCouncilRevenue.objects.filter(external_code__in=to_be_removed).update(
         excluded=True
     )
 
@@ -282,7 +289,8 @@ def update_citycouncil_expense(record):
 
 
 @shared_task(retry_kwargs={"max_retries": 1})
-def remove_citycouncil_expense(record):
-    CityCouncilExpense.objects.filter(
-        external_file_code=record["codigo"], external_file_line=record["linha"]
-    ).update(excluded=True)
+def remove_citycouncil_expense(records: List[dict]):
+    for record in records:
+        CityCouncilExpense.objects.filter(
+            external_file_code=record["codigo"], external_file_line=record["linha"]
+        ).update(excluded=True)
