@@ -79,7 +79,7 @@ class AttendanceListSpider(BaseSpider):
 
     @staticmethod
     def get_status(status):
-        """"Retorna label dos status. Consultado em 06/08/2021."""
+        """Retorna label dos status. Consultado em 06/08/2021."""
         if not status:
             return ""
         status = strip_accents(status.strip())
