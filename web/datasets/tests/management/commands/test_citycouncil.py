@@ -2,7 +2,6 @@ from datetime import date, datetime
 
 import pytest
 from django.utils.timezone import make_aware
-
 from web.datasets.management.commands._citycouncil import (
     save_agenda,
     save_attendance_list,
@@ -72,7 +71,6 @@ class TestSaveAttendanceList:
     def test_save_attendance_list(self):
         item = {
             "date": date(2020, 2, 3),
-            "description": "Abertura da 1ª etapa do 4º período da 18ª legislatura",
             "council_member": "Roberto Luis da Silva Tourinho",
             "status": "presente",
             "crawled_at": make_aware(datetime(2020, 3, 21, 7, 15, 17, 276019)),
@@ -81,7 +79,6 @@ class TestSaveAttendanceList:
 
         attendance = save_attendance_list(item)
         assert attendance.date == item["date"]
-        assert attendance.description == item["description"]
         assert attendance.council_member == item["council_member"]
         assert attendance.status == item["status"]
         assert attendance.crawled_at == item["crawled_at"]
