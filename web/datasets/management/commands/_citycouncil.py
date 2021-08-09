@@ -1,3 +1,4 @@
+from django.contrib.admin.options import get_content_type_for_model
 from web.datasets.management.commands._file import save_file
 from web.datasets.models import (
     CityCouncilAgenda,
@@ -5,7 +6,6 @@ from web.datasets.models import (
     CityCouncilExpense,
     CityCouncilMinute,
 )
-from django.contrib.admin.options import get_content_type_for_model
 
 
 def save_agenda(item):
@@ -26,7 +26,6 @@ def save_attendance_list(item):
         defaults={
             "crawled_at": item["crawled_at"],
             "crawled_from": item["crawled_from"],
-            "description": item["description"],
             "status": item.get("status"),
         },
     )
