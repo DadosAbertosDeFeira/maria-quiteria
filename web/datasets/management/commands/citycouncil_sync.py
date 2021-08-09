@@ -24,7 +24,7 @@ class Command(BaseCommand):
 
         chain(
             get_city_council_updates.s(target_date.strftime("%Y-%m-%d")),
-            distribute_city_council_objects_to_sync.s(),
+            distribute_city_council_objects_to_sync.s(retry=False),
         )()
 
         self.stdout.write(

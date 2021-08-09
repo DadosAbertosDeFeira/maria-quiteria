@@ -359,14 +359,13 @@ class TestCityCouncilBid:
         assert updated_bid.excluded is False
 
     def test_remove_citycouncil_bid(self):
-        bid = baker.make_recipe(
-            "datasets.CityCouncilBid", external_code=214, excluded=False
-        )
-        record = {"codLic": "214"}
+        bids = baker.make_recipe("datasets.CityCouncilBid", excluded=False, _quantity=3)
+        record = [{"codLic": bid.external_code} for bid in bids]
         remove_citycouncil_bid.delay(record)
 
-        bid.refresh_from_db()
-        assert bid.excluded is True
+        for bid in bids:
+            bid.refresh_from_db()
+            assert bid.excluded is True
 
     def test_update_citycouncil_files(self, mock_save_file):
         bid = baker.make_recipe("datasets.CityCouncilBid", external_code=214)
@@ -520,15 +519,16 @@ class TestCityCouncilContract:
         assert contract.pk == updated_contract.pk
         assert updated_contract.files.count() == 1
 
-    def test_remove_citycouncil_contract(self):
-        contract = baker.make_recipe(
-            "datasets.CityCouncilContract", external_code=214, excluded=False
+    def test_remove_citycouncil_contracts(self):
+        contracts = baker.make_recipe(
+            "datasets.CityCouncilContract", excluded=False, _quantity=3
         )
-        record = {"codCon": "214"}
-        remove_citycouncil_contract.delay(record)
+        records = [{"codCon": contract.external_code} for contract in contracts]
+        remove_citycouncil_contract.delay(records)
 
-        contract.refresh_from_db()
-        assert contract.excluded is True
+        for contract in contracts:
+            contract.refresh_from_db()
+            assert contract.excluded is True
 
 
 @pytest.mark.django_db
@@ -625,14 +625,15 @@ class TestCityCouncilRevenue:
         assert revenue.pk == updated_revenue.pk
 
     def test_remove_citycouncil_revenue(self):
-        revenue = baker.make_recipe(
-            "datasets.CityCouncilRevenue", external_code=214, excluded=False
+        revenues = baker.make_recipe(
+            "datasets.CityCouncilRevenue", excluded=False, _quantity=3
         )
-        record = {"codLinha": "214"}
-        remove_citycouncil_revenue.delay(record)
+        records = [{"codLinha": revenue.external_code} for revenue in revenues]
+        remove_citycouncil_revenue.delay(records)
 
-        revenue.refresh_from_db()
-        assert revenue.excluded is True
+        for revenue in revenues:
+            revenue.refresh_from_db()
+            assert revenue.excluded is True
 
 
 @pytest.mark.django_db
@@ -776,14 +777,15 @@ class TestCityCouncilExpense:
         assert expense.pk == updated_expense.pk
 
     def test_remove_citycouncil_expense(self):
-        expense = baker.make_recipe(
-            "datasets.CityCouncilExpense",
-            external_file_code=253,
-            external_file_line=2,
-            excluded=False,
+        expenses = baker.make_recipe(
+            "datasets.CityCouncilExpense", excluded=False, _quantity=3
         )
-        record = {"codigo": "253", "linha": "2"}
-        remove_citycouncil_expense.delay(record)
+        records = [
+            {"codigo": expense.external_file_code, "linha": expense.external_file_line}
+            for expense in expenses
+        ]
+        remove_citycouncil_expense.delay(records)
 
-        expense.refresh_from_db()
-        assert expense.excluded is True
+        for expense in expenses:
+            expense.refresh_from_db()
+            assert expense.excluded is True
