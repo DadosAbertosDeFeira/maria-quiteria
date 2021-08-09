@@ -123,7 +123,7 @@ def get_city_council_updates(formatted_date):
     return response
 
 
-@shared_task
+@shared_task(ignore_result=True)
 def distribute_city_council_objects_to_sync(payload):
     """Recebe o payload e dispara uma task para cada registro.
 
@@ -156,7 +156,7 @@ def distribute_city_council_objects_to_sync(payload):
                 task.delay(record)
 
 
-@shared_task(retry_kwargs={"max_retries": 1})
+@shared_task(retry_kwargs={"max_retries": 1}, ignore_result=True)
 def save_citycouncil_files(files, object, url_key):
     if not files:
         return
@@ -168,7 +168,7 @@ def save_citycouncil_files(files, object, url_key):
             save_file(file_[url_key], content_type, object.pk)
 
 
-@shared_task(retry_kwargs={"max_retries": 1})
+@shared_task(retry_kwargs={"max_retries": 1}, ignore_result=True)
 def add_citycouncil_bid(record):
     new_item = to_citycouncil_bid(record)
     new_item["crawled_at"] = datetime.now()
@@ -180,8 +180,7 @@ def add_citycouncil_bid(record):
     return bid
 
 
-# TODO tentar novamente se não existe apenas
-@shared_task(retry_kwargs={"max_retries": 1})
+@shared_task(retry_kwargs={"max_retries": 1}, ignore_result=True)
 def update_citycouncil_bid(record):
     bid = CityCouncilBid.objects.get(external_code=record["codLic"])
     updated_item = to_citycouncil_bid(record)
@@ -193,13 +192,13 @@ def update_citycouncil_bid(record):
     return bid
 
 
-@shared_task(retry_kwargs={"max_retries": 1})
+@shared_task(retry_kwargs={"max_retries": 1}, ignore_result=True)
 def remove_citycouncil_bid(records: List[dict]):
     to_be_removed = [record["codLic"] for record in records]
     CityCouncilBid.objects.filter(external_code__in=to_be_removed).update(excluded=True)
 
 
-@shared_task(retry_kwargs={"max_retries": 1})
+@shared_task(retry_kwargs={"max_retries": 1}, ignore_result=True)
 def add_citycouncil_contract(record):
     new_item = to_citycouncil_contract(record)
     new_item["crawled_at"] = datetime.now()
@@ -211,7 +210,7 @@ def add_citycouncil_contract(record):
     return contract
 
 
-@shared_task(retry_kwargs={"max_retries": 1})
+@shared_task(retry_kwargs={"max_retries": 1}, ignore_result=True)
 def update_citycouncil_contract(record):
     contract = CityCouncilContract.objects.get(external_code=record["codCon"])
     updated_item = to_citycouncil_contract(record)
@@ -223,7 +222,7 @@ def update_citycouncil_contract(record):
     return contract
 
 
-@shared_task(retry_kwargs={"max_retries": 1})
+@shared_task(retry_kwargs={"max_retries": 1}, ignore_result=True)
 def remove_citycouncil_contract(records: List[dict]):
     to_be_removed = [record["codCon"] for record in records]
     CityCouncilContract.objects.filter(external_code__in=to_be_removed).update(
@@ -231,7 +230,7 @@ def remove_citycouncil_contract(records: List[dict]):
     )
 
 
-@shared_task(retry_kwargs={"max_retries": 1})
+@shared_task(retry_kwargs={"max_retries": 1}, ignore_result=True)
 def add_citycouncil_revenue(record):
     new_item = to_citycouncil_revenue(record)
     new_item["crawled_at"] = datetime.now()
@@ -242,7 +241,7 @@ def add_citycouncil_revenue(record):
     return revenue
 
 
-@shared_task(retry_kwargs={"max_retries": 1})
+@shared_task(retry_kwargs={"max_retries": 1}, ignore_result=True)
 def update_citycouncil_revenue(record):
     revenue = CityCouncilRevenue.objects.get(external_code=record["codLinha"])
     updated_item = to_citycouncil_revenue(record)
@@ -252,7 +251,7 @@ def update_citycouncil_revenue(record):
     return revenue
 
 
-@shared_task(retry_kwargs={"max_retries": 1})
+@shared_task(retry_kwargs={"max_retries": 1}, ignore_result=True)
 def remove_citycouncil_revenue(records: List[dict]):
     to_be_removed = [record["codLinha"] for record in records]
     CityCouncilRevenue.objects.filter(external_code__in=to_be_removed).update(
@@ -260,7 +259,7 @@ def remove_citycouncil_revenue(records: List[dict]):
     )
 
 
-@shared_task(retry_kwargs={"max_retries": 1})
+@shared_task(retry_kwargs={"max_retries": 1}, ignore_result=True)
 def add_citycouncil_expense(record):
     new_item = to_citycouncil_expense(record)
     new_item["crawled_at"] = datetime.now()
@@ -275,7 +274,7 @@ def add_citycouncil_expense(record):
     return expense
 
 
-@shared_task(retry_kwargs={"max_retries": 1})
+@shared_task(retry_kwargs={"max_retries": 1}, ignore_result=True)
 def update_citycouncil_expense(record):
     expense = CityCouncilExpense.objects.get(
         external_file_code=record["codArquivo"],
@@ -288,7 +287,7 @@ def update_citycouncil_expense(record):
     return expense
 
 
-@shared_task(retry_kwargs={"max_retries": 1})
+@shared_task(retry_kwargs={"max_retries": 1}, ignore_result=True)
 def remove_citycouncil_expense(records: List[dict]):
     for record in records:
         CityCouncilExpense.objects.filter(
