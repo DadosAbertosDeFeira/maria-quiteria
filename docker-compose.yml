@@ -42,7 +42,7 @@ services:
 
     worker:
         build: .
-        command: ["celery", "-A", "web", "worker", "-l", "INFO"]
+        command: ["celery", "-A", "web", "worker", "-l", "INFO", "--without-heartbeat", "--without-gossip", "--without-mingle"]
         environment:
             DATABASE_HOST: db
             TIKA_CLIENT_ONLY: 1
