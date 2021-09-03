@@ -8,7 +8,7 @@ django-filter==2.4.0
 django-public-admin==0.0.5
 django-simple-history==3.0.0
 djangorestframework==3.12.4
-djangorestframework-simplejwt==4.7.2
+djangorestframework-simplejwt==4.8.0
 gunicorn==20.1.0
 jinja2==3.0.1
 psycopg2-binary==2.9.1
