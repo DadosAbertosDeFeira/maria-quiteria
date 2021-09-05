@@ -95,7 +95,6 @@ class AttendanceListSpider(BaseSpider):
             list_date = box.css("ul li ::text").get()
             if list_date:
                 date_obj = datetime.strptime(list_date, "%d/%m/%Y")
-                print(date_obj.date(), self.start_date)
                 if date_obj.date() >= self.start_date:
                     found = True
                     list_url = box.css("div a::attr(href)").get()
