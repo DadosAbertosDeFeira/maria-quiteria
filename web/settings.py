@@ -144,6 +144,7 @@ class Common(Configuration):
     SIMPLE_JWT = {
         "ACCESS_TOKEN_LIFETIME": timedelta(minutes=ACCESS_TOKEN_LIFETIME_IN_MINUTES),
         "REFRESH_TOKEN_LIFETIME": timedelta(minutes=REFRESH_TOKEN_LIFETIME_IN_MINUTES),
+        "BLACKLIST_AFTER_ROTATION": False,
     }
 
 
