@@ -174,5 +174,5 @@ class Prod(Common):
     CITY_COUNCIL_WEBSERVICE = values.Value()
     ENABLE_NEW_RELIC = True
     NEW_RELIC_LICENSE_KEY = os.getenv("NEW_RELIC_LICENSE_KEY", None)
-    NEW_RELIC_APP_NAME = os.getenv("NEW_RELIC_APP_NAME", "vm_mariaquiteria")
+    NEW_RELIC_APP_NAME = os.getenv("NEW_RELIC_APP_NAME", None)
     NEW_RELIC_CONFIG_FILE = os.getenv("NEW_RELIC_CONFIG_FILE", "newrelic.ini")
