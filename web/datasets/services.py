@@ -4,14 +4,12 @@ from pathlib import Path
 import boto3
 import requests
 
-session = boto3.session.Session()
-client = session.client("s3")
-
 
 class S3Client:
-    __slots__ = ("bucket", "bucket_folder", "bucket_region")
+    __slots__ = ("client", "bucket", "bucket_folder", "bucket_region")
 
-    def __init__(self, bucket, bucket_folder, bucket_region):
+    def __init__(self, client, bucket, bucket_folder, bucket_region):
+        self.client = client
         self.bucket = bucket
         self.bucket_folder = bucket_folder
         self.bucket_region = bucket_region
@@ -27,11 +25,10 @@ class S3Client:
             f"{bucket_file_path}"
         )
         with open(temp_file_path, "rb") as body_file:
-            client.put_object(
+            self.client.put_object(
                 Bucket=self.bucket,
                 Key=bucket_file_path,
                 Body=body_file,
-                ACL="bucket-owner-full-control",
             )
 
         self.delete_temp_file(temp_file_path)
@@ -61,7 +58,7 @@ class S3Client:
 
         local_path = f"{temporary_directory}{file_name}"
         with open(local_path, "wb") as file_:
-            client.download_fileobj(self.bucket, s3_file_path, file_)
+            self.client.download_fileobj(self.bucket, s3_file_path, file_)
 
         return local_path
 
@@ -87,14 +84,21 @@ class FakeS3Client(S3Client):
 
 
 def get_s3_client(settings):
-    use_local_file = all(
-        [settings.AWS_ACCESS_KEY_ID is None, settings.AWS_SECRET_ACCESS_KEY is None]
+    if os.getenv("DJANGO_CONFIGURATION") != "Prod":
+        from unittest.mock import Mock
+
+        client = Mock()
+        return FakeS3Client(client, "teste", "maria-quiteria-local", "brasil")
+
+    client = boto3.client(
+        service_name="s3",
+        region_name=settings.AWS_S3_REGION,
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
     )
-    if use_local_file or os.getenv("DJANGO_CONFIGURATION") != "Prod":
-        return FakeS3Client("teste", "maria-quiteria-local", "brasil")
-    else:
-        return S3Client(
-            settings.AWS_S3_BUCKET,
-            settings.AWS_S3_BUCKET_FOLDER,
-            settings.AWS_S3_REGION,
-        )
+    return S3Client(
+        client,
+        settings.AWS_S3_BUCKET,
+        settings.AWS_S3_BUCKET_FOLDER,
+        settings.AWS_S3_REGION,
+    )
