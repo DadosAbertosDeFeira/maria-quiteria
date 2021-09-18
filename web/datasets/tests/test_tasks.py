@@ -70,9 +70,9 @@ class TestContentFromFile:
         assert result.get() == "quarenta e dois"
 
     def test_content_from_files_not_saving_to_db(self, parser, path):
-        result = content_from_file(path="/tmp/README.md")
+        result = content_from_file.delay(path="/tmp/README.md")
 
-        assert result == "quarenta e dois"
+        assert result.get() == "quarenta e dois"
         assert parser.from_file.called
 
 
@@ -101,7 +101,8 @@ class TestBackupFile:
         assert a_file.s3_file_path == expected_s3_file_path
 
     def test_return_none_when_file_does_not_exist(self):
-        assert backup_file(9) is None
+        result = backup_file.delay(9)
+        assert result.get() is None
 
     def test_return_none_when_file_has_backup_already(self):
         gazette = baker.make("datasets.Gazette")
