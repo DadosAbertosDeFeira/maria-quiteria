@@ -19,9 +19,6 @@ def save_document(item):
             "crawled_at": item["crawled_at"],
         },
     )
-    # TODO backup_local_file
-    # le do arquivo local, faz upload e salva url
-    # remove arquivo local
     content_type = get_content_type_for_model(document)
     if created:
         _, file_created = File.objects.get_or_create(

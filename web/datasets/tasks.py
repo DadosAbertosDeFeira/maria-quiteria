@@ -71,14 +71,19 @@ def backup_file(file_id):
         info(f"O arquivo ({file_id}) não existe ou já possui backup.")
         return
 
+    if not file_obj.url and not file_obj.local_path:
+        info(f"O arquivo ({file_id}) não tem URL ou não existe localmente.")
+        return
+
     model_name = file_obj.content_object._meta.model_name
     relative_file_path = (
         f"{model_name}/{file_obj.created_at.year}/"
         f"{file_obj.created_at.month}/{file_obj.created_at.day}/"
     )
 
+    location = file_obj.local_path or file_obj.url
     s3_url, s3_file_path = client.upload_file(
-        file_obj.url, relative_file_path, prefix=file_obj.checksum
+        location, relative_file_path, prefix=file_obj.checksum
     )
     file_obj.s3_file_path = s3_file_path
     file_obj.s3_url = s3_url
