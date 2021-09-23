@@ -14,11 +14,27 @@ from web.datasets.management.commands._tcmba import save_document
 
 
 class Command(BaseCommand):
+    """Raspa documentos de uma unidade no TCM-BA.
+
+    Unidades:
+        "Camara Municipal de FEIRA DE SANTANA"
+        "Agência Reguladora de Feira de Santana - ARFES"
+        "Fundação Hospitalar de Feira de Santana"
+        "Superintendência Municipal de Proteção e Defesa do Consumidor"
+        "Consórcio Público Interfederativo De Saúde Da Região de Feira de Santana"
+        "Fundação Cultural Municipal Egberto Tavares Costa"
+        "Superintendência Municipal de Trânsito - SMT"
+        "Instituto de Previdência de Feira de Santana - IPFS"
+    """
+
     help = "Executa raspador de documentos públicos do TCM-BA e salva no banco."
 
     def add_arguments(self, parser):
         parser.add_argument("--period")
         parser.add_argument("--period-type", default="mensal")
+        parser.add_argument(
+            "--unit", default="Prefeitura Municipal de FEIRA DE SANTANA"
+        )
         parser.add_argument("--scrapy-args")
 
     def echo(self, text, style=None):
@@ -51,7 +67,9 @@ class Command(BaseCommand):
             settings.update(scrapy_args)
 
         process = CrawlerProcess(settings=settings)
+
         args = {
+            "unidade": options.get("unit"),
             "competencia": target_date,
             "cidade": "feira de santana",
             "periodicidade": options.get("period_type"),
