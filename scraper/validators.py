@@ -92,3 +92,17 @@ class CityHallPaymentsItem(BaseModel):
     subfunction = StringType()
     type_of_process = StringType()
     resource = StringType()
+
+
+class TCMBADocumentItem(Model):
+    crawled_at = DateTimeType(required=True)
+    category = StringType()
+    filename = StringType(required=True)
+    original_filename = StringType(required=True)
+    filepath = StringType(required=True)
+    inserted_by = StringType()
+    inserted_at = DateType(formats=("%d/%m/%Y", "%d/%m/%y"))
+    unit = StringType(required=True)
+    month = StringType()
+    year = StringType()
+    period = StringType()
