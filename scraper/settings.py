@@ -1,4 +1,7 @@
 import os
+from pathlib import Path
+
+from tcmba.items import DocumentItem as TCMBADocumentItem
 
 from .items import (
     CityCouncilAgendaItem,
@@ -44,6 +47,7 @@ SPIDERMON_VALIDATION_MODELS = {
     CityHallBidItem: "scraper.validators.CityHallBidItem",
     CityHallPaymentsItem: "scraper.validators.CityHallPaymentsItem",
     CityCouncilAttendanceListItem: "scraper.validators.CityCouncilAttendanceListItem",
+    TCMBADocumentItem: "scraper.validators.TCMBADocumentItem",
 }
 
 # monitoring
@@ -67,3 +71,6 @@ AUTOTHROTTLE_ENABLED = True
 
 if os.getenv("ENABLE_AUTOTHROTTLE_DEBUG", False):
     AUTOTHROTTLE_DEBUG = True
+
+FILES_STORE = Path.cwd() / "files"
+FILES_STORE.mkdir(parents=True, exist_ok=True)

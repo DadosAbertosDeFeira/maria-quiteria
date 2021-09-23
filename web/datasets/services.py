@@ -14,16 +14,7 @@ class S3Client:
         self.bucket_folder = bucket_folder
         self.bucket_region = bucket_region
 
-    def upload_file(self, url, relative_file_path, prefix=""):
-        bucket_file_path = f"{self.bucket_folder}/files/{relative_file_path}"
-        file_name, temp_file_path = self.create_temp_file(
-            url, relative_file_path, prefix
-        )
-        bucket_file_path = f"{bucket_file_path}{file_name}"
-        url = (
-            f"https://{self.bucket}.s3.{self.bucket_region}.amazonaws.com/"
-            f"{bucket_file_path}"
-        )
+    def _upload_to_s3(self, temp_file_path, bucket_file_path):
         with open(temp_file_path, "rb") as body_file:
             self.client.put_object(
                 Bucket=self.bucket,
@@ -31,7 +22,25 @@ class S3Client:
                 Body=body_file,
             )
 
+    def upload_file(self, location_or_url, relative_file_path, prefix=""):
+        location = Path(location_or_url)
+        if not location.exists():
+            # se não é um arquivo local, assumimos que é uma url
+            file_name, temp_file_path = self.create_temp_file(
+                location_or_url, relative_file_path, prefix
+            )
+        else:
+            file_name, temp_file_path = location.name, str(location)
+
+        bucket_file_path = f"{self.bucket_folder}/files/{relative_file_path}"
+        bucket_file_path = f"{bucket_file_path}{file_name}"
+        url = (
+            f"https://{self.bucket}.s3.{self.bucket_region}.amazonaws.com/"
+            f"{bucket_file_path}"
+        )
+        self._upload_to_s3(temp_file_path, bucket_file_path)
         self.delete_temp_file(temp_file_path)
+
         return url, bucket_file_path
 
     @staticmethod
@@ -68,16 +77,8 @@ class S3Client:
 
 
 class FakeS3Client(S3Client):
-    def upload_file(self, url, relative_file_path, prefix=""):
-        file_path = f"{self.bucket_folder}/files/{relative_file_path}"
-        temp_file_name, _ = self.create_temp_file(url, file_path, prefix)
-        bucket_file_path = f"{file_path}{temp_file_name}"
-
-        url = (
-            f"https://{self.bucket}.s3.{self.bucket_region}.amazonaws.com/"
-            f"{bucket_file_path}"
-        )
-        return url, bucket_file_path
+    def _upload_to_s3(self, temp_file_path, bucket_file_path):
+        pass
 
     def download_file(self, s3_file_path):
         return f"{Path.cwd()}/data/tmp/{s3_file_path}"

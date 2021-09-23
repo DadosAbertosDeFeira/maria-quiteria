@@ -73,6 +73,7 @@ class File(models.Model):
     original_filename = models.CharField(
         "Nome do arquivo", max_length=200, null=True, blank=True, db_index=True
     )
+    local_path = models.CharField(max_length=350, null=True, blank=True)
 
     search_vector = SearchVectorField(null=True, editable=False)
 

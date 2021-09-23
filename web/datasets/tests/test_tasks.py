@@ -308,7 +308,7 @@ class TestCityCouncilBid:
 
         assert CityCouncilBid.objects.count() == 1
 
-    def test_add_citycouncil_bid_with_files(self, mock_save_file):
+    def test_add_citycouncil_bid_with_files(self, mock_backup_file):
         assert CityCouncilBid.objects.count() == 0
 
         record = {
@@ -368,7 +368,7 @@ class TestCityCouncilBid:
             bid.refresh_from_db()
             assert bid.excluded is True
 
-    def test_update_citycouncil_files(self, mock_save_file):
+    def test_update_citycouncil_files(self, mock_backup_file):
         bid = baker.make_recipe("datasets.CityCouncilBid", external_code=214)
         assert bid.files.count() == 0
 
@@ -454,7 +454,7 @@ class TestCityCouncilContract:
 
         assert CityCouncilContract.objects.count() == 1
 
-    def test_add_citycouncil_contract_with_files(self, mock_save_file):
+    def test_add_citycouncil_contract_with_files(self, mock_backup_file):
         assert CityCouncilContract.objects.count() == 0
         record = {
             "codCon": "43",
@@ -500,7 +500,7 @@ class TestCityCouncilContract:
 
         assert contract.pk == updated_contract.pk
 
-    def test_update_citycouncil_contract_with_files(self, mock_save_file):
+    def test_update_citycouncil_contract_with_files(self, mock_backup_file):
         contract = baker.make_recipe("datasets.CityCouncilContract", external_code=43)
         assert contract.files.count() == 0
         record = {

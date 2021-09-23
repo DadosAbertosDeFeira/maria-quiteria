@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
 
-from web.datasets.services import get_s3_client
 from django.conf import settings
+from web.datasets.services import get_s3_client
 
 client = get_s3_client(settings)
 
@@ -20,9 +20,7 @@ class TestS3Client:
 
         assert s3_url == expected_s3_url
         assert bucket_file_path == expected_file_path
-        assert Path(real_path).exists()
-
-        client.delete_temp_file(real_path)
+        assert Path(real_path).exists() is False
 
     def test_create_temp_file(self):
         url = (
@@ -81,10 +79,21 @@ class TestS3Client:
 
         assert s3_url == expected_s3_url
         assert relative_file_path == expected_file_path
-        assert Path(real_path).exists()
+        assert Path(real_path).exists() is False
 
         absolute_file_path = client.download_file(relative_file_path)
 
         assert absolute_file_path == real_path
 
-        client.delete_temp_file(absolute_file_path)
+    def test_upload_file_from_local_path(self):
+        local_path = Path("conteudo.txt")
+        local_path.write_text("Testando")
+        relative_path = "TestModel/2021/06/23/"
+        s3_url, bucket_file_path = client.upload_file(str(local_path), relative_path)
+
+        expected_file_path = f"maria-quiteria-local/files/{relative_path}conteudo.txt"
+        expected_s3_url = f"https://teste.s3.brasil.amazonaws.com/{bucket_file_path}"
+
+        assert s3_url == expected_s3_url
+        assert bucket_file_path == expected_file_path
+        assert Path(local_path).exists() is False
