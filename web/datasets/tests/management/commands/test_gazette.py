@@ -11,7 +11,7 @@ from web.datasets.management.commands._gazette import (
 
 @pytest.mark.django_db
 class TestSaveGazette:
-    def test_save_gazette(self, mock_save_file):
+    def test_save_gazette(self, mock_backup_file):
         item = {
             "date": date(2019, 11, 5),
             "power": "executivo",
@@ -41,10 +41,10 @@ class TestSaveGazette:
         assert event.secretariat == item["events"][0]["secretariat"]
         assert event.summary == item["events"][0]["summary"]
 
-        assert mock_save_file.called is True
-        assert mock_save_file.call_count == 1
+        assert mock_backup_file.called is True
+        assert mock_backup_file.call_count == 1
 
-    def test_save_different_events_to_same_gazette(self, mock_save_file):
+    def test_save_different_events_to_same_gazette(self, mock_backup_file):
         item = {
             "date": date(2019, 11, 5),
             "power": "executivo",
@@ -69,13 +69,13 @@ class TestSaveGazette:
         gazette = save_gazette(item)
         assert gazette.events.count() == 2
 
-        assert mock_save_file.called is True
-        assert mock_save_file.call_count == 1
+        assert mock_backup_file.called is True
+        assert mock_backup_file.call_count == 1
 
 
 @pytest.mark.django_db
 class TestSaveLegacyGazette:
-    def test_save_legacy_gazette(self, mock_save_file):
+    def test_save_legacy_gazette(self, mock_backup_file):
         legacy_item = {
             "title": "DECRETO Nº 9.416, DE 26 DE NOVEMBRO DE 2014.",
             "published_on": "Folha do Estado",
@@ -101,7 +101,7 @@ class TestSaveLegacyGazette:
         assert event.summary == legacy_item["details"]
         assert event.published_on == legacy_item["published_on"]
 
-    def test_save_different_events_to_same_legacy_gazette(self, mock_save_file):
+    def test_save_different_events_to_same_legacy_gazette(self, mock_backup_file):
         legacy_items = [
             {
                 "title": "DECRETO Nº 9.416, DE 26 DE NOVEMBRO DE 2014.",
@@ -137,7 +137,7 @@ class TestSaveLegacyGazette:
         assert len(set([g.pk for g in gazettes])) == 1
         assert gazettes[0].events.count() == 3
 
-    def test_save_different_events_to_different_legacy_gazette(self, mock_save_file):
+    def test_save_different_events_to_different_legacy_gazette(self, mock_backup_file):
         legacy_items = [
             {
                 "title": "DECRETO Nº 9.416, DE 1 DE NOVEMBRO DE 2014.",

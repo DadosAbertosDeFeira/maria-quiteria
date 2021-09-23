@@ -110,7 +110,7 @@ class TestSaveAttendanceList:
 
 @pytest.mark.django_db
 class TestSaveMinute:
-    def test_save_minute(self, mock_save_file):
+    def test_save_minute(self, mock_backup_file):
         item = {
             "crawled_at": make_aware(datetime(2020, 4, 30, 18, 18, 56, 173788)),
             "crawled_from": "https://www.feiradesantana.ba.leg.br/atas?"
