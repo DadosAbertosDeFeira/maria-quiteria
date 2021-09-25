@@ -313,7 +313,7 @@ class CityCouncilRevenueAdmin(PublicModelAdmin):
 
 
 class TCMBADocumentAdmin(FileURLsMixin, PublicModelAdmin):
-    search_fields = ["original_filename", "unit", "category"]
+    search_fields = ["original_filename", "unit", "category", "files__search_vector"]
     list_filter = ["month", "year", "period", "unit", "category"]
     list_display = (
         "original_filename",
