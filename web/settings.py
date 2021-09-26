@@ -147,6 +147,8 @@ class Common(Configuration):
         "BLACKLIST_AFTER_ROTATION": False,
     }
 
+    ENABLE_NEW_RELIC = False
+
 
 class Dev(Common):
     DEBUG = True
@@ -169,3 +171,8 @@ class Prod(Common):
     ALLOWED_HOSTS.extend((gethostname(), gethostbyname(gethostname())))
     DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=False)}
     GOOGLE_ANALYTICS_KEY = values.Value()
+    CITY_COUNCIL_WEBSERVICE = values.Value()
+    ENABLE_NEW_RELIC = True
+    NEW_RELIC_LICENSE_KEY = os.getenv("NEW_RELIC_LICENSE_KEY", None)
+    NEW_RELIC_APP_NAME = os.getenv("NEW_RELIC_APP_NAME", None)
+    NEW_RELIC_CONFIG_FILE = os.getenv("NEW_RELIC_CONFIG_FILE", "newrelic.ini")
