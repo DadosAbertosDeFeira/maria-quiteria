@@ -57,8 +57,9 @@ def content_from_file(file_pk=None, path=None, keep_file=True):
         Path(path).unlink()
 
     if a_file:
-        a_file.content = raw["content"]
+        a_file.content = raw["content"] or ""
         a_file.save()
+        return a_file.content
 
     return raw["content"]
 
