@@ -75,6 +75,31 @@ class TestContentFromFile:
         assert result.get() == "quarenta e dois"
         assert parser.from_file.called
 
+    @pytest.mark.django_db
+    def test_save_empty_string_when_nothing_is_parsed(self, mocker, path):
+        parser_mock = mocker.patch("web.datasets.tasks.parser")
+        parser_mock.from_file.return_value = {
+            "content": None
+        }  # casos onde o pdf é uma imagem
+        gazette = baker.make("datasets.Gazette")
+        a_file = baker.make(
+            "datasets.File",
+            url="https://url.com",
+            content_object=gazette,
+            checksum="random",
+            s3_url="https://dadosabertosdefeira.com/mq/"
+            "Termo_de_Referência_-_HOSP_CAMP.pdf",
+            s3_file_path="mq/Termo_de_Referência_-_HOSP_CAMP.pdf",
+            content=None,
+        )
+
+        result = content_from_file.delay(a_file.pk)
+        a_file.refresh_from_db()
+
+        assert parser_mock.from_file.called
+        assert result.get() == ""
+        assert a_file.content == ""
+
 
 @pytest.mark.django_db
 class TestBackupFile:
