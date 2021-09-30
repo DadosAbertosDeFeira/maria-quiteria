@@ -51,6 +51,9 @@ class Common(Configuration):
         "simple_history.middleware.HistoryRequestMiddleware",
     ]
 
+    if os.getenv("DEBUG_SQL", False):
+        MIDDLEWARE.append("web.sqlprint.SqlPrintingMiddleware")
+
     ROOT_URLCONF = "web.urls"
 
     TEMPLATES = [
