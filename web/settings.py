@@ -149,6 +149,8 @@ class Common(Configuration):
 
     ENABLE_NEW_RELIC = False
 
+    DATA_DIR = values.Value(default="/data", environ_prefix=None)
+
 
 class Dev(Common):
     DEBUG = True

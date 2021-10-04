@@ -3,8 +3,7 @@ from pathlib import Path
 
 import boto3
 import requests
-
-DATA_DIR = "/data"
+from django.conf import settings
 
 
 class S3Client:
@@ -48,7 +47,7 @@ class S3Client:
 
     @staticmethod
     def create_temp_file(url, relative_file_path="", prefix=""):
-        temporary_directory = Path(f"{DATA_DIR}/{relative_file_path}")
+        temporary_directory = Path(f"{settings.DATA_DIR}/{relative_file_path}")
         temporary_directory.mkdir(parents=True, exist_ok=True)
 
         response = requests.get(url)
@@ -62,12 +61,12 @@ class S3Client:
         return temp_file_name, str(temp_file_path.absolute())
 
     def download_file(self, s3_file_path):
-        Path(DATA_DIR).mkdir(parents=True, exist_ok=True)
+        Path(settings.DATA_DIR).mkdir(parents=True, exist_ok=True)
 
         start_index = s3_file_path.rfind("/") + 1
         file_name = s3_file_path[start_index:]
 
-        local_path = f"{DATA_DIR}/{file_name}"
+        local_path = f"{settings.DATA_DIR}/{file_name}"
         with open(local_path, "wb") as file_:
             self.client.download_fileobj(self.bucket, s3_file_path, file_)
 
@@ -83,7 +82,7 @@ class FakeS3Client(S3Client):
         pass
 
     def download_file(self, s3_file_path):
-        return f"{DATA_DIR}/{s3_file_path}"
+        return f"{settings.DATA_DIR}/{s3_file_path}"
 
     @staticmethod
     def delete_temp_file(temp_file_path):

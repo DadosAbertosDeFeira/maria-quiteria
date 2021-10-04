@@ -15,7 +15,7 @@ class TestS3Client:
 
         expected_file_path = f"maria-quiteria-local/files/{relative_path}/robots.txt"
         expected_s3_url = f"https://teste.s3.brasil.amazonaws.com/{bucket_file_path}"
-        real_path = Path(f"/data/{expected_file_path}")
+        real_path = Path(f"{settings.DATA_DIR}/{expected_file_path}")
 
         assert s3_url == expected_s3_url
         assert bucket_file_path == expected_file_path
@@ -68,7 +68,7 @@ class TestS3Client:
 
         expected_file_path = f"maria-quiteria-local/files/{relative_path}/robots.txt"
         expected_s3_url = f"https://teste.s3.brasil.amazonaws.com/{expected_file_path}"
-        real_path = Path(f"/data/{expected_file_path}")
+        real_path = Path(f"{settings.DATA_DIR}/{expected_file_path}")
 
         assert s3_url == expected_s3_url
         assert relative_file_path == expected_file_path

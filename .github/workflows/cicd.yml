@@ -5,10 +5,6 @@ on: [ push, pull_request ]
 jobs:
   build:
     runs-on: ubuntu-18.04
-    container:
-      image: ubuntu:18.04
-      volumes:
-        - ${{ github.workspace }}/data:/data
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
@@ -33,6 +29,7 @@ jobs:
           DJANGO_SETTINGS_MODULE: "web.settings"
           DJANGO_CONFIGURATION: "Test"
           DATABASE_URL: "postgres://postgres:postgres@localhost:5432/mariaquiteria"
+          DATA_DIR: ${{ github.workspace }}
         run: |
           python manage.py collectstatic
           pytest
