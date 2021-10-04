@@ -31,6 +31,7 @@ services:
         command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
         volumes:
             - .:/code
+            - data:/data
         ports:
             - "8000:8000"
         environment:
@@ -43,6 +44,8 @@ services:
     worker:
         build: .
         command: ["celery", "-A", "web", "worker", "-l", "INFO", "--without-heartbeat", "--without-gossip", "--without-mingle"]
+        volumes:
+            - data:/data
         environment:
             DATABASE_HOST: db
             TIKA_CLIENT_ONLY: 1
@@ -53,3 +56,6 @@ services:
             - tika
             - db
             - rabbitmq
+
+volumes:
+  data:
