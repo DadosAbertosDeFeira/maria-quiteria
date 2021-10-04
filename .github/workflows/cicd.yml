@@ -5,6 +5,10 @@ on: [ push, pull_request ]
 jobs:
   build:
     runs-on: ubuntu-18.04
+    container:
+      image: ubuntu:18.04
+      volumes:
+        - ${{ github.workspace }}/data:/data
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
