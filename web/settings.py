@@ -1,6 +1,6 @@
 import os
 from datetime import timedelta
-from socket import gethostbyname, gethostname
+from socket import gethostbyname, gethostbyname_ex, gethostname
 
 import dj_database_url
 import sentry_sdk
@@ -158,7 +158,8 @@ class Dev(Common):
 
     MIDDLEWARE = Common.MIDDLEWARE + ["debug_toolbar.middleware.DebugToolbarMiddleware"]
 
-    INTERNAL_IPS = ["127.0.0.1"]
+    hostname, _, ips = gethostbyname_ex(gethostname())
+    INTERNAL_IPS = ["127.0.0.1"] + [ip[:-1] + "1" for ip in ips]
 
 
 class Test(Dev):
