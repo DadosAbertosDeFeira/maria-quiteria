@@ -49,10 +49,11 @@ make build
 ```
 
 O passo anterior vai criar um banco de dados postgres.
-Agora, basta aplicar as `migrations`:
+Agora, basta aplicar as `migrations` executar o `collectstatic`:
 
 ```
 make migrate
+make collectstatic
 ```
 
 ### Executando os testes
