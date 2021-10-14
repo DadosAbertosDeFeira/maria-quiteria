@@ -5,6 +5,7 @@ from web.api.views import (
     CityCouncilAttendanceListView,
     GazetteView,
     HealthCheckView,
+    CityHallBidView
 )
 
 router = routers.DefaultRouter()
@@ -24,4 +25,5 @@ urlpatterns = [
         CityCouncilAttendanceListView.as_view(),
         name="city-council-attendance-list",
     ),
+    path("city-hall/bids/", CityHallBidView.as_view(), name="city-hall-bids"),
 ]

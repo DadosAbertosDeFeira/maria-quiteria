@@ -7,12 +7,14 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet, ViewSet
 from web.api.filters import GazetteFilter
+from django.contrib.postgres.search import SearchVector
 from web.api.serializers import (
     CityCouncilAgendaSerializer,
     CityCouncilAttendanceListSerializer,
     GazetteSerializer,
+    CityHallBidSerializer,
 )
-from web.datasets.models import CityCouncilAgenda, CityCouncilAttendanceList, Gazette
+from web.datasets.models import CityCouncilAgenda, CityCouncilAttendanceList, Gazette, CityHallBid
 
 
 class HealthCheckView(ViewSet):
@@ -77,3 +79,46 @@ class GazetteView(ReadOnlyModelViewSet):
         "events__summary",
         "year_and_edition",
     ]
+
+
+class CityHallBidView(ListAPIView):
+    serializer_class = CityHallBidSerializer
+
+    def get_queryset(self):
+        bids = CityHallBid.objects.prefetch_related("events").prefetch_related("files")
+
+        if self.request.query_params:
+            bids = self.filter_by_query_params(bids)
+
+        return bids
+
+    def filter_by_query_params(self, bids):
+        bids = self.filter_by_query(bids)
+        bids = self.filter_by_start_date(bids)
+        bids = self.filter_by_end_date(bids)
+        return bids
+
+    def filter_by_end_date(self, bids):
+        end_date = self.request.query_params.get("end_date", None)
+        if end_date is not None:
+            bids = bids.filter(session_at__date__lte=end_date)
+        return bids
+
+    def filter_by_start_date(self, bids):
+        start_date = self.request.query_params.get("start_date", None)
+        if start_date is not None:
+            bids = bids.filter(session_at__date__gte=start_date)
+        return bids
+
+    def filter_by_query(self, bids):
+        description = self.request.query_params.get("query", None)
+
+        if description:
+            description = description.replace('"', "")
+            search_vector = SearchVector("files__search_vector", config="portuguese")
+            bids = (
+                bids.filter(description__icontains=description)
+                | bids.filter(events__summary__icontains=description)
+                | bids.annotate(search=search_vector).filter(search=description)
+            )
+        return bids
