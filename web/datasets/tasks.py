@@ -2,8 +2,10 @@ from datetime import datetime
 from logging import info
 from pathlib import Path
 from typing import List
+from notifiers import get_notifier
 
 import requests
+import json
 from celery import shared_task
 from django.conf import settings
 from django.contrib.admin.options import get_content_type_for_model
@@ -118,6 +120,8 @@ def get_city_council_updates(formatted_date):
         raise HTTPError
 
     response = response.json()
+    telegram = get_notifier('telegram')
+    telegram.notify(message=json.dumps(response, indent=2), token=settings.TELEGRAM_SENDER_TOKEN, chat_id=settings.TELEGRAM_CHANNEL, raise_on_errors=True)
     sync_info.response = response
 
     if response.get("erro"):
