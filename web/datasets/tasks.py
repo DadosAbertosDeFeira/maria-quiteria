@@ -120,12 +120,12 @@ def get_city_council_updates(formatted_date):
         raise HTTPError
 
     response = response.json()
-    telegram = get_notifier('telegram')
+    telegram = get_notifier("telegram")
     telegram.notify(
         message=json.dumps(response, indent=2),
         token=settings.TELEGRAM_SENDER_TOKEN,
         chat_id=settings.TELEGRAM_CHANNEL,
-        raise_on_errors=True
+        raise_on_errors=True,
     )
     sync_info.response = response
 
