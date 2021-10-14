@@ -47,7 +47,7 @@ class S3Client:
 
     @staticmethod
     def create_temp_file(url, relative_file_path="", prefix=""):
-        temporary_directory = Path(f"{settings.DATA_DIR}/{relative_file_path}")
+        temporary_directory = Path(settings.DATA_DIR) / relative_file_path
         temporary_directory.mkdir(parents=True, exist_ok=True)
 
         response = requests.get(url)
@@ -66,7 +66,7 @@ class S3Client:
         start_index = s3_file_path.rfind("/") + 1
         file_name = s3_file_path[start_index:]
 
-        local_path = f"{settings.DATA_DIR}/{file_name}"
+        local_path = Path(settings.DATA_DIR) / file_name
         with open(local_path, "wb") as file_:
             self.client.download_fileobj(self.bucket, s3_file_path, file_)
 
