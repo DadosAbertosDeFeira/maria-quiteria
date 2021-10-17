@@ -1,6 +1,7 @@
 from datetime import date, datetime
 
 import scrapy
+
 from scraper.items import (
     CityCouncilAgendaItem,
     CityCouncilAttendanceListItem,
@@ -63,6 +64,7 @@ class AgendaSpider(BaseSpider):
             ]
             event_date = from_str_to_date(event_date)
             yield CityCouncilAgendaItem(
+                hash_commit=response.hash_commit,
                 crawled_at=datetime_utcnow_aware(),
                 crawled_from=response.url,
                 date=event_date,
@@ -120,6 +122,7 @@ class AttendanceListSpider(BaseSpider):
 
         for council_member, status in zip(council_members, status):
             yield CityCouncilAttendanceListItem(
+                hash_commit=response.hash_commit,
                 crawled_at=datetime_utcnow_aware(),
                 crawled_from=response.url,
                 date=from_str_to_date(response.meta["date"]),
@@ -171,6 +174,7 @@ class MinuteSpider(BaseSpider):
         for event_date, title, file_url in zip(dates, event_titles, file_urls):
             event_date = from_str_to_date(event_date)
             yield CityCouncilMinuteItem(
+                hash_commit=response.hash_commit,
                 crawled_at=datetime_utcnow_aware(),
                 crawled_from=response.url,
                 date=event_date,

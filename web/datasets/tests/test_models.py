@@ -38,6 +38,13 @@ class TestCityCouncilAgenda:
         assert agendas.first().date == newer_date
         assert agendas.last().date == older_date
 
+    def test_should_exist_hash_commit_field(self):
+        hash_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
+        agenda = baker.make_recipe(
+            "datasets.CityCouncilAgenda", hash_commit=hash_commit
+        )
+        assert isinstance(agenda.hash_commit, str)
+
 
 @pytest.mark.django_db
 class TestCityCouncilAttendanceList:
@@ -91,6 +98,13 @@ class TestCityCouncilAttendanceList:
         for attendance_list in attendance_lists:
             attendance_list.history.count() == 2
 
+    def test_should_exist_hash_commit_field(self):
+        hash_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
+        attendance = baker.make_recipe(
+            "datasets.CityCouncilAttendanceList", hash_commit=hash_commit
+        )
+        assert isinstance(attendance.hash_commit, str)
+
 
 @pytest.mark.django_db
 class TestCityCouncilBid:
@@ -105,6 +119,11 @@ class TestCityCouncilBid:
         assert bids[1].session_at == older_datetime
         assert bids.last().session_at is None
 
+    def test_should_exist_hash_commit_field(self):
+        hash_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
+        bid = baker.make_recipe("datasets.CityCouncilBid", hash_commit=hash_commit)
+        assert isinstance(bid.hash_commit, str)
+
 
 @pytest.mark.django_db
 class TestCityCouncilContract:
@@ -116,6 +135,13 @@ class TestCityCouncilContract:
         contracts = CityCouncilContract.objects.all()
         assert contracts.first().start_date == newer_date
         assert contracts.last().start_date == older_date
+
+    def test_should_exist_hash_commit_field(self):
+        hash_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
+        contract = baker.make_recipe(
+            "datasets.CityCouncilContract", hash_commit=hash_commit
+        )
+        assert isinstance(contract.hash_commit, str)
 
 
 @pytest.mark.django_db
@@ -139,6 +165,13 @@ class TestCityCouncilExpense:
         assert expenses.first().date == newer_date
         assert expenses.last().date == older_date
 
+    def test_should_exist_hash_commit_field(self):
+        hash_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
+        expense = baker.make_recipe(
+            "datasets.CityCouncilExpense", hash_commit=hash_commit
+        )
+        assert isinstance(expense.hash_commit, str)
+
 
 @pytest.mark.django_db
 class TestCityCouncilMinute:
@@ -161,6 +194,13 @@ class TestCityCouncilMinute:
         assert minutes.first().date == newer_date
         assert minutes.last().date == older_date
 
+    def test_should_exist_hash_commit_field(self):
+        hash_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
+        minutes = baker.make_recipe(
+            "datasets.CityCouncilMinute", hash_commit=hash_commit
+        )
+        assert isinstance(minutes.hash_commit, str)
+
 
 @pytest.mark.django_db
 class TestCityCouncilRevenue:
@@ -174,6 +214,13 @@ class TestCityCouncilRevenue:
         assert revenues.first().published_at == newer_date
         assert revenues[1].published_at == older_date
         assert revenues.last().published_at is None
+
+    def test_should_exist_hash_commit_field(self):
+        hash_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
+        revenue = baker.make_recipe(
+            "datasets.CityCouncilRevenue", hash_commit=hash_commit
+        )
+        assert isinstance(revenue.hash_commit, str)
 
 
 @pytest.mark.django_db
@@ -199,6 +246,11 @@ class TestGazette:
         assert gazettes[1].date == older_date
         assert gazettes.last().date is None
 
+    def test_should_exist_hash_commit_field(self):
+        hash_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
+        gazette = baker.make_recipe("datasets.Gazette", hash_commit=hash_commit)
+        assert isinstance(gazette.hash_commit, str)
+
 
 @pytest.mark.django_db
 class TestCityHallBid:
@@ -221,3 +273,8 @@ class TestCityHallBid:
         assert bids.first().session_at == newer_datetime
         assert bids[1].session_at == older_datetime
         assert bids.last().session_at is None
+
+    def test_should_exist_hash_commit_field(self):
+        hash_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
+        bid = baker.make_recipe("datasets.CityHallBid", hash_commit=hash_commit)
+        assert isinstance(bid.hash_commit, str)

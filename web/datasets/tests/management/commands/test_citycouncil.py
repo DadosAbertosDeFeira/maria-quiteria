@@ -2,6 +2,7 @@ from datetime import date, datetime
 
 import pytest
 from django.utils.timezone import make_aware
+
 from web.datasets.management.commands._citycouncil import (
     save_agenda,
     save_attendance_list,
@@ -27,6 +28,7 @@ class TestSaveAgenda:
             "Requerimento nº 142/2019.",
             "event_type": "sessao_especial",
             "title": "SESSÃO ESPECIAL 29 DE AGOSTO",
+            "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
         }
 
         agenda = save_agenda(item)
@@ -36,9 +38,11 @@ class TestSaveAgenda:
         assert agenda.title == item["title"]
         assert agenda.crawled_at == item["crawled_at"]
         assert agenda.crawled_from == item["crawled_from"]
+        assert agenda.hash_commit == item["hash_commit"]
 
     def test_handle_with_changed_agenda(self):
         item = {
+            "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
             "crawled_at": make_aware(datetime(2020, 3, 21, 7, 15, 17, 908831)),
             "crawled_from": "https://www.feiradesantana.ba.leg.br/agenda",
             "date": date(2019, 8, 29),
@@ -70,6 +74,7 @@ class TestSaveAgenda:
 class TestSaveAttendanceList:
     def test_save_attendance_list(self):
         item = {
+            "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
             "date": date(2020, 2, 3),
             "council_member": "Roberto Luis da Silva Tourinho",
             "status": "presente",
@@ -83,9 +88,11 @@ class TestSaveAttendanceList:
         assert attendance.status == item["status"]
         assert attendance.crawled_at == item["crawled_at"]
         assert attendance.crawled_from == item["crawled_from"]
+        assert attendance.hash_commit == item["hash_commit"]
 
     def test_handle_with_changed_attendance_list(self):
         item = {
+            "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
             "date": date(2020, 2, 3),
             "description": "Abertura da 1ª etapa do 4º período da 18ª legislatura",
             "council_member": "Roberto Luis da Silva Tourinho",
@@ -104,6 +111,7 @@ class TestSaveAttendanceList:
         assert attendance.council_member == updated_attendance.council_member
         assert attendance.description == updated_attendance.description
         assert attendance.crawled_from == updated_attendance.crawled_from
+        assert attendance.hash_commit == updated_attendance.hash_commit
         assert attendance.status != updated_attendance.status
         assert attendance.crawled_at != updated_attendance.crawled_at
 
@@ -112,6 +120,7 @@ class TestSaveAttendanceList:
 class TestSaveMinute:
     def test_save_minute(self, mock_backup_file):
         item = {
+            "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
             "crawled_at": make_aware(datetime(2020, 4, 30, 18, 18, 56, 173788)),
             "crawled_from": "https://www.feiradesantana.ba.leg.br/atas?"
             "mes=9&ano=2018&Acessar=OK",
@@ -132,3 +141,4 @@ class TestSaveMinute:
         assert minute.title == item["title"]
         assert minute.event_type == item["event_type"]
         assert minute.crawled_from == item["crawled_from"]
+        assert minute.hash_commit == item["hash_commit"]
