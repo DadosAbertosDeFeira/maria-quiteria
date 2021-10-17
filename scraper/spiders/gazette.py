@@ -1,7 +1,8 @@
 from datetime import date, datetime
 
-from scraper.items import GazetteItem, LegacyGazetteItem
 from scrapy import Request
+
+from scraper.items import GazetteItem, LegacyGazetteItem
 from web.datasets.parsers import from_str_to_date
 
 from . import BaseSpider
@@ -30,6 +31,7 @@ class LegacyGazetteSpider(BaseSpider):
             events, urls = self.extract_events(response)
             for event, url in zip(events, urls):
                 yield LegacyGazetteItem(
+                    hash_commit=response.hash_commit,
                     title=event["event"],
                     published_on=event["published_on"],
                     date=from_str_to_date(event["date"]),
@@ -184,6 +186,7 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
                 )
             else:
                 gazette_item = GazetteItem(
+                    hash_commit=gazette["hash_commit"],
                     date=from_str_to_date(gazette["date"]),
                     power=gazette["power"],
                     year_and_edition=gazette["year_and_edition"],

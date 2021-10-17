@@ -98,6 +98,9 @@ class DatasetMixin(models.Model):
     crawled_at = models.DateTimeField("Coletado em")
     crawled_from = models.URLField("Fonte")
     notes = models.TextField("Anotações", null=True, blank=True)
+    hash_commit = models.TextField(
+        "Código do commit", null=True, blank=True, max_length=40
+    )
 
     class Meta:
         abstract = True

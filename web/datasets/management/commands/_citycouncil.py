@@ -1,4 +1,5 @@
 from django.contrib.admin.options import get_content_type_for_model
+
 from web.datasets.management.commands._file import save_file
 from web.datasets.models import (
     CityCouncilAgenda,
@@ -10,6 +11,7 @@ from web.datasets.models import (
 
 def save_agenda(item):
     agenda, _ = CityCouncilAgenda.objects.update_or_create(
+        hash_commit=item["hash_commit"],
         date=item["date"],
         title=item["title"],
         event_type=item["event_type"],
@@ -21,6 +23,7 @@ def save_agenda(item):
 
 def save_attendance_list(item):
     attendance, _ = CityCouncilAttendanceList.objects.update_or_create(
+        hash_commit=item["hash_commit"],
         date=item["date"],
         council_member=item["council_member"],
         defaults={
@@ -60,6 +63,7 @@ def save_expense(item):
 
 def save_minute(item):
     minute, created = CityCouncilMinute.objects.get_or_create(
+        hash_commit=item["hash_commit"],
         date=item["date"],
         crawled_from=item["crawled_from"],
         defaults={
