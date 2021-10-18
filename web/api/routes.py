@@ -3,6 +3,7 @@ from rest_framework import routers
 from web.api.views import (
     CityCouncilAgendaView,
     CityCouncilAttendanceListView,
+    CityCouncilMinuteView,
     GazetteView,
     HealthCheckView,
 )
@@ -23,5 +24,10 @@ urlpatterns = [
         "city-council/attendance-list/",
         CityCouncilAttendanceListView.as_view(),
         name="city-council-attendance-list",
+    ),
+    path(
+        "city-council/minute/",
+        CityCouncilMinuteView.as_view(),
+        name="city-council-minute",
     ),
 ]
