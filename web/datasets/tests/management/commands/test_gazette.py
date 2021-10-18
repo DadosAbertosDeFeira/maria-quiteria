@@ -14,7 +14,6 @@ from web.datasets.management.commands._gazette import (
 class TestSaveGazette:
     def test_save_gazette(self, mock_backup_file):
         item = {
-            "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
             "date": date(2019, 11, 5),
             "power": "executivo",
             "year_and_edition": "Ano V - Edi\u00e7\u00e3o N\u00ba 1131",
@@ -37,7 +36,7 @@ class TestSaveGazette:
         assert gazette.crawled_at == item["crawled_at"]
         assert gazette.crawled_from == item["crawled_from"]
         assert gazette.files.count() == 1
-        assert gazette.hash_commit == item["hash_commit"]
+        assert len(gazette.git_commit) == 40
 
         event = gazette.events.first()
         assert event.title == item["events"][0]["title"]
@@ -49,7 +48,6 @@ class TestSaveGazette:
 
     def test_save_different_events_to_same_gazette(self, mock_backup_file):
         item = {
-            "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
             "date": date(2019, 11, 5),
             "power": "executivo",
             "year_and_edition": "Ano V - Edi\u00e7\u00e3o N\u00ba 1131",
@@ -87,7 +85,6 @@ class TestSaveLegacyGazette:
             "details": "ABRE CRÉDITO SUPLEMENTAR AO ORÇAMENTO DO MUNICÍPIO...",
             "crawled_at": make_aware(datetime(2019, 11, 6, 10, 11, 19)),
             "crawled_from": "http://www.diariooficial.br/st=1&publicacao=1",
-            "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
         }
 
         gazette = save_legacy_gazette(legacy_item)
@@ -99,7 +96,7 @@ class TestSaveLegacyGazette:
         assert gazette.crawled_at == legacy_item["crawled_at"]
         assert gazette.crawled_from == legacy_item["crawled_from"]
         assert gazette.events.count() == 1
-        assert gazette.hash_commit == legacy_item["hash_commit"]
+        assert len(gazette.git_commit) == 40
 
         event = gazette.events.first()
         assert event.title == legacy_item["title"]
@@ -117,7 +114,6 @@ class TestSaveLegacyGazette:
                 "files": ["http://www.feiradesantana.ba.gov.br/leis/Deno20149416.pdf"],
                 "crawled_at": make_aware(datetime(2019, 11, 6, 10, 11, 19)),
                 "crawled_from": "http://www.diariooficial.br/st=1&&edicao=1131",
-                "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
             },
             {
                 "title": "DECRETO Nº 9.415, DE 26 DE NOVEMBRO DE 2014.",
@@ -127,7 +123,6 @@ class TestSaveLegacyGazette:
                 "files": ["http://www.diariooficial.feira.ba.gov.br/d.pdf"],
                 "crawled_at": make_aware(datetime(2019, 11, 6, 10, 11, 19)),
                 "crawled_from": "http://www.diariooficial.br/st=1&&edicao=1131",
-                "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
             },
             {
                 "title": "DECRETO Nº 9.414, DE 26 DE NOVEMBRO DE 2014.",
@@ -137,7 +132,6 @@ class TestSaveLegacyGazette:
                 "files": ["http://www.diariooficial.feira.ba.gov.br/d.pdf"],
                 "crawled_at": make_aware(datetime(2019, 11, 6, 10, 11, 19)),
                 "crawled_from": "http://www.diariooficial.br/st=1&&edicao=1131",
-                "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
             },
         ]
 
@@ -150,7 +144,6 @@ class TestSaveLegacyGazette:
         legacy_items = [
             {
                 "title": "DECRETO Nº 9.416, DE 1 DE NOVEMBRO DE 2014.",
-                "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
                 "published_on": None,
                 "date": None,
                 "details": "ABRE CRÉDITO SUPLEMENTAR AO ORÇAMENTO DO MUNICÍPIO...",
@@ -160,7 +153,6 @@ class TestSaveLegacyGazette:
             },
             {
                 "title": "DECRETO Nº 9.415, DE 26 DE NOVEMBRO DE 2014.",
-                "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
                 "published_on": "Folha do Estado",
                 "date": date(2014, 11, 27),
                 "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA...",
@@ -170,7 +162,6 @@ class TestSaveLegacyGazette:
             },
             {
                 "title": "DECRETO Nº 9.414, DE 26 DE NOVEMBRO DE 2014.",
-                "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
                 "published_on": "Folha do Estado",
                 "date": date(2014, 11, 26),
                 "details": "ALTERA O QUADRO DE DETALHAMENTO DE DESPESA...",

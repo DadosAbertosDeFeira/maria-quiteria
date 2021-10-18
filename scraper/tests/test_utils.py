@@ -5,6 +5,7 @@ import pytest
 from ..spiders.utils import (
     extract_date,
     extract_param,
+    get_git_commit,
     identify_contract_id,
     is_url,
     months_and_years,
@@ -159,3 +160,9 @@ def test_strip_accents(original_value, expected_value):
 )
 def test_is_url(original_value, expected_value):
     assert is_url(original_value) is expected_value
+
+
+def test_get_git_commit():
+    git_commit = get_git_commit()
+
+    assert len(git_commit) == 40

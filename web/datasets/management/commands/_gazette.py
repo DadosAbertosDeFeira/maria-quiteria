@@ -11,7 +11,6 @@ from ._file import save_file
 def save_gazette(item):
     """Salva diários oficiais do executivo a partir de 2015."""
     gazette, created = Gazette.objects.update_or_create(
-        hash_commit=item["hash_commit"],
         date=item["date"],
         power=item["power"],
         year_and_edition=item["year_and_edition"],
@@ -28,7 +27,6 @@ def save_gazette(item):
 
     for event in item["events"]:
         GazetteEvent.objects.get_or_create(
-            hash_commit=item["hash_commit"],
             gazette=gazette,
             title=event["title"],
             secretariat=event["secretariat"],
@@ -56,18 +54,12 @@ def save_legacy_gazette(item):
             item["date"] = extracted_date
             notes = "Data extraída do título."
 
-    try:
-        item["hash_commit"]
-    except KeyError:
-        item["hash_commit"] = None
-
     gazette, created = Gazette.objects.get_or_create(
         date=item["date"],
         power="executivo",
         crawled_from=item["crawled_from"],
         is_legacy=True,
         defaults={"crawled_at": item["crawled_at"], "notes": notes},
-        hash_commit=item["hash_commit"],
     )
 
     if created and item.get("files"):
@@ -82,7 +74,6 @@ def save_legacy_gazette(item):
         summary=item["details"],
         published_on=item["published_on"],
         crawled_at=item["crawled_at"],
-        hash_commit=item["hash_commit"],
     )
     return gazette
 

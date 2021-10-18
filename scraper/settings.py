@@ -74,3 +74,5 @@ if os.getenv("ENABLE_AUTOTHROTTLE_DEBUG", False):
 
 FILES_STORE = Path.cwd() / "files"
 FILES_STORE.mkdir(parents=True, exist_ok=True)
+
+ROOT_DIR = os.getcwd()

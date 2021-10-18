@@ -7,7 +7,6 @@ from ._file import save_file
 
 def save_bid(item):
     bid, created = CityHallBid.objects.update_or_create(
-        hash_commit=item["hash_commit"],
         session_at=item["session_at"],
         public_agency=item["public_agency"],
         codes=item["codes"],
@@ -27,7 +26,6 @@ def save_bid(item):
     content_type = get_content_type_for_model(CityHallBidEvent)
     for event in item["history"]:
         event_obj, created = CityHallBidEvent.objects.get_or_create(
-            hash_commit=item["hash_commit"],
             crawled_from=item["crawled_from"],
             bid=bid,
             published_at=event["published_at"],

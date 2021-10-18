@@ -4,7 +4,7 @@ import scrapy
 class BaseItem(scrapy.Item):
     crawled_at = scrapy.Field()
     crawled_from = scrapy.Field()
-    hash_commit = scrapy.Field()
+    git_commit = scrapy.Field()
 
 
 class LegacyGazetteItem(BaseItem):
