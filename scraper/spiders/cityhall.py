@@ -102,7 +102,6 @@ class BidsSpider(BaseSpider):
             month, year = match.group(2).split("-")
 
             item = CityHallBidItem(
-                hash_commit=response.hash_commit,
                 crawled_at=datetime_utcnow_aware(),
                 crawled_from=response.url,
                 public_agency=match.group(1).upper(),
@@ -253,7 +252,6 @@ class ContractsSpider(BaseSpider):
             contractor_name = contractor[1]
 
             item = CityHallContractItem(
-                hash_commit=response.hash_commit,
                 contract_id=contract_id,
                 starts_at=starts_at,
                 summary=details[0],
@@ -352,7 +350,6 @@ class PaymentsSpider(BaseSpider):
         for headline, raw_details in zip(headlines, details):
             headline = [text.strip() for text in headline.css("td ::text").extract()]
             item = CityHallPaymentsItem(
-                hash_commit=response.hash_commit,
                 published_at=headline[0],
                 phase=headline[1],
                 company_or_person=headline[2],
@@ -448,7 +445,6 @@ class COVID19ExpensesSpider(BaseSpider):
         for headline, raw_details in zip(headlines, details):
             headline = [text.strip() for text in headline.css("td ::text").extract()]
             item = CityHallPaymentsItem(
-                hash_commit=response.hash_commit,
                 published_at=headline[0],
                 phase=headline[1],
                 company_or_person=headline[2],

@@ -10,7 +10,6 @@ from web.datasets.management.commands._cityhall import save_bid
 class TestSaveBid:
     def test_save_bid(self, mock_backup_file):
         item = {
-            "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
             "crawled_at": make_aware(datetime(2020, 3, 21, 7, 15, 17, 908831)),
             "crawled_from": "http://www.feiradesantana.ba.gov.br/servicos.asp",
             "session_at": make_aware(datetime(2018, 4, 17, 8, 30, 0)),
@@ -42,11 +41,10 @@ class TestSaveBid:
         assert bid.public_agency == item["public_agency"]
         assert bid.modality == item["modality"]
         assert bid.files
-        assert bid.hash_commit == item["hash_commit"]
+        assert len(bid.git_commit) == 40
 
     def test_save_history(self, mock_backup_file):
         item = {
-            "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
             "public_agency": "PMFS",
             "crawled_at": make_aware(datetime(2020, 4, 4, 14, 29, 49, 261985)),
             "crawled_from": "http://www.feiradesantana.ba.gov.br/servicos.asp",
@@ -80,7 +78,6 @@ class TestSaveBid:
 
     def test_handle_with_existent_event(self, mock_backup_file):
         item = {
-            "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
             "public_agency": "PMFS",
             "crawled_at": make_aware(datetime(2020, 4, 4, 14, 29, 49, 261985)),
             "crawled_from": "http://www.feiradesantana.ba.gov.br/servicos.asp",
@@ -130,7 +127,6 @@ class TestSaveBid:
 
     def test_handle_with_updated_bid(self, mock_backup_file):
         item = {
-            "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
             "crawled_at": make_aware(datetime(2020, 3, 21, 7, 15, 17, 908831)),
             "crawled_from": "http://www.feiradesantana.ba.gov.br/servicos.asp",
             "session_at": make_aware(datetime(2018, 4, 17, 8, 30, 0)),
@@ -169,7 +165,6 @@ class TestSaveBid:
         self, mock_backup_file
     ):
         item = {
-            "hash_commit": "6f643054bd75871e9db6e16e2ad58ead84567c9f",
             "crawled_at": make_aware(datetime(2020, 3, 21, 7, 15, 17, 908831)),
             "crawled_from": "http://www.feiradesantana.ba.gov.br/servicos.asp",
             "session_at": make_aware(datetime(2018, 4, 17, 8, 30, 0)),
