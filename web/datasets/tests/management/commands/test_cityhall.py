@@ -41,7 +41,6 @@ class TestSaveBid:
         assert bid.public_agency == item["public_agency"]
         assert bid.modality == item["modality"]
         assert bid.files
-        assert len(bid.git_commit) == 40
 
     def test_save_history(self, mock_backup_file):
         item = {

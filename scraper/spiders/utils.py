@@ -1,11 +1,10 @@
 import logging
-import pathlib
+import os
 import re
 import unicodedata
 from datetime import datetime, timezone
 from urllib.parse import parse_qs, urlparse
 
-from scraper.settings import ROOT_DIR
 from web.datasets.parsers import from_str_to_date
 
 DOMAIN_FORMAT = re.compile(
@@ -119,9 +118,4 @@ def datetime_utcnow_aware() -> datetime:
 
 def get_git_commit() -> str:
     """Retorna o hash ID do atual commit."""
-    git_directory = pathlib.Path(ROOT_DIR) / ".git"
-    with (git_directory / "HEAD").open("r") as head:
-        ref = head.readline().split(" ")[-1].strip()
-
-    with (git_directory / ref).open("r") as git_commit:
-        return git_commit.readline().strip()
+    return os.environ.get("GIT_REV")

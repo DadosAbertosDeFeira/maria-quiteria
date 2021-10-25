@@ -36,7 +36,6 @@ class TestSaveGazette:
         assert gazette.crawled_at == item["crawled_at"]
         assert gazette.crawled_from == item["crawled_from"]
         assert gazette.files.count() == 1
-        assert len(gazette.git_commit) == 40
 
         event = gazette.events.first()
         assert event.title == item["events"][0]["title"]
@@ -96,7 +95,6 @@ class TestSaveLegacyGazette:
         assert gazette.crawled_at == legacy_item["crawled_at"]
         assert gazette.crawled_from == legacy_item["crawled_from"]
         assert gazette.events.count() == 1
-        assert len(gazette.git_commit) == 40
 
         event = gazette.events.first()
         assert event.title == legacy_item["title"]

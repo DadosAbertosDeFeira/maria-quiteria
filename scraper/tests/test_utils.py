@@ -1,3 +1,4 @@
+import os
 from datetime import date, datetime
 
 import pytest
@@ -163,6 +164,9 @@ def test_is_url(original_value, expected_value):
 
 
 def test_get_git_commit():
+    os.environ["GIT_REV"] = "43fb0339d3758204cef63d3bc3ffadfda9b8dd3b"
+
     git_commit = get_git_commit()
 
     assert len(git_commit) == 40
+    assert git_commit == "43fb0339d3758204cef63d3bc3ffadfda9b8dd3b"
