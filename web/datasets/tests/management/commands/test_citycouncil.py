@@ -37,7 +37,6 @@ class TestSaveAgenda:
         assert agenda.title == item["title"]
         assert agenda.crawled_at == item["crawled_at"]
         assert agenda.crawled_from == item["crawled_from"]
-        assert len(agenda.git_commit) == 40
 
     def test_handle_with_changed_agenda(self):
         item = {
@@ -85,7 +84,6 @@ class TestSaveAttendanceList:
         assert attendance.status == item["status"]
         assert attendance.crawled_at == item["crawled_at"]
         assert attendance.crawled_from == item["crawled_from"]
-        assert len(attendance.git_commit) == 40
 
     def test_handle_with_changed_attendance_list(self):
         item = {
@@ -107,7 +105,6 @@ class TestSaveAttendanceList:
         assert attendance.council_member == updated_attendance.council_member
         assert attendance.description == updated_attendance.description
         assert attendance.crawled_from == updated_attendance.crawled_from
-        assert attendance.git_commit == updated_attendance.git_commit
         assert attendance.status != updated_attendance.status
         assert attendance.crawled_at != updated_attendance.crawled_at
 
@@ -136,4 +133,3 @@ class TestSaveMinute:
         assert minute.title == item["title"]
         assert minute.event_type == item["event_type"]
         assert minute.crawled_from == item["crawled_from"]
-        assert len(minute.git_commit) == 40
