@@ -20,7 +20,7 @@ python-dotenv==0.19.0
 schematics==2.1.1
 scrapy==2.5.1
 sentry-sdk==1.4.3
-spidermon==1.15.0
+spidermon==1.15.2
 tika==1.24
 whitenoise==5.3.0
 xlrd==2.0.1
