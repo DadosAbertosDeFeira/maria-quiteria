@@ -13,7 +13,7 @@ gunicorn==20.1.0
 https://github.com/DadosAbertosDeFeira/tcm-ba/releases/download/0.2.0/documentos_tcmba-0.2.0-py3-none-any.whl
 jinja2==3.0.2
 jsonschema==3.2.0
-newrelic==7.0.0.166
+newrelic==7.2.2.169
 psycopg2-binary==2.9.1
 python-dateutil==2.8.2
 python-dotenv==0.19.1
