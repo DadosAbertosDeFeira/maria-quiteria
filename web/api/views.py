@@ -10,9 +10,15 @@ from web.api.filters import GazetteFilter
 from web.api.serializers import (
     CityCouncilAgendaSerializer,
     CityCouncilAttendanceListSerializer,
+    CityCouncilMinuteSerializer,
     GazetteSerializer,
 )
-from web.datasets.models import CityCouncilAgenda, CityCouncilAttendanceList, Gazette
+from web.datasets.models import (
+    CityCouncilAgenda,
+    CityCouncilAttendanceList,
+    CityCouncilMinute,
+    Gazette,
+)
 
 
 class HealthCheckView(ViewSet):
@@ -58,6 +64,26 @@ class CityCouncilAttendanceListView(ListAPIView):
             kwargs["council_member__icontains"] = query
         if status:
             kwargs["status"] = status
+        if start_date:
+            kwargs["date__gte"] = start_date
+        if end_date:
+            kwargs["date__lte"] = end_date
+
+        return self.queryset.filter(**kwargs)
+
+
+class CityCouncilMinuteView(ListAPIView):
+    queryset = CityCouncilMinute.objects.all()
+    serializer_class = CityCouncilMinuteSerializer
+
+    def get_queryset(self):
+        query = self.request.query_params.get("query", None)
+        start_date = self.request.query_params.get("start_date", None)
+        end_date = self.request.query_params.get("end_date", None)
+        kwargs = {}
+
+        if query:
+            kwargs["title__icontains"] = query
         if start_date:
             kwargs["date__gte"] = start_date
         if end_date:
