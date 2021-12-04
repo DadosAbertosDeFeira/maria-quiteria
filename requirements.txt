@@ -14,7 +14,7 @@ https://github.com/DadosAbertosDeFeira/tcm-ba/releases/download/0.2.0/documentos
 jinja2==3.0.2
 jsonschema==3.2.0
 newrelic==7.2.2.169
-psycopg2-binary==2.9.1
+psycopg2-binary==2.9.2
 python-dateutil==2.8.2
 python-dotenv==0.19.1
 schematics==2.1.1
