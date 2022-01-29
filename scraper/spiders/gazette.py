@@ -92,7 +92,7 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
 
     name = "gazettes"
     allowed_domains = ["diariooficial.feiradesantana.ba.gov.br"]
-    start_urls = ["http://www.diariooficial.feiradesantana.ba.gov.br"]
+    start_urls = ["https://www.diariooficial.feiradesantana.ba.gov.br"]
     powers = {"executivo": 1, "legislativo": 2}
     last_page = 1
     handle_httpstatus_list = [302]
