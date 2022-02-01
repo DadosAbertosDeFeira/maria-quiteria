@@ -19,7 +19,7 @@ python-dateutil==2.8.2
 python-dotenv==0.19.2
 schematics==2.1.1
 scrapy==2.5.1
-sentry-sdk==1.5.0
+sentry-sdk==1.5.4
 spidermon==1.15.2
 tika==1.24
 whitenoise==5.3.0
