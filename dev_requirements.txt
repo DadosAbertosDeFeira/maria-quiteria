@@ -1,6 +1,6 @@
 -r requirements.txt
 black==22.1.0
-django-debug-toolbar==3.2.2
+django-debug-toolbar==3.2.4
 flake8==4.0.1
 isort==5.10.1
 model-bakery==1.4.0
