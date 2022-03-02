@@ -8,7 +8,7 @@ django-filter==21.1
 django-public-admin==0.0.5
 django-simple-history==3.0.0
 djangorestframework==3.12.4
-djangorestframework-simplejwt==5.0.0
+djangorestframework-simplejwt==5.1.0
 gunicorn==20.1.0
 https://github.com/DadosAbertosDeFeira/tcm-ba/releases/download/0.2.0/documentos_tcmba-0.2.0-py3-none-any.whl
 jinja2==3.0.3
