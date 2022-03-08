@@ -11,6 +11,7 @@ from sentry_sdk.integrations.django import DjangoIntegration
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),
     integrations=[DjangoIntegration(), CeleryIntegration()],
+    traces_sample_rate=1.0,
 )
 
 
