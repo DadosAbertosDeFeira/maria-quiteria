@@ -11,7 +11,7 @@ djangorestframework==3.13.1
 djangorestframework-simplejwt==5.1.0
 gunicorn==20.1.0
 https://github.com/DadosAbertosDeFeira/tcm-ba/releases/download/0.2.0/documentos_tcmba-0.2.0-py3-none-any.whl
-jinja2==3.0.3
+jinja2==3.1.2
 jsonschema==3.2.0
 newrelic==7.10.0.175
 psycopg2-binary==2.9.3
