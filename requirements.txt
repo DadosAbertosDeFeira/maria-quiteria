@@ -22,6 +22,6 @@ scrapy==2.6.1
 sentry-sdk==1.5.12
 spidermon==1.16.2
 tika==1.24
-whitenoise==6.0.0
+whitenoise==6.2.0
 xlrd==2.0.1
 PyJWT==2.4.0
