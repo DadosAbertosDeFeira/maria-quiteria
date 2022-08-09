@@ -1,7 +1,7 @@
 boto3==1.23.7
 celery==5.2.7
 dj-database-url==0.5.0
-django==4.0.4
+django==4.0.6
 django-configurations==2.3.2
 django-extensions==3.1.5
 django-filter==21.1
