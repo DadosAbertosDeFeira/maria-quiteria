@@ -5,7 +5,7 @@ on:
     types: [created]
 jobs:
   docker:
-    uses: "mentoriaiac/cicd_centralizado/.github/workflows/docker_build.yaml@docker/v1"
+    uses: "mentoriaiac/cicd_centralizado/.github/workflows/docker_build.yaml@v1"
     with:
       image: wf975621/mariaqueteria
 
