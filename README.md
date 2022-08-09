@@ -1,6 +1,6 @@
 # Maria Quitéria
 
-![CI](https://github.com/DadosAbertosDeFeira/maria-quiteria/workflows/CI/badge.svg)
+[![CI](https://github.com/DadosAbertosDeFeira/maria-quiteria/actions/workflows/cicd.yml/badge.svg)](https://github.com/DadosAbertosDeFeira/maria-quiteria/actions/workflows/cicd.yml)
 
 Tem a missão de libertar dados do município de [Feira de Santana](https://pt.wikipedia.org/wiki/Feira_de_Santana).
 Responsável pela raspagem e o armazenamento.
