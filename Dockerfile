@@ -6,7 +6,7 @@ WORKDIR /code
 
 COPY requirements.txt .
 COPY dev_requirements.txt .
-
+# hadolint ignore=DL3008,DL3042,DL3027
 RUN apt-get update && \
     apt-get install -y netcat-openbsd gcc && \
     apt-get clean && \
