@@ -74,8 +74,16 @@ class Common(Configuration):
     WSGI_APPLICATION = "web.wsgi.application"
 
     # Precisamos alterar para variavel de ambiente: default_db = postgres://POSTGRES_USER:$POSTGRES_PASSWORD@POSTGRES_ENDPOINT:5432/POSTGRES_NAME
-    default_db = "postgres://postgres:postgres@mariaquiteria.c4rmfbajkjko.us-east-1.rds.amazonaws.com/mariaquiteria"
-    DATABASES = {"default": dj_database_url.config(default=default_db)}
+    #default_db = "postgres://postgres:postgres@mariaquiteria.c4rmfbajkjko.us-east-1.rds.amazonaws.com/mariaquiteria"
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'POSTGRES_ENDPOINT': os.getenv('POSTGRES_ENDPOINT'),
+            'POSTGRES_NAME': os.getenv('POSTGRES_NAME'),
+            'POSTGRES_USER': os.getenv('POSTGRES_USER'),
+            'POSTGRES_PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        }
+    }
 
     AUTH_PASSWORD_VALIDATORS = [
         {
@@ -154,7 +162,7 @@ class Common(Configuration):
 
 class Dev(Common):
     DEBUG = True
-    ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "0.0.0.0"]
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "0.0.0.0", "load-balance-mentoria-1815320676.us-east-1.elb.amazonaws.com"]
 
     INSTALLED_APPS = Common.INSTALLED_APPS + ["debug_toolbar"]
 
