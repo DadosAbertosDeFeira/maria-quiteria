@@ -1,0 +1,47 @@
+[
+    {
+      "cpu": 256,
+      "image": "${IMAGE}",
+      "memory": 512,
+      "name": "api",
+      "networkMode": "awsvpc",
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "hostPort": 8000
+        }
+      ],
+      "secrets": [
+        {
+          "name": "POSTGRES_ENDPOINT",
+          "valueFrom": "arn:aws:ssm:us-east-1:238346160346:parameter/mariaquiteria/postgres_endpoint"
+        },
+        {
+          "name": "POSTGRES_PASSWORD",
+          "valueFrom": "arn:aws:ssm:us-east-1:238346160346:parameter/mariaquiteria/postgres_password"
+        },
+        {
+          "name": "POSTGRES_NAME",
+          "valueFrom": "arn:aws:ssm:us-east-1:238346160346:parameter/mariaquiteria/postgres_name"
+        },
+        {
+          "name": "POSTGRES_USER",
+          "valueFrom": "arn:aws:ssm:us-east-1:238346160346:parameter/mariaquiteria/postgres_user"
+        }
+      ],
+      "environment": [
+        {
+          "name": "AWESOME_ENV_VAR",
+          "value": "/mariaquiteria/aws_s3_region"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "mentoria-log",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "myawesomeapp"
+        }
+      }
+    }
+]

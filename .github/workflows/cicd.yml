@@ -1,70 +1,28 @@
-name: CI
+name: "Pipeline para build de imagem docker"
+on:
+  push: 
+  release:
+    types: [created]
 
-on: [ push, pull_request ]
+env:
+  TF_VAR_image: ezmom/mariaquiteria:latest
 
 jobs:
-  build:
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-      - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r dev_requirements.txt
-      - name: Lint
-        run: |
-          black --check .
-          flake8 .
-      - name: Check migrations
-        env:
-          DJANGO_SETTINGS_MODULE: "web.settings"
-          DATABASE_URL: "postgres://postgres:postgres@localhost:5432/mariaquiteria"
-        run: python manage.py makemigrations --check
-      - name: Run Tests
-        env:
-          DJANGO_SETTINGS_MODULE: "web.settings"
-          DJANGO_CONFIGURATION: "Test"
-          DATABASE_URL: "postgres://postgres:postgres@localhost:5432/mariaquiteria"
-        run: |
-          python manage.py collectstatic
-          pytest
-    services:
-      postgres:
-        image: library/postgres:11-alpine
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: mariaquiteria
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      rabbitmq:
-        image: rabbitmq
-        env:
-          RABBITMQ_DEFAULT_USER: guest
-          RABBITMQ_DEFAULT_PASS: guest
-        ports:
-          - 5672:5672
-  deploy:
-    runs-on: ubuntu-18.04
-    if: github.ref == 'refs/heads/main'
+  docker:
+    uses: "mentoriaiac/cicd_centralizado/.github/workflows/docker_build.yaml@v1"
+    with:
+      image: leofl94/mariaquiteria
+      push_image: ${{github.event_name == 'release'}}
+    secrets:
+      docker_user: ${{secrets.DOCKER_LOGIN}}
+      docker_password: ${{secrets.TOKEN_DOCKERHUB}}
 
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Push to dokku
-        uses: dokku/github-action@v1.0.2
-        with:
-          branch: main
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          git_remote_url: ${{ secrets.DOKKU_REMOTE_URL }}
-          ssh_host_key: ${{ secrets.SSH_HOST_KEY }}
-    needs: [build]
+  terraform:
+    needs: docker
+    uses: "mentoriaiac/cicd_centralizado/.github/workflows/terraform.yaml@v1"
+    with:
+      plan: true
+      apply: true
+      working_directory: ./iac
+      workspace: default
+    secrets: inherit
