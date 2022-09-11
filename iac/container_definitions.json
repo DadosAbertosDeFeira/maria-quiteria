@@ -14,19 +14,19 @@
       "secrets": [
         {
           "name": "POSTGRES_ENDPOINT",
-          "valueFrom": "arn:aws:ssm:us-east-1:238346160346:parameter/mariaquiteria/postgres_endpoint"
+          "valueFrom": "arn:aws:ssm:us-east-1:733824474891:parameter/mariaquiteria/postgres_endpoint"
         },
         {
           "name": "POSTGRES_PASSWORD",
-          "valueFrom": "arn:aws:ssm:us-east-1:238346160346:parameter/mariaquiteria/postgres_password"
+          "valueFrom": "arn:aws:ssm:us-east-1:733824474891:parameter/mariaquiteria/postgres_password"
         },
         {
           "name": "POSTGRES_NAME",
-          "valueFrom": "arn:aws:ssm:us-east-1:238346160346:parameter/mariaquiteria/postgres_name"
+          "valueFrom": "arn:aws:ssm:us-east-1:733824474891:parameter/mariaquiteria/postgres_name"
         },
         {
           "name": "POSTGRES_USER",
-          "valueFrom": "arn:aws:ssm:us-east-1:238346160346:parameter/mariaquiteria/postgres_user"
+          "valueFrom": "arn:aws:ssm:us-east-1:733824474891:parameter/mariaquiteria/postgres_user"
         }
       ],
       "environment": [

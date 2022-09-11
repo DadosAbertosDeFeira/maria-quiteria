@@ -74,7 +74,7 @@ class Common(Configuration):
     WSGI_APPLICATION = "web.wsgi.application"
 
     # Precisamos alterar para variavel de ambiente: default_db = postgres://POSTGRES_USER:$POSTGRES_PASSWORD@POSTGRES_ENDPOINT:5432/POSTGRES_NAME
-    default_db = "postgres://postgres:postgres@db:5432/mariaquiteria"
+    default_db = "postgres://postgres:postgres@mariaquiteria.c4rmfbajkjko.us-east-1.rds.amazonaws.com/mariaquiteria"
     DATABASES = {"default": dj_database_url.config(default=default_db)}
 
     AUTH_PASSWORD_VALIDATORS = [
