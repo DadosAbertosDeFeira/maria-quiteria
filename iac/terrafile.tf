@@ -79,12 +79,12 @@ module "rds_mariaquiteria" {
   snapshot                = true
   publicly_accessible_rds = true
   default_tags = {
-    Name : "RDS_mariaquiteria",
-    Team : "Mentoria-IAC",
-    Application : "maria-quiteria",
-    Environment : "Production",
-    Terraform : "Yes",
-    Owner : "Mentoria-IAC"
+    Name        = "RDS_mariaquiteria",
+    Team        = "Mentoria-IAC",
+    Application = "maria-quiteria",
+    Environment = "Production",
+    Terraform   = "Yes",
+    Owner       = "Mentoria-IAC"
   }
   parameters = [{
     name        = "sentry_dsn",
