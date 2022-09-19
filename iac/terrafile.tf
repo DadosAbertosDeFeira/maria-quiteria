@@ -109,7 +109,6 @@ module "rds_mariaquiteria" {
       description = "Parâmetro referente à variável de ambiente DJANGO_SETTINGS_MODULE"
       type        = "String"
       value       = " "
-
     },
     {
       name        = "django_configuration",
