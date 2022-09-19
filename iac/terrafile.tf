@@ -133,7 +133,6 @@ module "rds_mariaquiteria" {
       description = "Parâmetro referente à variável de ambiente REFRESH_TOKEN_LIFETIME_IN_MINUTES"
       type        = "String"
       value       = " "
-
     },
     {
       name        = "aws_s3_bucket",
