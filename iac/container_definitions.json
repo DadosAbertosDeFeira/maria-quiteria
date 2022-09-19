@@ -40,7 +40,7 @@
         "options": {
           "awslogs-group": "mentoria-log",
           "awslogs-region": "us-east-1",
-          "awslogs-stream-prefix": "myawesomeapp"
+         "awslogs-stream-prefix": "maria-quiteria"
         }
       }
     }
