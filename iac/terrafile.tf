@@ -21,10 +21,10 @@ module "ecs_mentoria" {
   source                = "git::https://github.com/mentoriaiac/iac-modulo-aws-ecs.git?ref=ebfe0d63e4afa387b390cc91f44e12c89ba3bdea"
   create_cluster        = true
   app_count             = 1
-  fargate_cpu           = 256
-  fargate_memory        = 512
-  subnet_ids            = ["subnet-07e64bae35c703e59", "subnet-076661f11f71e2c7e"]
-  vpc_id                = "vpc-0ca967f989c37ad90"
+  fargate_cpu           = 1024
+  fargate_memory        = 2048
+  subnet_ids            = ["subnet-03d379403b182fead", "subnet-0c7aaf51c80df183e"]
+  vpc_id                = "vpc-0e919332ff389ff9a"
   protocol              = "HTTP"
   family_name           = "mentoria"
   service_name          = "mentoria"
@@ -53,6 +53,7 @@ output "security_group_id" {
 
 variable "image" {
   type        = string
+  default     = "ezmo/maria-quiteria:v1.4"
   description = "Nome da Imagem"
 }
 
@@ -63,9 +64,9 @@ terraform {
 
 module "rds_mariaquiteria" {
   source                  = "git::https://github.com/mentoriaiac/iac-modulo-aws-rds.git"
-  subnet_ids              = ["subnet-07e64bae35c703e59", "subnet-076661f11f71e2c7e"]
+  subnet_ids              = ["subnet-03d379403b182fead", "subnet-0c7aaf51c80df183e"]
   proj_name               = "mariaquiteria"
-  vpc_id                  = "vpc-0ca967f989c37ad90"
+  vpc_id                  = "vpc-0e919332ff389ff9a"
   port                    = 5432
   storage                 = 20
   storage_type            = "gp2"
