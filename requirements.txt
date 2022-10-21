@@ -1,4 +1,4 @@
-boto3==1.24.64
+boto3==1.24.94
 celery==5.2.7
 dj-database-url==1.0.0
 django==4.0.7
