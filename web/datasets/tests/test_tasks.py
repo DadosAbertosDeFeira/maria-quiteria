@@ -23,6 +23,7 @@ from web.datasets.tasks import (
     content_from_file,
     distribute_city_council_objects_to_sync,
     get_city_council_updates,
+    notify_about_retrieved_city_council_data,
     remove_citycouncil_bid,
     remove_citycouncil_contract,
     remove_citycouncil_expense,
@@ -31,7 +32,6 @@ from web.datasets.tasks import (
     update_citycouncil_contract,
     update_citycouncil_expense,
     update_citycouncil_revenue,
-    notify_about_retrieved_city_council_data
 )
 
 
@@ -195,7 +195,9 @@ class TestGetCityCouncilUpdates:
         assert sync_info.succeed is True
         assert sync_info.response == expected_payload
 
-    def test_handle_with_error_when_parameters_are_invalid(self, mocker, mock_notifiers):
+    def test_handle_with_error_when_parameters_are_invalid(
+        self, mocker, mock_notifiers
+    ):
         expected_payload = {"erro": "Os parametros enviados são inválidos."}
         post_mock = mocker.patch("web.datasets.tasks.requests.get")
         post_mock.return_value.json.return_value = expected_payload
@@ -828,8 +830,10 @@ class TestCityCouncilExpense:
 
 def test_notify_about_retrieved_city_council_data_when_get_error(mock_notifiers):
     response = {"erro": "Os parametros enviados são inválidos."}
-    expected_message = "❌ Comunicação com a Câmara finalizada\n" \
-                       "Erro: Os parametros enviados são inválidos."
+    expected_message = (
+        "❌ Comunicação com a Câmara finalizada\n"
+        "Erro: Os parametros enviados são inválidos."
+    )
 
     notify_about_retrieved_city_council_data(response)
 
@@ -864,21 +868,21 @@ def test_notify_about_retrieved_city_council_data_with_numbers(mock_notifiers):
     expected_message = (
         "✅ Comunicação com a Câmara finalizada\n\n"
         "- Contratos"
-        f"novos: 0\n"
-        f"alterados: 0\n"
-        f"deletados: 0\n\n"
+        "novos: 0\n"
+        "alterados: 0\n"
+        "deletados: 0\n\n"
         "- Licitações"
-        f"novos: 0\n"
-        f"alterados: 1\n"
-        f"deletados: 0\n\n"
+        "novos: 0\n"
+        "alterados: 1\n"
+        "deletados: 0\n\n"
         "- Receitas"
-        f"novos: 0\n"
-        f"alterados: 0\n"
-        f"deletados: 0\n\n"
+        "novos: 0\n"
+        "alterados: 0\n"
+        "deletados: 0\n\n"
         "- Despesas"
-        f"novos: 0\n"
-        f"alterados: 0\n"
-        f"deletados: 0"
+        "novos: 0\n"
+        "alterados: 0\n"
+        "deletados: 0"
     )
 
     notify_about_retrieved_city_council_data(response)

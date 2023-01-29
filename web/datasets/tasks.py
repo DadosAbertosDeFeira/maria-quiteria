@@ -2,12 +2,12 @@ from datetime import datetime
 from logging import info
 from pathlib import Path
 from typing import List
-from notifiers import get_notifier
 
 import requests
 from celery import shared_task
 from django.conf import settings
 from django.contrib.admin.options import get_content_type_for_model
+from notifiers import get_notifier
 from requests import HTTPError
 from tika import parser
 from web.datasets.adapters import (
@@ -109,7 +109,7 @@ def notify_about_retrieved_city_council_data(response):
             "- Licitações"
             f"novos: {len(response['inclusoesLicitacao'])}\n"
             f"alterados: {len(response['alteracoesLicitacao'])}\n"
-            f"deletados: {len(response['exclusoesLicitacao'])}\n\n"        
+            f"deletados: {len(response['exclusoesLicitacao'])}\n\n"
             "- Receitas"
             f"novos: {len(response['inclusoesReceita'])}\n"
             f"alterados: {len(response['alteracoesReceita'])}\n"
