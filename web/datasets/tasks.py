@@ -5,7 +5,6 @@ from typing import List
 from notifiers import get_notifier
 
 import requests
-import json
 from celery import shared_task
 from django.conf import settings
 from django.contrib.admin.options import get_content_type_for_model
@@ -95,6 +94,39 @@ def backup_file(file_id):
     return s3_url
 
 
+def notify_about_retrieved_city_council_data(response):
+    telegram_notifier = get_notifier("telegram")
+
+    if response.get("erro"):
+        message = f"❌ Comunicação com a Câmara finalizada\nErro: {response['erro']}"
+    else:
+        message = (
+            "✅ Comunicação com a Câmara finalizada\n\n"
+            "- Contratos"
+            f"novos: {len(response['inclusoesContrato'])}\n"
+            f"alterados: {len(response['alteracoesContrato'])}\n"
+            f"deletados: {len(response['exclusoesContrato'])}\n\n"
+            "- Licitações"
+            f"novos: {len(response['inclusoesLicitacao'])}\n"
+            f"alterados: {len(response['alteracoesLicitacao'])}\n"
+            f"deletados: {len(response['exclusoesLicitacao'])}\n\n"        
+            "- Receitas"
+            f"novos: {len(response['inclusoesReceita'])}\n"
+            f"alterados: {len(response['alteracoesReceita'])}\n"
+            f"deletados: {len(response['exclusoesReceita'])}\n\n"
+            "- Despesas"
+            f"novos: {len(response['inclusoesDespesa'])}\n"
+            f"alterados: {len(response['alteracoesDespesa'])}\n"
+            f"deletados: {len(response['exclusoesDespesa'])}"
+        )
+
+    telegram_notifier.notify(
+        message=message,
+        token=settings.TELEGRAM_SENDER_TOKEN,
+        chat_id=settings.TELEGRAM_CHANNEL,
+    )
+
+
 @shared_task
 def get_city_council_updates(formatted_date):
     """Solicita atualizações ao webservice da Câmara."""
@@ -120,14 +152,8 @@ def get_city_council_updates(formatted_date):
         raise HTTPError
 
     response = response.json()
-    telegram = get_notifier("telegram")
-    telegram.notify(
-        message=json.dumps(response, indent=2),
-        token=settings.TELEGRAM_SENDER_TOKEN,
-        chat_id=settings.TELEGRAM_CHANNEL,
-        raise_on_errors=True,
-    )
     sync_info.response = response
+    notify_about_retrieved_city_council_data(response)
 
     if response.get("erro"):
         sync_info.succeed = False
