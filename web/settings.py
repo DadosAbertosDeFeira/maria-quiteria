@@ -108,6 +108,9 @@ class Common(Configuration):
     AWS_S3_BUCKET = values.Value(environ_prefix=None)
     AWS_S3_BUCKET_FOLDER = values.Value(environ_prefix=None)
     AWS_S3_REGION = values.Value(environ_prefix=None)
+    # bot
+    TELEGRAM_SENDER_TOKEN = values.Value(environ_prefix=None)
+    TELEGRAM_CHANNEL = values.Value(environ_prefix=None)
 
     CITY_COUNCIL_WEBSERVICE = values.Value(
         default="http://teste.com.br/", environ_prefix=None
