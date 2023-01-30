@@ -1,8 +1,9 @@
 import re
 from datetime import date
 
-from web.datasets.models import Gazette, GazetteEvent
 from django.contrib.admin.options import get_content_type_for_model
+
+from web.datasets.models import Gazette, GazetteEvent
 
 from ._file import save_file
 

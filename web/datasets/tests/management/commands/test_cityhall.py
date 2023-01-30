@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pytest
 from django.utils.timezone import make_aware
+
 from web.datasets.management.commands._cityhall import save_bid
 
 

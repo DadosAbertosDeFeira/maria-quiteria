@@ -13,6 +13,7 @@ from schematics.types import (
 class BaseModel(Model):
     crawled_at = DateTimeType(required=True)
     crawled_from = URLType(required=True)
+    git_commit = StringType(required=False)
 
 
 class LegacyGazetteItem(BaseModel):

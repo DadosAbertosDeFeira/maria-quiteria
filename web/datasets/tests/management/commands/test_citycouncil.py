@@ -2,6 +2,7 @@ from datetime import date, datetime
 
 import pytest
 from django.utils.timezone import make_aware
+
 from web.datasets.management.commands._citycouncil import (
     save_agenda,
     save_attendance_list,

@@ -1,5 +1,6 @@
-from web.datasets.models import CityHallBid, CityHallBidEvent
 from django.contrib.admin.options import get_content_type_for_model
+
+from web.datasets.models import CityHallBid, CityHallBidEvent
 
 from ._file import save_file
 

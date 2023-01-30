@@ -29,6 +29,7 @@ SENTRY_DSN = os.getenv("SENTRY_DSN", "")
 # pipelines
 ITEM_PIPELINES = {
     "spidermon.contrib.scrapy.pipelines.ItemValidationPipeline": 200,
+    "scraper.pipelines.DefaultValuesPipeline": 300,
 }
 
 # http cache

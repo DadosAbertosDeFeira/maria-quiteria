@@ -1,10 +1,9 @@
 import logging
+import os
 import re
 import unicodedata
-
 from datetime import datetime, timezone
 from urllib.parse import parse_qs, urlparse
-
 
 from web.datasets.parsers import from_str_to_date
 
@@ -115,3 +114,11 @@ def strip_accents(string):
 def datetime_utcnow_aware() -> datetime:
     """Data e hora UTC com informação de timezone."""
     return datetime.utcnow().replace(tzinfo=timezone.utc)
+
+
+def get_git_commit() -> str:
+    """Retorna o hash ID do atual commit."""
+    git_rev = os.environ.get("GIT_REV")
+    if git_rev in [None, "None"]:
+        return ""
+    return git_rev
