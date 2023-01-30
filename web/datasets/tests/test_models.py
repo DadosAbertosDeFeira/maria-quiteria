@@ -3,7 +3,6 @@ from datetime import date, datetime, timedelta
 import pytest
 from django.utils.timezone import make_aware
 from model_bakery import baker
-
 from web.datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
@@ -242,9 +241,10 @@ class TestGazette:
         assert gazettes[1].date == older_date
         assert gazettes.last().date is None
 
-    def test_should_exist_git_commit_field(self):
+    def test_should_add_git_commit_by_default(self, monkeypatch):
         git_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
-        gazette = baker.make_recipe("datasets.Gazette", git_commit=git_commit)
+        monkeypatch.setenv("GIT_REV", git_commit)
+        gazette = baker.make_recipe("datasets.Gazette")
         assert gazette.git_commit == git_commit
 
 
@@ -269,8 +269,3 @@ class TestCityHallBid:
         assert bids.first().session_at == newer_datetime
         assert bids[1].session_at == older_datetime
         assert bids.last().session_at is None
-
-    def test_should_exist_git_commit_field(self):
-        git_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
-        bid = baker.make_recipe("datasets.CityHallBid", git_commit=git_commit)
-        assert bid.git_commit == git_commit

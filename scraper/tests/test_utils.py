@@ -1,4 +1,3 @@
-import os
 from datetime import date, datetime
 
 import pytest
@@ -163,10 +162,17 @@ def test_is_url(original_value, expected_value):
     assert is_url(original_value) is expected_value
 
 
-def test_get_git_commit():
-    os.environ["GIT_REV"] = "43fb0339d3758204cef63d3bc3ffadfda9b8dd3b"
+def test_get_git_commit(monkeypatch):
+    expected_git_commit = "43fb0339d3758204cef63d3bc3ffadfda9b8dd3b"
+    monkeypatch.setenv("GIT_REV", expected_git_commit)
 
     git_commit = get_git_commit()
 
     assert len(git_commit) == 40
-    assert git_commit == "43fb0339d3758204cef63d3bc3ffadfda9b8dd3b"
+    assert git_commit == expected_git_commit
+
+
+def test_get_git_commit_when_git_rev_is_none(monkeypatch):
+    monkeypatch.setenv("GIT_REV", None)
+
+    assert get_git_commit() == ""

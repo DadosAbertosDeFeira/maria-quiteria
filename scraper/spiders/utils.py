@@ -118,4 +118,7 @@ def datetime_utcnow_aware() -> datetime:
 
 def get_git_commit() -> str:
     """Retorna o hash ID do atual commit."""
-    return os.environ.get("GIT_REV")
+    git_rev = os.environ.get("GIT_REV")
+    if git_rev in [None, "None"]:
+        return ""
+    return git_rev

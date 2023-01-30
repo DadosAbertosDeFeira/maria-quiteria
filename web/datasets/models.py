@@ -6,9 +6,8 @@ from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.db.models import F
-from simple_history.models import HistoricalRecords
-
 from scraper.spiders.utils import get_git_commit
+from simple_history.models import HistoricalRecords
 
 CITY_COUNCIL_EVENT_TYPE = (
     ("sessao_ordinaria", "Sessão Ordinária"),
@@ -101,11 +100,11 @@ class DatasetMixin(models.Model):
     crawled_from = models.URLField("Fonte")
     notes = models.TextField("Anotações", null=True, blank=True)
     git_commit = models.TextField(
-        "Código do commit",
+        "Hash do commit",
         null=True,
         blank=True,
         max_length=40,
-        default=get_git_commit(),
+        default=get_git_commit,
     )
 
     class Meta:
