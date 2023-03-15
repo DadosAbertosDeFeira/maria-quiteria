@@ -5,6 +5,7 @@ from typing import List
 
 import requests
 from celery import shared_task
+from dateutil.parser import parse
 from django.conf import settings
 from django.contrib.admin.options import get_content_type_for_model
 from notifiers import get_notifier
@@ -130,7 +131,7 @@ def notify_about_retrieved_city_council_data(response):
 @shared_task
 def get_city_council_updates(formatted_date):
     """Solicita atualizações ao webservice da Câmara."""
-    target_date = datetime.strptime(formatted_date, "%Y-%m-%d").date()
+    target_date = parse(formatted_date, yearfirst=True).date()
     sync_info, _ = SyncInformation.objects.get_or_create(
         date=target_date, source="camara", defaults={"succeed": False}
     )
