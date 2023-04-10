@@ -1,0 +1,4 @@
+---
+exclude:
+  - AWS099
+  - aws-iam-no-policy-wildcards

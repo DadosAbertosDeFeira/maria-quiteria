@@ -1,0 +1,115 @@
+[
+    {
+      "cpu": 256,
+      "image": "${IMAGE}",
+      "memory": 512,
+      "name": "api",
+      "networkMode": "awsvpc",
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "hostPort": 8000
+        }
+      ],
+      "secrets": [
+        {
+          "name": "POSTGRES_ENDPOINT",
+          "valueFrom": "arn:aws:ssm:us-east-1:877563618566:parameter/mariaquiteria/postgres_endpoint"
+        },
+        {
+          "name": "POSTGRES_PASSWORD",
+          "valueFrom": "arn:aws:ssm:us-east-1:877563618566:parameter/mariaquiteria/postgres_password"
+        },
+        {
+          "name": "POSTGRES_NAME",
+          "valueFrom": "arn:aws:ssm:us-east-1:877563618566:parameter/mariaquiteria/postgres_name"
+        },
+        {
+          "name": "POSTGRES_USER",
+          "valueFrom": "arn:aws:ssm:us-east-1:877563618566:parameter/mariaquiteria/postgres_user"
+        },
+        {
+          "name": "DATABASE_URL",
+          "valueFrom": "arn:aws:ssm:us-east-1:877563618566:parameter/mariaquiteria/database_url"
+        }
+      ],
+      "environment": [
+        {
+          "name": "AWESOME_ENV_VAR",
+          "value": "/mariaquiteria/aws_s3_region"
+        },
+        {
+          "name": "DJANGO_CONFIGURATION",
+          "value": "Prod"
+        },
+        {
+          "name": "DJANGO_SECRET_KEY",
+          "value": "dont-tell-anybody"
+        },
+        {
+          "name": "DJANGO_ALLOWED_HOSTS",
+          "value": "load-balance-mentoria-1704459434.us-east-1.elb.amazonaws.com"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "mentoria-log",
+          "awslogs-region": "us-east-1",
+         "awslogs-stream-prefix": "maria-quiteria"
+        }
+      }
+    },
+    {
+      "cpu": 256,
+      "image": "${IMAGE}",
+      "command": ["celery", "-A", "web", "worker", "-l", "INFO", "--without-heartbeat", "--without-gossip", "--without-mingle"],
+      "memory": 512,
+      "name": "worker",
+      "networkMode": "awsvpc",
+      "secrets": [
+        {
+          "name": "POSTGRES_ENDPOINT",
+          "valueFrom": "arn:aws:ssm:us-east-1:877563618566:parameter/mariaquiteria/postgres_endpoint"
+        },
+        {
+          "name": "POSTGRES_PASSWORD",
+          "valueFrom": "arn:aws:ssm:us-east-1:877563618566:parameter/mariaquiteria/postgres_password"
+        },
+        {
+          "name": "POSTGRES_NAME",
+          "valueFrom": "arn:aws:ssm:us-east-1:877563618566:parameter/mariaquiteria/postgres_name"
+        },
+        {
+          "name": "POSTGRES_USER",
+          "valueFrom": "arn:aws:ssm:us-east-1:877563618566:parameter/mariaquiteria/postgres_user"
+        },
+        {
+          "name": "DATABASE_URL",
+          "valueFrom": "arn:aws:ssm:us-east-1:877563618566:parameter/mariaquiteria/database_url"
+        }
+      ],
+      "environment": [
+        {
+          "name": "AWESOME_ENV_VAR",
+          "value": "/mariaquiteria/aws_s3_region"
+        },
+        {
+          "name": "DJANGO_CONFIGURATION",
+          "value": "Prod"
+        },
+        {
+          "name": "DJANGO_SECRET_KEY",
+          "value": "dont-tell-anybody"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "mentoria-log",
+          "awslogs-region": "us-east-1",
+         "awslogs-stream-prefix": "maria-worker"
+        }
+      }
+    }
+]
