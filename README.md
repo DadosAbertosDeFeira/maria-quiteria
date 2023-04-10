@@ -9,7 +9,7 @@ Não sabe quem foi [Maria Quitéria](https://pt.wikipedia.org/wiki/Maria_Quit%C3
 
 ## Dados
 
-Você pode visualizar e fazer buscas nossos dados [aqui](https://www.dadosabertosdefeira.com.br/painel/).
+Você pode visualizar e fazer buscas nossos dados [aqui](https://mq.dadosabertosdefeira.com.br/painel/).
 
 | Base de dados | Fonte | Descrição        | Coleta          | Banco de dados | Download |
 | ------------- | ------------- | ------------- |:-------------:|:-----:|:-----:|
