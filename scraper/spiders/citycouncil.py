@@ -95,7 +95,7 @@ class AttendanceListSpider(BaseSpider):
         for box in boxes:
             list_date = box.css("ul li ::text").get()
             if list_date:
-                date_obj = parse(list_date, yearfirst=True)
+                date_obj = parse(list_date, dayfirst=True)
                 if date_obj.date() >= self.start_date:
                     found = True
                     list_url = box.css("div a::attr(href)").get()

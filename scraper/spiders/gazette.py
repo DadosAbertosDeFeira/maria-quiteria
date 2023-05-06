@@ -109,7 +109,7 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
         go_to_next_page = False
 
         for url, gazette_date in zip(gazettes_links, dates):
-            date_obj = parse(gazette_date, yearfirst=True)
+            date_obj = parse(gazette_date, dayfirst=True)
             if date_obj.date() >= self.start_date:
                 # visita mais uma página porque as datas do legislativo
                 # e do executivo podem não estar na mesma página

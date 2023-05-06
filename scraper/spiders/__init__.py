@@ -10,7 +10,7 @@ class BaseSpider(scrapy.Spider):
         picked_date = None
         if self.start_from_date:
             if isinstance(self.start_from_date, str):
-                picked_date = parse(self.start_from_date, yearfirst=True)
+                picked_date = parse(self.start_from_date, dayfirst=True)
                 picked_date = picked_date.date()
             else:
                 picked_date = self.start_from_date
