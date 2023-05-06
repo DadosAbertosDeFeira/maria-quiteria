@@ -1,6 +1,7 @@
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 
 from celery import chain
+from dateutil.parser import parse
 from django.core.management.base import BaseCommand
 from web.datasets.tasks import (
     distribute_city_council_objects_to_sync,
@@ -17,7 +18,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options.get("date"):
             # converte para datetime para verificar se o formato está correto
-            target_date = datetime.strptime(options.get("date"), "%Y-%m-%d").date()
+            target_date = parse(options.get("date"), yearfirst=True).date()
         else:
             # ontem
             target_date = date.today() - timedelta(days=1)

@@ -1,7 +1,7 @@
 from datetime import date, datetime
 
 import pytest
-
+from dateutil.parser import parse
 from web.api.serializers import (
     CityCouncilAgendaSerializer,
     CityCouncilAttendanceListSerializer,
@@ -26,7 +26,7 @@ class TestCityCouncilAgendaSerializer:
         assert serializer.is_valid() is True
         assert (
             serializer.validated_data["date"]
-            == datetime.strptime(data["date"], "%Y-%m-%d").date()
+            == parse(data["date"], dayfirst=True).date()
         )
         assert serializer.validated_data["details"] == data["details"]
         assert serializer.validated_data["event_type"] == data["event_type"]
@@ -86,7 +86,7 @@ class TestCityCouncilMinuteSerializer:
         assert serializer.is_valid() is True
         assert (
             serializer.validated_data["date"]
-            == datetime.strptime(data["date"], "%Y-%m-%d").date()
+            == parse(data["date"], dayfirst=True).date()
         )
         assert serializer.validated_data["event_type"] == data["event_type"]
         assert serializer.validated_data["title"] == data["title"]
