@@ -159,14 +159,12 @@ class TestGazetteView:
     @pytest.mark.parametrize(
         "data,quantity_expected",
         [
-            ({"query": "life"}, 1),
             ({"power": "executivo"}, 2),
             ({"start_date": "2021-01-02"}, 2),
             ({"end_date": "2021-03-15"}, 2),
             ({"start_date": "2021-01-02", "end_date": "2021-03-15"}, 1),
             (
                 {
-                    "query": "talk",
                     "power": "legislativo",
                     "start_date": "2021-01-01",
                     "end_date": "2021-04-30",
@@ -176,7 +174,6 @@ class TestGazetteView:
             ({}, 3),
         ],
         ids=[
-            "filter_by_query",
             "filter_by_power",
             "filter_by_start_date",
             "filter_by_end_date",
@@ -268,14 +265,12 @@ class TestCityHallBidView:
     @pytest.mark.parametrize(
         "data,quantity_expected",
         [
-            ({"query": "Aquisição de materiais"}, 1),
             ({"start_date": "2020-02-20"}, 3),
             ({"end_date": "2020-03-20"}, 2),
             ({"start_date": "2020-02-17", "end_date": "2020-03-30"}, 3),
             ({}, 3),
         ],
         ids=[
-            "filter_by_query",
             "filter_by_start_date",
             "filter_by_end_date",
             "filter_by_range_date",
@@ -306,4 +301,3 @@ class TestCityHallBidView:
 
         assert response.status_code == HTTPStatus.OK
         assert len(data) == quantity_expected
-

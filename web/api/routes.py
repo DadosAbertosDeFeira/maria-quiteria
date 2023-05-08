@@ -4,9 +4,9 @@ from web.api.views import (
     CityCouncilAgendaView,
     CityCouncilAttendanceListView,
     CityCouncilMinuteView,
+    CityHallBidView,
     GazetteView,
     HealthCheckView,
-    CityHallBidView
 )
 
 router = routers.DefaultRouter()

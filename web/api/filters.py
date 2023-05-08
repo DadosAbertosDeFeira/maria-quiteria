@@ -1,5 +1,5 @@
 from django_filters import rest_framework as filters
-from web.datasets.models import Gazette, CityHallBid
+from web.datasets.models import CityHallBid, Gazette
 
 
 class GazetteFilter(filters.FilterSet):
@@ -25,10 +25,4 @@ class CityHallBidFilter(filters.FilterSet):
 
     class Meta:
         model = CityHallBid
-        fields = [
-            "public_agency",
-            "description",
-            "modality",
-            "start_date",
-            "end_date"
-        ]
+        fields = ["public_agency", "description", "modality", "start_date", "end_date"]

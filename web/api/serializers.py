@@ -3,11 +3,11 @@ from web.datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
     CityCouncilMinute,
+    CityHallBid,
+    CityHallBidEvent,
     File,
     Gazette,
     GazetteEvent,
-    CityHallBid,
-    CityHallBidEvent
 )
 
 

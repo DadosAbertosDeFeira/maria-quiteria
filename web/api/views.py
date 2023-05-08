@@ -6,14 +6,13 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet, ViewSet
-from web.api.filters import GazetteFilter
-from django.contrib.postgres.search import SearchVector
+from web.api.filters import CityHallBidFilter, GazetteFilter
 from web.api.serializers import (
     CityCouncilAgendaSerializer,
     CityCouncilAttendanceListSerializer,
     CityCouncilMinuteSerializer,
-    GazetteSerializer,
     CityHallBidSerializer,
+    GazetteSerializer,
 )
 from web.datasets.models import (
     CityCouncilAgenda,

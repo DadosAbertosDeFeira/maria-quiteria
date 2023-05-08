@@ -1,15 +1,15 @@
 from datetime import date, datetime
 
-from model_bakery import baker
 import pytest
 from dateutil.parser import parse
+from model_bakery import baker
 from web.api.serializers import (
     CityCouncilAgendaSerializer,
     CityCouncilAttendanceListSerializer,
     CityCouncilMinuteSerializer,
     CityHallBidEventSerializer,
     CityHallBidSerializer,
-    FileSerializer
+    FileSerializer,
 )
 
 pytestmark = pytest.mark.django_db
@@ -94,6 +94,7 @@ class TestCityCouncilMinuteSerializer:
         )
         assert serializer.validated_data["event_type"] == data["event_type"]
         assert serializer.validated_data["title"] == data["title"]
+
 
 class TestCityHallBidEventSerializer:
     def test_city_hall_bid_event_serializer(self):
