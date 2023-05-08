@@ -2,6 +2,8 @@ import logging
 import unicodedata
 from datetime import datetime
 
+from dateutil.parser import ParserError, parse
+
 logger = logging.getLogger(__name__)
 
 
@@ -34,25 +36,17 @@ def to_boolean(value):
 
 
 def from_str_to_datetime(date_str, supported_formats=None):
-    if supported_formats is None:
-        supported_formats = [
-            "%d/%m/%Y %H:%M",
-            "%d/%m/%y %H:%M",
-            "%d/%m/%Y %H:%M:%S",
-            "%d/%m/%y %H:%M:%S",
-            "%Y-%m-%d %H:%M:%S",
-            "%d/%m/%Y %Hh%M",
-        ]
-    if date_str:
-        for supported_format in supported_formats:
-            try:
-                converted_date = datetime.strptime(date_str, supported_format)
-            except ValueError:
-                pass
-            else:
-                reference_date = datetime(1833, 9, 18)
-                if converted_date >= reference_date:
-                    return converted_date
+    if date_str is None:
+        return
+    try:
+        converted_date = parse(date_str, dayfirst=True)
+    except ParserError:
+        pass
+    else:
+        reference_date = datetime(1833, 9, 18)
+        if converted_date >= reference_date:
+            return converted_date
+    return
 
 
 def from_str_to_date(date_str, supported_formats=["%d/%m/%Y", "%d/%m/%y", "%Y-%m-%d"]):

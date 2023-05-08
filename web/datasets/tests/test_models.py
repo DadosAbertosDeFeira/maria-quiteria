@@ -3,7 +3,6 @@ from datetime import date, datetime, timedelta
 import pytest
 from django.utils.timezone import make_aware
 from model_bakery import baker
-
 from web.datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
@@ -37,6 +36,11 @@ class TestCityCouncilAgenda:
         agendas = CityCouncilAgenda.objects.all()
         assert agendas.first().date == newer_date
         assert agendas.last().date == older_date
+
+    def test_should_exist_git_commit_field(self):
+        git_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
+        agenda = baker.make_recipe("datasets.CityCouncilAgenda", git_commit=git_commit)
+        assert agenda.git_commit == git_commit
 
 
 @pytest.mark.django_db
@@ -91,6 +95,13 @@ class TestCityCouncilAttendanceList:
         for attendance_list in attendance_lists:
             attendance_list.history.count() == 2
 
+    def test_should_exist_git_commit_field(self):
+        git_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
+        attendance = baker.make_recipe(
+            "datasets.CityCouncilAttendanceList", git_commit=git_commit
+        )
+        assert attendance.git_commit == git_commit
+
 
 @pytest.mark.django_db
 class TestCityCouncilBid:
@@ -105,6 +116,11 @@ class TestCityCouncilBid:
         assert bids[1].session_at == older_datetime
         assert bids.last().session_at is None
 
+    def test_should_exist_git_commit_field(self):
+        git_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
+        bid = baker.make_recipe("datasets.CityCouncilBid", git_commit=git_commit)
+        assert isinstance(bid.git_commit, str)
+
 
 @pytest.mark.django_db
 class TestCityCouncilContract:
@@ -116,6 +132,13 @@ class TestCityCouncilContract:
         contracts = CityCouncilContract.objects.all()
         assert contracts.first().start_date == newer_date
         assert contracts.last().start_date == older_date
+
+    def test_should_exist_git_commit_field(self):
+        git_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
+        contract = baker.make_recipe(
+            "datasets.CityCouncilContract", git_commit=git_commit
+        )
+        assert isinstance(contract.git_commit, str)
 
 
 @pytest.mark.django_db
@@ -139,6 +162,13 @@ class TestCityCouncilExpense:
         assert expenses.first().date == newer_date
         assert expenses.last().date == older_date
 
+    def test_should_exist_git_commit_field(self):
+        git_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
+        expense = baker.make_recipe(
+            "datasets.CityCouncilExpense", git_commit=git_commit
+        )
+        assert isinstance(expense.git_commit, str)
+
 
 @pytest.mark.django_db
 class TestCityCouncilMinute:
@@ -161,6 +191,11 @@ class TestCityCouncilMinute:
         assert minutes.first().date == newer_date
         assert minutes.last().date == older_date
 
+    def test_should_exist_git_commit_field(self):
+        git_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
+        minutes = baker.make_recipe("datasets.CityCouncilMinute", git_commit=git_commit)
+        assert minutes.git_commit == git_commit
+
 
 @pytest.mark.django_db
 class TestCityCouncilRevenue:
@@ -174,6 +209,13 @@ class TestCityCouncilRevenue:
         assert revenues.first().published_at == newer_date
         assert revenues[1].published_at == older_date
         assert revenues.last().published_at is None
+
+    def test_should_exist_git_commit_field(self):
+        git_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
+        revenue = baker.make_recipe(
+            "datasets.CityCouncilRevenue", git_commit=git_commit
+        )
+        assert revenue.git_commit == git_commit
 
 
 @pytest.mark.django_db
@@ -198,6 +240,12 @@ class TestGazette:
         assert gazettes.first().date == newer_date
         assert gazettes[1].date == older_date
         assert gazettes.last().date is None
+
+    def test_should_add_git_commit_by_default(self, monkeypatch):
+        git_commit = "6f643054bd75871e9db6e16e2ad58ead84567c9f"
+        monkeypatch.setenv("GIT_REV", git_commit)
+        gazette = baker.make_recipe("datasets.Gazette")
+        assert gazette.git_commit == git_commit
 
 
 @pytest.mark.django_db

@@ -1,6 +1,7 @@
-from datetime import date, datetime
+from datetime import date
 
 import scrapy
+from dateutil.parser import parse
 from scraper.items import (
     CityCouncilAgendaItem,
     CityCouncilAttendanceListItem,
@@ -94,7 +95,7 @@ class AttendanceListSpider(BaseSpider):
         for box in boxes:
             list_date = box.css("ul li ::text").get()
             if list_date:
-                date_obj = datetime.strptime(list_date, "%d/%m/%Y")
+                date_obj = parse(list_date, dayfirst=True)
                 if date_obj.date() >= self.start_date:
                     found = True
                     list_url = box.css("div a::attr(href)").get()

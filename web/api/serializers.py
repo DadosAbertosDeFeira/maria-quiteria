@@ -2,6 +2,7 @@ from rest_framework import serializers
 from web.datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
+    CityCouncilMinute,
     File,
     Gazette,
     GazetteEvent,
@@ -36,7 +37,7 @@ class GazetteEventSerializer(serializers.ModelSerializer):
 
 class GazetteSerializer(serializers.ModelSerializer):
     events = GazetteEventSerializer(many=True)
-    files = FileSerializer(many=True)
+    files = FileSerializer(many=True, required=False)
 
     class Meta:
         model = Gazette
@@ -48,6 +49,14 @@ class GazetteSerializer(serializers.ModelSerializer):
             "events",
             "files",
         ]
+
+
+class CityCouncilMinuteSerializer(serializers.ModelSerializer):
+    files = FileSerializer(many=True)
+
+    class Meta:
+        model = CityCouncilMinute
+        fields = "__all__"
 
 
 class CityHallBidEventSerializer(serializers.ModelSerializer):

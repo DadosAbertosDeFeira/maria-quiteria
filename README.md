@@ -1,6 +1,6 @@
 # Maria Quitéria
 
-![CI](https://github.com/DadosAbertosDeFeira/maria-quiteria/workflows/CI/badge.svg)
+[![CI](https://github.com/DadosAbertosDeFeira/maria-quiteria/actions/workflows/cicd.yml/badge.svg)](https://github.com/DadosAbertosDeFeira/maria-quiteria/actions/workflows/cicd.yml)
 
 Tem a missão de libertar dados do município de [Feira de Santana](https://pt.wikipedia.org/wiki/Feira_de_Santana).
 Responsável pela raspagem e o armazenamento.
@@ -9,7 +9,7 @@ Não sabe quem foi [Maria Quitéria](https://pt.wikipedia.org/wiki/Maria_Quit%C3
 
 ## Dados
 
-Você pode visualizar e fazer buscas nossos dados [aqui](https://www.dadosabertosdefeira.com.br/painel/).
+Você pode visualizar e fazer buscas nossos dados [aqui](https://mq.dadosabertosdefeira.com.br/painel/).
 
 | Base de dados | Fonte | Descrição        | Coleta          | Banco de dados | Download |
 | ------------- | ------------- | ------------- |:-------------:|:-----:|:-----:|

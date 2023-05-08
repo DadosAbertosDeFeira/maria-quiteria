@@ -2,10 +2,11 @@ from datetime import date, datetime
 
 from model_bakery import baker
 import pytest
-
+from dateutil.parser import parse
 from web.api.serializers import (
     CityCouncilAgendaSerializer,
     CityCouncilAttendanceListSerializer,
+    CityCouncilMinuteSerializer,
     CityHallBidEventSerializer,
     CityHallBidSerializer,
     FileSerializer
@@ -29,7 +30,7 @@ class TestCityCouncilAgendaSerializer:
         assert serializer.is_valid() is True
         assert (
             serializer.validated_data["date"]
-            == datetime.strptime(data["date"], "%Y-%m-%d").date()
+            == parse(data["date"], dayfirst=True).date()
         )
         assert serializer.validated_data["details"] == data["details"]
         assert serializer.validated_data["event_type"] == data["event_type"]
@@ -66,6 +67,33 @@ class TestCityCouncilAttendanceList:
         )
         assert serializer.validated_data["crawled_from"] == data["crawled_from"]
         assert serializer.validated_data["notes"] == data["notes"]
+
+
+class TestCityCouncilMinuteSerializer:
+    def test_city_council_minute_serializer(self):
+        data = {
+            "date": "2020-03-18",
+            "event_type": "sessao_ordinaria",
+            "title": "ORDEM DO DIA - 18 DE MARÇO DE 2020",
+            "crawled_at": "2020-01-01T04:16:13-04:00",
+            "crawled_from": "http://www.pudim.com.br/",
+            "files": [
+                {
+                    "url": "https://www.feiradesantana.ba.leg.br/5eaabb5e91088.pd",
+                    "checksum": "checksum",
+                    "content": None,
+                },
+            ],
+        }
+        serializer = CityCouncilMinuteSerializer(data=data)
+
+        assert serializer.is_valid() is True
+        assert (
+            serializer.validated_data["date"]
+            == parse(data["date"], dayfirst=True).date()
+        )
+        assert serializer.validated_data["event_type"] == data["event_type"]
+        assert serializer.validated_data["title"] == data["title"]
 
 class TestCityHallBidEventSerializer:
     def test_city_hall_bid_event_serializer(self):

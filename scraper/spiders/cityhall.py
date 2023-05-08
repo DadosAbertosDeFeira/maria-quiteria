@@ -2,8 +2,9 @@ import re
 from datetime import date, timedelta
 
 import scrapy
-from web.datasets.parsers import from_str_to_datetime
+
 from scraper.items import CityHallBidItem, CityHallContractItem, CityHallPaymentsItem
+from web.datasets.parsers import from_str_to_datetime
 
 from . import BaseSpider
 from .utils import (

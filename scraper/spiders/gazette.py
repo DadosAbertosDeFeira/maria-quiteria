@@ -1,5 +1,6 @@
-from datetime import date, datetime
+from datetime import date
 
+from dateutil.parser import parse
 from scraper.items import GazetteItem, LegacyGazetteItem
 from scrapy import Request
 from web.datasets.parsers import from_str_to_date
@@ -92,7 +93,7 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
 
     name = "gazettes"
     allowed_domains = ["diariooficial.feiradesantana.ba.gov.br"]
-    start_urls = ["http://www.diariooficial.feiradesantana.ba.gov.br"]
+    start_urls = ["https://www.diariooficial.feiradesantana.ba.gov.br"]
     powers = {"executivo": 1, "legislativo": 2}
     last_page = 1
     handle_httpstatus_list = [302]
@@ -108,7 +109,7 @@ class ExecutiveAndLegislativeGazetteSpider(BaseSpider):
         go_to_next_page = False
 
         for url, gazette_date in zip(gazettes_links, dates):
-            date_obj = datetime.strptime(gazette_date, "%d/%m/%Y")
+            date_obj = parse(gazette_date, dayfirst=True)
             if date_obj.date() >= self.start_date:
                 # visita mais uma página porque as datas do legislativo
                 # e do executivo podem não estar na mesma página

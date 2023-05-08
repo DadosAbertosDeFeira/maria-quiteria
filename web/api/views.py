@@ -11,10 +11,17 @@ from django.contrib.postgres.search import SearchVector
 from web.api.serializers import (
     CityCouncilAgendaSerializer,
     CityCouncilAttendanceListSerializer,
+    CityCouncilMinuteSerializer,
     GazetteSerializer,
     CityHallBidSerializer,
 )
-from web.datasets.models import CityCouncilAgenda, CityCouncilAttendanceList, Gazette, CityHallBid
+from web.datasets.models import (
+    CityCouncilAgenda,
+    CityCouncilAttendanceList,
+    CityCouncilMinute,
+    CityHallBid,
+    Gazette,
+)
 
 
 class HealthCheckView(ViewSet):
@@ -60,6 +67,26 @@ class CityCouncilAttendanceListView(ListAPIView):
             kwargs["council_member__icontains"] = query
         if status:
             kwargs["status"] = status
+        if start_date:
+            kwargs["date__gte"] = start_date
+        if end_date:
+            kwargs["date__lte"] = end_date
+
+        return self.queryset.filter(**kwargs)
+
+
+class CityCouncilMinuteView(ListAPIView):
+    queryset = CityCouncilMinute.objects.all()
+    serializer_class = CityCouncilMinuteSerializer
+
+    def get_queryset(self):
+        query = self.request.query_params.get("query", None)
+        start_date = self.request.query_params.get("start_date", None)
+        end_date = self.request.query_params.get("end_date", None)
+        kwargs = {}
+
+        if query:
+            kwargs["title__icontains"] = query
         if start_date:
             kwargs["date__gte"] = start_date
         if end_date:

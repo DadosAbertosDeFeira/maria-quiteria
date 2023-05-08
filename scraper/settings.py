@@ -29,6 +29,7 @@ SENTRY_DSN = os.getenv("SENTRY_DSN", "")
 # pipelines
 ITEM_PIPELINES = {
     "spidermon.contrib.scrapy.pipelines.ItemValidationPipeline": 200,
+    "scraper.pipelines.DefaultValuesPipeline": 300,
 }
 
 # http cache
@@ -54,8 +55,8 @@ SPIDERMON_VALIDATION_MODELS = {
 SPIDERMON_SPIDER_CLOSE_MONITORS = ("scraper.monitors.SpiderCloseMonitorSuite",)
 
 # bot
-SPIDERMON_TELEGRAM_SENDER_TOKEN = os.getenv("SPIDERMON_TELEGRAM_SENDER_TOKEN", "fake")
-SPIDERMON_TELEGRAM_RECIPIENTS = [os.getenv("SPIDERMON_TELEGRAM_CHANNEL", None)]
+SPIDERMON_TELEGRAM_SENDER_TOKEN = os.getenv("TELEGRAM_SENDER_TOKEN", "fake")
+SPIDERMON_TELEGRAM_RECIPIENTS = [os.getenv("TELEGRAM_CHANNEL", None)]
 SPIDERMON_TELEGRAM_FAKE = os.getenv("SPIDERMON_TELEGRAM_FAKE", False)
 
 # sentry

@@ -1,5 +1,6 @@
 import json
 from datetime import date, datetime, timedelta
+from unittest.mock import Mock
 
 import pytest
 from django.conf import settings
@@ -22,6 +23,7 @@ from web.datasets.tasks import (
     content_from_file,
     distribute_city_council_objects_to_sync,
     get_city_council_updates,
+    notify_about_retrieved_city_council_data,
     remove_citycouncil_bid,
     remove_citycouncil_contract,
     remove_citycouncil_expense,
@@ -45,6 +47,13 @@ def path(mocker):
     path_mock = mocker.patch("web.datasets.tasks.Path")
     path_mock.return_value.exists.return_value = True
     return path_mock
+
+
+@pytest.fixture
+def mock_notifiers(mocker):
+    notifier = mocker.patch("web.datasets.tasks.get_notifier")
+    notifier.return_value.notify.return_value = Mock()
+    return notifier
 
 
 class TestContentFromFile:
@@ -144,7 +153,7 @@ class TestBackupFile:
 
 @pytest.mark.django_db
 class TestGetCityCouncilUpdates:
-    def test_get_city_council_updates(self, mocker):
+    def test_get_city_council_updates(self, mocker, mock_notifiers):
         expected_payload = {
             "inclusoesContrato": [],
             "alteracoesContrato": [],
@@ -186,7 +195,9 @@ class TestGetCityCouncilUpdates:
         assert sync_info.succeed is True
         assert sync_info.response == expected_payload
 
-    def test_handle_with_error_when_parameters_are_invalid(self, mocker):
+    def test_handle_with_error_when_parameters_are_invalid(
+        self, mocker, mock_notifiers
+    ):
         expected_payload = {"erro": "Os parametros enviados são inválidos."}
         post_mock = mocker.patch("web.datasets.tasks.requests.get")
         post_mock.return_value.json.return_value = expected_payload
@@ -815,3 +826,66 @@ class TestCityCouncilExpense:
         for expense in expenses:
             expense.refresh_from_db()
             assert expense.excluded is True
+
+
+def test_notify_about_retrieved_city_council_data_when_get_error(mock_notifiers):
+    response = {"erro": "Os parametros enviados são inválidos."}
+    expected_message = (
+        "❌ Comunicação com a Câmara finalizada\n"
+        "Erro: Os parametros enviados são inválidos."
+    )
+
+    notify_about_retrieved_city_council_data(response)
+
+    assert mock_notifiers.called
+    assert mock_notifiers.mock_calls[1].kwargs["message"] == expected_message
+
+
+def test_notify_about_retrieved_city_council_data_with_numbers(mock_notifiers):
+    response = {
+        "inclusoesContrato": [],
+        "alteracoesContrato": [],
+        "exclusoesContrato": [],
+        "inclusoesLicitacao": [],
+        "alteracoesLicitacao": [
+            {
+                "codLic": "214",
+                "codTipoLic": "7",
+                "numLic": "004/2020",
+                "numTipoLic": "004/2020",
+                "objetoLic": "Contratação de pessoa jurídica",
+                "dtLic": "2020-03-26 09:00:00",
+            }
+        ],
+        "exclusoesLicitacao": [],
+        "inclusoesReceita": [],
+        "alteracoesReceita": [],
+        "exclusoesReceita": [],
+        "inclusoesDespesa": [],
+        "alteracoesDespesa": [],
+        "exclusoesDespesa": [],
+    }
+    expected_message = (
+        "✅ Comunicação com a Câmara finalizada\n\n"
+        "- Contratos\n"
+        "novos: 0\n"
+        "alterados: 0\n"
+        "deletados: 0\n\n"
+        "- Licitações\n"
+        "novos: 0\n"
+        "alterados: 1\n"
+        "deletados: 0\n\n"
+        "- Receitas\n"
+        "novos: 0\n"
+        "alterados: 0\n"
+        "deletados: 0\n\n"
+        "- Despesas\n"
+        "novos: 0\n"
+        "alterados: 0\n"
+        "deletados: 0"
+    )
+
+    notify_about_retrieved_city_council_data(response)
+
+    assert mock_notifiers.called
+    assert mock_notifiers.mock_calls[1].kwargs["message"] == expected_message

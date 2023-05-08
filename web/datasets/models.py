@@ -6,6 +6,7 @@ from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.db.models import F
+from scraper.spiders.utils import get_git_commit
 from simple_history.models import HistoricalRecords
 
 CITY_COUNCIL_EVENT_TYPE = (
@@ -98,6 +99,13 @@ class DatasetMixin(models.Model):
     crawled_at = models.DateTimeField("Coletado em")
     crawled_from = models.URLField("Fonte")
     notes = models.TextField("Anotações", null=True, blank=True)
+    git_commit = models.TextField(
+        "Hash do commit",
+        null=True,
+        blank=True,
+        max_length=40,
+        default=get_git_commit,
+    )
 
     class Meta:
         abstract = True
