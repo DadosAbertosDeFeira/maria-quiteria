@@ -27,7 +27,7 @@ class TestCityCouncilAgendaSerializer:
         }
         serializer = CityCouncilAgendaSerializer(data=data)
 
-        assert serializer.is_valid() is True
+        assert serializer.is_valid()
         assert (
             serializer.validated_data["date"]
             == parse(data["date"], dayfirst=True).date()
@@ -57,7 +57,7 @@ class TestCityCouncilAttendanceList:
         }
 
         serializer = CityCouncilAttendanceListSerializer(data=data)
-        assert serializer.is_valid() is True
+        assert serializer.is_valid()
         assert serializer.validated_data["date"] == data["date"]
         assert serializer.validated_data["description"] == data["description"]
         assert serializer.validated_data["council_member"] == data["council_member"]
@@ -87,7 +87,7 @@ class TestCityCouncilMinuteSerializer:
         }
         serializer = CityCouncilMinuteSerializer(data=data)
 
-        assert serializer.is_valid() is True
+        assert serializer.is_valid()
         assert (
             serializer.validated_data["date"]
             == parse(data["date"], dayfirst=True).date()
@@ -108,7 +108,7 @@ class TestCityHallBidEventSerializer:
         }
 
         serializer = CityHallBidEventSerializer(data=data)
-        assert serializer.is_valid() is True
+        assert serializer.is_valid()
 
         assert serializer.validated_data["published_at"] == datetime.fromisoformat(
             data["published_at"]
@@ -119,17 +119,10 @@ class TestCityHallBidEventSerializer:
 
 class TestFileSerializer:
     def test_file_serializer(self):
-        bid = baker.make_recipe("datasets.CityHallBid")
-
-        data = {
-            "published_at": "2020-07-21T11:49:00-03:00",
-            "summary": "Julgamento do recurso administrativo",
-            "bid": bid.pk,
-            "url": "https://www.example.com",
-        }
+        data = {"url": "https://www.example.com/file.pdf"}
 
         serializer = FileSerializer(data=data)
-        assert serializer.is_valid() is True
+        assert serializer.is_valid()
         assert serializer.validated_data["url"] == data["url"]
 
 
@@ -160,7 +153,7 @@ class TestCityHallBidSerializer:
         }
 
         serializer = CityHallBidSerializer(data=data)
-        assert serializer.is_valid() is True
+        assert serializer.is_valid()
 
         assert serializer.validated_data["session_at"] == datetime.fromisoformat(
             data["session_at"]

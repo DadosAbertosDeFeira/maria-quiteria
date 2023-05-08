@@ -297,7 +297,7 @@ class TestCityHallBidView:
         )
         baker.make_recipe(
             "datasets.CityHallBid",
-            description="e quantificação de hemoglobinas",
+            description="quantificação de hemoglobinas",
             session_at=date(2020, 3, 24),
         )
 
