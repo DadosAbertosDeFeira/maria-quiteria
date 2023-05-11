@@ -22,6 +22,7 @@ class GazetteFilter(filters.FilterSet):
 class CityHallBidFilter(filters.FilterSet):
     start_date = filters.DateFilter(field_name="session_at", lookup_expr="gte")
     end_date = filters.DateFilter(field_name="session_at", lookup_expr="lte")
+    description = filters.CharFilter(field_name="description", lookup_expr="icontains")
 
     class Meta:
         model = CityHallBid
