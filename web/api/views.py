@@ -6,17 +6,19 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet, ViewSet
-from web.api.filters import GazetteFilter
+from web.api.filters import CityHallBidFilter, GazetteFilter
 from web.api.serializers import (
     CityCouncilAgendaSerializer,
     CityCouncilAttendanceListSerializer,
     CityCouncilMinuteSerializer,
+    CityHallBidSerializer,
     GazetteSerializer,
 )
 from web.datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
     CityCouncilMinute,
+    CityHallBid,
     Gazette,
 )
 
@@ -97,9 +99,10 @@ class GazetteView(ReadOnlyModelViewSet):
     serializer_class = GazetteSerializer
     filterset_class = GazetteFilter
     filter_backends = [SearchFilter, DjangoFilterBackend]
-    search_fields = [
-        "events__title",
-        "events__secretariat",
-        "events__summary",
-        "year_and_edition",
-    ]
+
+
+class CityHallBidView(ListAPIView):
+    queryset = CityHallBid.objects.prefetch_related("events").prefetch_related("files")
+    serializer_class = CityHallBidSerializer
+    filterset_class = CityHallBidFilter
+    filter_backends = [SearchFilter, DjangoFilterBackend]

@@ -4,6 +4,7 @@ from web.api.views import (
     CityCouncilAgendaView,
     CityCouncilAttendanceListView,
     CityCouncilMinuteView,
+    CityHallBidView,
     GazetteView,
     HealthCheckView,
 )
@@ -30,4 +31,5 @@ urlpatterns = [
         CityCouncilMinuteView.as_view(),
         name="city-council-minute",
     ),
+    path("city-hall/bids/", CityHallBidView.as_view(), name="city-hall-bids"),
 ]

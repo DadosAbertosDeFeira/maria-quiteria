@@ -159,14 +159,12 @@ class TestGazetteView:
     @pytest.mark.parametrize(
         "data,quantity_expected",
         [
-            ({"query": "life"}, 1),
             ({"power": "executivo"}, 2),
             ({"start_date": "2021-01-02"}, 2),
             ({"end_date": "2021-03-15"}, 2),
             ({"start_date": "2021-01-02", "end_date": "2021-03-15"}, 1),
             (
                 {
-                    "query": "talk",
                     "power": "legislativo",
                     "start_date": "2021-01-01",
                     "end_date": "2021-04-30",
@@ -176,7 +174,6 @@ class TestGazetteView:
             ({}, 3),
         ],
         ids=[
-            "filter_by_query",
             "filter_by_power",
             "filter_by_start_date",
             "filter_by_end_date",
@@ -250,3 +247,57 @@ class TestCityCouncilMinuteView:
                 'O valor "%(value)s" tem um formato de data inválido.'
                 "Deve ser no formato  YYY-MM-DD."
             )
+
+
+class TestCityHallBidView:
+    url = reverse("city-hall-bids")
+
+    def test_should_list_city_hall_bids(self, api_client_authenticated):
+        baker.make_recipe("datasets.CityHallBid", _quantity=3)
+
+        response = api_client_authenticated.get(self.url)
+
+        data = response.json()["results"]
+
+        assert response.status_code == HTTPStatus.OK
+        assert len(data) == 3
+
+    @pytest.mark.parametrize(
+        "data,quantity_expected",
+        [
+            ({"start_date": "2020-02-20"}, 3),
+            ({"end_date": "2020-03-20"}, 2),
+            ({"start_date": "2020-02-17", "end_date": "2020-03-30"}, 3),
+            ({}, 3),
+        ],
+        ids=[
+            "filter_by_start_date",
+            "filter_by_end_date",
+            "filter_by_range_date",
+            "filter_by_non",
+        ],
+    )
+    def test_should_filter_bids(
+        self, api_client_authenticated, data, quantity_expected
+    ):
+        baker.make_recipe(
+            "datasets.CityHallBid",
+            description="Aquisição de materiais de limpeza",
+            session_at=date(2020, 3, 18),
+        )
+        baker.make_recipe(
+            "datasets.CityHallBid",
+            description="material de higienização",
+            session_at=date(2020, 3, 20),
+        )
+        baker.make_recipe(
+            "datasets.CityHallBid",
+            description="quantificação de hemoglobinas",
+            session_at=date(2020, 3, 24),
+        )
+
+        response = api_client_authenticated.get(self.url, data=data)
+        data = response.json()["results"]
+
+        assert response.status_code == HTTPStatus.OK
+        assert len(data) == quantity_expected
