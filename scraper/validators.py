@@ -1,5 +1,6 @@
 from schematics.models import Model
 from schematics.types import (
+    BaseType,
     DateTimeType,
     DateType,
     DictType,
@@ -65,12 +66,18 @@ class CityHallContractItem(BaseModel):
     files = ListType(StringType)
 
 
+class CityHallBidHistoryType(BaseType):
+    event = StringType()
+    published_at = DateTimeType()
+    url = URLType()
+
+
 class CityHallBidItem(BaseModel):
     public_agency = StringType()
     month = IntType(min_value=1, max_value=12)
     year = IntType(min_value=1873)  # quando Feira virou cidade :)
     description = StringType()
-    history = ListType(DictType(StringType))
+    history = ListType(DictType(CityHallBidHistoryType))
     codes = StringType()
     modality = StringType()
     session_at = DateTimeType()

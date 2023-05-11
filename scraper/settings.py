@@ -39,6 +39,7 @@ HTTPCACHE_EXPIRATION_SECS = 86400  # 24 horas
 # testing
 SPIDERMON_ENABLED = True
 SPIDERMON_VALIDATION_ADD_ERRORS_TO_ITEMS = True
+SPIDERMON_VALIDATION_ERRORS_FIELD = "errors"
 SPIDERMON_VALIDATION_MODELS = {
     LegacyGazetteItem: "scraper.validators.LegacyGazetteItem",
     GazetteItem: "scraper.validators.GazetteItem",
