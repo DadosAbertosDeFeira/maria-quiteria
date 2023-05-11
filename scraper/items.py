@@ -5,6 +5,7 @@ class BaseItem(scrapy.Item):
     crawled_at = scrapy.Field()
     crawled_from = scrapy.Field()
     git_commit = scrapy.Field()
+    errors = scrapy.Field()
 
 
 class LegacyGazetteItem(BaseItem):
