@@ -24,6 +24,7 @@ class Common(Configuration):
     DEBUG = False
 
     ALLOWED_HOSTS = []
+    CSRF_TRUSTED_ORIGINS = []
     INSTALLED_APPS = [
         "web.home.apps.HomeConfig",
         "public_admin",
@@ -172,6 +173,7 @@ class Test(Dev):
 
 class Prod(Common):
     SECRET_KEY = values.SecretValue()
+    CSRF_TRUSTED_ORIGINS = values.ListValue([])
     ALLOWED_HOSTS = values.ListValue([], environ_name="ALLOWED_HOSTS")
     ALLOWED_HOSTS.extend((gethostname(), gethostbyname(gethostname())))
     DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=False)}
