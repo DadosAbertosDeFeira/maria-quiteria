@@ -65,12 +65,6 @@ class CityHallBidEventSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class FileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = File
-        fields = ["url"]
-
-
 class CityHallBidSerializer(serializers.ModelSerializer):
 
     events = CityHallBidEventSerializer(many=True, read_only=True)

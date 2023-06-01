@@ -39,6 +39,7 @@ class Common(Configuration):
         "rest_framework",
         "simple_history",
         "django_filters",
+        "drf_yasg",
     ]
 
     MIDDLEWARE = [
