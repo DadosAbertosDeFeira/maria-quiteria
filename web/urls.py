@@ -15,18 +15,15 @@ from rest_framework_simplejwt.views import (
 from web.datasets.admin import public_admin
 
 
-
 schema_view = get_schema_view(
-   openapi.Info(
-      title="Maria Quiteria API",
-      default_version='v1',
-      description="",
-      terms_of_service="https://www.google.com/policies/terms/",
-      contact=openapi.Contact(email="contact@snippets.local"),
-      license=openapi.License(name="BSD License"),
-   ),
-   public=True,
-   permission_classes=(permissions.AllowAny,),
+    openapi.Info(
+        title="Maria Quitéria API",
+        default_version="v1",
+        contact=openapi.Contact(email="dadosabertosdefeira+api@gmail.com"),
+        license=openapi.License(name="MIT"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
 )
 
 urlpatterns = [
@@ -37,7 +34,11 @@ urlpatterns = [
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
-    re_path(r'^swagger/$', schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
+    re_path(
+        r"^api/docs/$",
+        schema_view.with_ui("swagger", cache_timeout=0),
+        name="schema-swagger-ui",
+    ),
 ]
 
 
