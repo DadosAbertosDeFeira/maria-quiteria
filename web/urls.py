@@ -36,7 +36,7 @@ urlpatterns = [
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     re_path(
         r"^api/docs/$",
-        schema_view.with_ui("swagger", cache_timeout=0),
+        schema_view.with_ui("swagger"),
         name="schema-swagger-ui",
     ),
 ]
