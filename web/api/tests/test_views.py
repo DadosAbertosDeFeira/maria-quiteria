@@ -5,6 +5,7 @@ import pytest
 from django.core import exceptions
 from django.urls import reverse
 from model_bakery import baker
+from web.api.tests.constants import AVAILABLE_ENDPOINTS_BY_PUBLIC_AGENCY
 
 pytestmark = pytest.mark.django_db
 
@@ -301,3 +302,13 @@ class TestCityHallBidView:
 
         assert response.status_code == HTTPStatus.OK
         assert len(data) == quantity_expected
+
+
+class TestFrontendEndpointView:
+    url = reverse("frontend-endpoints")
+
+    def test_should_list_frontend_endpoints(self, api_client_authenticated):
+        response = api_client_authenticated.get(self.url)
+
+        assert response.data == AVAILABLE_ENDPOINTS_BY_PUBLIC_AGENCY
+        assert response.status_code == HTTPStatus.OK
