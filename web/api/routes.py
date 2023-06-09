@@ -7,6 +7,7 @@ from web.api.views import (
     CityHallBidView,
     GazetteView,
     HealthCheckView,
+    FrontendEndpoint,
 )
 
 router = routers.DefaultRouter()
@@ -32,4 +33,5 @@ urlpatterns = [
         name="city-council-minute",
     ),
     path("city-hall/bids/", CityHallBidView.as_view(), name="city-hall-bids"),
+    path("endpoints", FrontendEndpoint.as_view(), name="frontend-endpoints"),
 ]
