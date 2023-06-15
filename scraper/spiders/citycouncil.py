@@ -76,7 +76,7 @@ class AgendaSpider(BaseSpider):
 class AttendanceListSpider(BaseSpider):
     name = "citycouncil_attendancelist"
     initial_date = date(2021, 4, 20)
-    start_urls = ["https://www.feiradesantana.ba.leg.br/listadepresenca.asp"]
+    start_urls = ["https://www.feiradesantana.ba.leg.br/lista-presenca"]
 
     @staticmethod
     def get_status(status):
@@ -90,6 +90,7 @@ class AttendanceListSpider(BaseSpider):
         boxes = response.css("div.row div div")
         current_page = response.meta.get("current_page", 1)
         last_page = response.css("ul.pagination li:last-child ::text").get()
+
         found = False
 
         for box in boxes:
@@ -110,7 +111,7 @@ class AttendanceListSpider(BaseSpider):
             next_page = current_page + 1
             if next_page <= last_page:
                 yield scrapy.Request(
-                    url=response.urljoin(f"listadepresenca.asp?p={next_page}"),
+                    url=response.urljoin(f"lista-presenca?p={next_page}"),
                     callback=self.parse,
                     meta={"current_page": next_page},
                 )
@@ -134,12 +135,12 @@ class MinuteSpider(BaseSpider):
     base_url = "https://www.feiradesantana.ba.leg.br"
     initial_date = date(2015, 1, 1)
     pages_by_type = {
-        "sessao_ordinaria": "atas.asp?ida=1&nma=Sessão Ordinária",
-        "sessao_solene": "atas.asp?ida=2&nma=Sessão Solene",
-        "sessao_especial": "atas.asp?ida=3&nma=Sessões Especiais",
-        "audiencia_publica": "atas.asp?ida=4&nma=Audiência Pública",
-        "sessao_extraordinaria": "atas.asp?ida=5&nma=Sessão Extraordinária",
-        "termo_de_encerramento": "atas.asp?ida=6&nma=Termo de Encerramento",
+        "sessao_ordinaria": "atas?ida=1&nma=Sessão Ordinária",
+        "sessao_solene": "atas?ida=2&nma=Sessão Solene",
+        "sessao_especial": "atas?ida=3&nma=Sessões Especiais",
+        "audiencia_publica": "atas?ida=4&nma=Audiência Pública",
+        "sessao_extraordinaria": "atas?ida=5&nma=Sessão Extraordinária",
+        "termo_de_encerramento": "atas?ida=6&nma=Termo de Encerramento",
     }
 
     def start_requests(self):
