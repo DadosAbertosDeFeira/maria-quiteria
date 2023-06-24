@@ -75,8 +75,34 @@ class AgendaSpider(BaseSpider):
 
 class AttendanceListSpider(BaseSpider):
     name = "citycouncil_attendancelist"
-    initial_date = date(2021, 4, 20)
-    start_urls = ["https://www.feiradesantana.ba.leg.br/listadepresenca.asp"]
+    initial_date = date(2022, 1, 1)
+    start_urls = ["https://www.feiradesantana.ba.leg.br/lista-presenca"]
+    events = {
+        "Sessão Ordinária": "1",
+        "Sessão Solene": "2",
+        "Sessões Especiais": "3",
+        "Audiência Pública": "4",
+        "Sessão Extraordinária": "5",
+        "Termo de Encerramento": "6",
+    }
+
+    def start_requests(self):
+        for month, year in months_and_years(self.initial_date, date.today()):
+            month = str(f"0{month}" if month < 10 else month)
+            year = str(year)
+            for event, event_number in self.events.items():
+                url = (
+                    f"https://www.feiradesantana.ba.leg.br/lista-presenca?"
+                    f"mes={month}&"
+                    f"ano={year}&"
+                    f"Acessar=OK#{event_number}"
+                )
+                data = {
+                    "mes": month,
+                    "ano": year,
+                    "Acessar": "OK"
+                }
+                yield scrapy.FormRequest(url, formdata=data, callback=self.parse_list_page, meta={"event": event})
 
     @staticmethod
     def get_status(status):
@@ -86,47 +112,32 @@ class AttendanceListSpider(BaseSpider):
         status = strip_accents(status.strip())
         return status.lower().replace(" ", "_")
 
-    def parse(self, response):
-        boxes = response.css("div.row div div")
-        current_page = response.meta.get("current_page", 1)
-        last_page = response.css("ul.pagination li:last-child ::text").get()
-        found = False
-
-        for box in boxes:
-            list_date = box.css("ul li ::text").get()
-            if list_date:
-                date_obj = parse(list_date, dayfirst=True)
-                if date_obj.date() >= self.start_date:
-                    found = True
-                    list_url = box.css("div a::attr(href)").get()
-                    yield scrapy.Request(
-                        url=response.urljoin(list_url),
-                        callback=self.parse_list_page,
-                        meta={"date": list_date},
-                    )
-
-        if found and last_page:  # deve continuar checando até não encontrar mais
-            last_page = int(last_page)
-            next_page = current_page + 1
-            if next_page <= last_page:
-                yield scrapy.Request(
-                    url=response.urljoin(f"listadepresenca.asp?p={next_page}"),
-                    callback=self.parse,
-                    meta={"current_page": next_page},
-                )
-
     def parse_list_page(self, response):
-        council_members = response.css("div.row div div ul li a::text").extract()
-        status = response.css("div.row div div div a::text").extract()
+        dates = response.css("div#myTabContent2 h4::text").extract()
+        tables = response.css("table.table")
 
-        for council_member, status in zip(council_members, status):
-            yield CityCouncilAttendanceListItem(
-                crawled_at=datetime_utcnow_aware(),
-                crawled_from=response.url,
-                date=from_str_to_date(response.meta["date"]),
-                council_member=council_member.strip(),
-                status=self.get_status(status),
-            )
+        for a_date in dates:
+            table = tables.pop()
+            info = table.css("div.TITULO::text").extract()
+            council_members = []
+            status = []
+            index = 0
+            while index < len(info):
+                if index % 2 == 0:  # even
+                    council_members.append(info[index])
+                else:
+                    status.append(info[index])
+                index += 1
+
+            for council_member, status in zip(council_members, status):
+                yield CityCouncilAttendanceListItem(
+                    crawled_at=datetime_utcnow_aware(),
+                    crawled_from=response.url,
+                    date=from_str_to_date(a_date),
+                    council_member=council_member.strip(),
+                    status=self.get_status(status),
+                    description=response.meta["event"]
+                )
 
 
 class MinuteSpider(BaseSpider):
