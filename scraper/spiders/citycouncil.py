@@ -1,7 +1,6 @@
 from datetime import date
 
 import scrapy
-from dateutil.parser import parse
 from scraper.items import (
     CityCouncilAgendaItem,
     CityCouncilAttendanceListItem,
