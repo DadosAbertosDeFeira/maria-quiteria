@@ -1,5 +1,5 @@
 boto3==1.26.145
-celery==5.2.7
+celery==5.3.1
 dj-database-url==2.0.0
 django==4.1.9
 django-configurations==2.4
