@@ -122,3 +122,11 @@ def get_git_commit() -> str:
     if git_rev in [None, "None"]:
         return ""
     return git_rev
+
+
+def get_status(status):
+    """Retorna label dos status. Consultado em datas distintas, variando para cada spider."""
+    if not status:
+        return ""
+    status = strip_accents(status.strip())
+    return status.lower().replace(" ", "_")

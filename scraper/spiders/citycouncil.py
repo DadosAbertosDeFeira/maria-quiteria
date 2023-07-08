@@ -9,7 +9,7 @@ from scraper.items import (
 from web.datasets.parsers import from_str_to_date
 
 from . import BaseSpider
-from .utils import datetime_utcnow_aware, months_and_years, strip_accents
+from .utils import datetime_utcnow_aware, get_status, months_and_years
 
 
 class AgendaSpider(BaseSpider):
@@ -105,16 +105,11 @@ class AttendanceListSpider(BaseSpider):
                     meta={"event": event},
                 )
 
-    @staticmethod
-    def get_status(status):
-        """Retorna label dos status. Consultado em 06/08/2021."""
-        if not status:
-            return ""
-        status = strip_accents(status.strip())
-        return status.lower().replace(" ", "_")
 
     def parse_list_page(self, response):
         dates = response.css("div#myTabContent2 h4::text").extract()
+        dates = self.remove_invalid_dates(dates)
+
         tables = response.css("table.table")
 
         for a_date in dates:
@@ -136,9 +131,19 @@ class AttendanceListSpider(BaseSpider):
                     crawled_from=response.url,
                     date=from_str_to_date(a_date),
                     council_member=council_member.strip(),
-                    status=self.get_status(status),
+                    status=get_status(status),
                     description=response.meta["event"],
                 )
+
+    @staticmethod
+    def remove_invalid_dates(dates):
+        for c_date in range(0, len(dates)):
+            if c_date >= len(dates): break
+
+            if '      ' in dates[c_date]:
+                dates.pop(c_date)
+
+        return dates
 
 
 class MinuteSpider(BaseSpider):
@@ -171,13 +176,6 @@ class MinuteSpider(BaseSpider):
                     url, formdata=data, callback=self.parse, meta={"event": event}
                 )
 
-    @staticmethod
-    def get_status(status):
-        """Retorna label dos status. Consultado em 06/08/2021."""
-        if not status:
-            return ""
-        status = strip_accents(status.strip())
-        return status.lower().replace(" ", "_")
 
     def parse(self, response):
         dates = response.xpath("//table/tbody/tr/td[1]/strong/text()").getall()
