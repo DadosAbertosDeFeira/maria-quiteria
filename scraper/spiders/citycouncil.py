@@ -105,7 +105,6 @@ class AttendanceListSpider(BaseSpider):
                     meta={"event": event},
                 )
 
-
     def parse_list_page(self, response):
         dates = response.css("div#myTabContent2 h4::text").extract()
         dates = self.remove_invalid_dates(dates)
@@ -138,9 +137,10 @@ class AttendanceListSpider(BaseSpider):
     @staticmethod
     def remove_invalid_dates(dates):
         for c_date in range(0, len(dates)):
-            if c_date >= len(dates): break
+            if c_date >= len(dates):
+                break
 
-            if '      ' in dates[c_date]:
+            if "      " in dates[c_date]:
                 dates.pop(c_date)
 
         return dates
@@ -175,7 +175,6 @@ class MinuteSpider(BaseSpider):
                 yield scrapy.FormRequest(
                     url, formdata=data, callback=self.parse, meta={"event": event}
                 )
-
 
     def parse(self, response):
         dates = response.xpath("//table/tbody/tr/td[1]/strong/text()").getall()
