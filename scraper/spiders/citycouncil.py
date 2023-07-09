@@ -148,15 +148,15 @@ class AttendanceListSpider(BaseSpider):
 
 class MinuteSpider(BaseSpider):
     name = "citycouncil_minutes"
-    initial_date = date(2022, 1, 1)
+    initial_date = date(2018, 1, 1)
     base_url = "https://www.feiradesantana.ba.leg.br/atas"
     events = {
-        "Sessão Ordinária": "1",
-        "Sessão Solene": "2",
-        "Sessões Especiais": "3",
-        "Audiência Pública": "4",
-        "Sessão Extraordinária": "5",
-        "Termo de Encerramento": "6",
+        "sessao_ordinaria": "1",
+        "sessao_solene": "2",
+        "sessao_especial": "3",
+        "audiencia_publica": "4",
+        "sessao_extraordinaria": "5",
+        "termo_de_encerramento": "6",
     }
 
     def start_requests(self):
