@@ -126,7 +126,7 @@ def get_git_commit() -> str:
 
 def get_status(status):
     """Retorna label dos status.
-    Consultado em datas distintas, variando para cada spider."""
+    Consultado em 01/01/2023."""
     if not status:
         return ""
     status = strip_accents(status.strip())
