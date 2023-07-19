@@ -122,3 +122,12 @@ def get_git_commit() -> str:
     if git_rev in [None, "None"]:
         return ""
     return git_rev
+
+
+def get_status(status):
+    """Retorna label dos status.
+    Consultado em 01/01/2022."""
+    if not status:
+        return ""
+    status = strip_accents(status.strip())
+    return status.lower().replace(" ", "_")

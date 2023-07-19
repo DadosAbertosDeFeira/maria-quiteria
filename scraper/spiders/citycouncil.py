@@ -1,7 +1,6 @@
 from datetime import date
 
 import scrapy
-from dateutil.parser import parse
 from scraper.items import (
     CityCouncilAgendaItem,
     CityCouncilAttendanceListItem,
@@ -10,7 +9,7 @@ from scraper.items import (
 from web.datasets.parsers import from_str_to_date
 
 from . import BaseSpider
-from .utils import datetime_utcnow_aware, months_and_years, strip_accents
+from .utils import datetime_utcnow_aware, get_status, months_and_years
 
 
 class AgendaSpider(BaseSpider):
@@ -75,98 +74,103 @@ class AgendaSpider(BaseSpider):
 
 class AttendanceListSpider(BaseSpider):
     name = "citycouncil_attendancelist"
-    initial_date = date(2021, 4, 20)
-    start_urls = ["https://www.feiradesantana.ba.leg.br/listadepresenca.asp"]
+    initial_date = date(2022, 1, 1)
+    start_urls = ["https://www.feiradesantana.ba.leg.br/lista-presenca"]
+    events = {
+        "Sessão Ordinária": "1",
+        "Sessão Solene": "2",
+        "Sessões Especiais": "3",
+        "Audiência Pública": "4",
+        "Sessão Extraordinária": "5",
+        "Termo de Encerramento": "6",
+    }
 
-    @staticmethod
-    def get_status(status):
-        """Retorna label dos status. Consultado em 06/08/2021."""
-        if not status:
-            return ""
-        status = strip_accents(status.strip())
-        return status.lower().replace(" ", "_")
+    def start_requests(self):
+        for month, year in months_and_years(self.initial_date, date.today()):
+            month = str(f"0{month}" if month < 10 else month)
+            year = str(year)
+            for event, event_number in self.events.items():
+                url = (
+                    f"https://www.feiradesantana.ba.leg.br/lista-presenca?"
+                    f"mes={month}&"
+                    f"ano={year}&"
+                    f"Acessar=OK#{event_number}"
+                )
+                data = {"mes": month, "ano": year, "Acessar": "OK"}
 
-    def parse(self, response):
-        boxes = response.css("div.row div div")
-        current_page = response.meta.get("current_page", 1)
-        last_page = response.css("ul.pagination li:last-child ::text").get()
-        found = False
-
-        for box in boxes:
-            list_date = box.css("ul li ::text").get()
-            if list_date:
-                date_obj = parse(list_date, dayfirst=True)
-                if date_obj.date() >= self.start_date:
-                    found = True
-                    list_url = box.css("div a::attr(href)").get()
-                    yield scrapy.Request(
-                        url=response.urljoin(list_url),
-                        callback=self.parse_list_page,
-                        meta={"date": list_date},
-                    )
-
-        if found and last_page:  # deve continuar checando até não encontrar mais
-            last_page = int(last_page)
-            next_page = current_page + 1
-            if next_page <= last_page:
-                yield scrapy.Request(
-                    url=response.urljoin(f"listadepresenca.asp?p={next_page}"),
-                    callback=self.parse,
-                    meta={"current_page": next_page},
+                yield scrapy.FormRequest(
+                    url,
+                    formdata=data,
+                    callback=self.parse_list_page,
+                    meta={"event": event},
                 )
 
     def parse_list_page(self, response):
-        council_members = response.css("div.row div div ul li a::text").extract()
-        status = response.css("div.row div div div a::text").extract()
+        dates = response.css("div#myTabContent2 h4::text").extract()
 
-        for council_member, status in zip(council_members, status):
-            yield CityCouncilAttendanceListItem(
-                crawled_at=datetime_utcnow_aware(),
-                crawled_from=response.url,
-                date=from_str_to_date(response.meta["date"]),
-                council_member=council_member.strip(),
-                status=self.get_status(status),
-            )
+        tables = response.css("table.table")
+
+        for a_date in dates:
+            if a_date.strip() == "":
+                continue
+
+            table = tables.pop()
+            info = table.css("div.TITULO::text").extract()
+            council_members = []
+            status = []
+            index = 0
+            while index < len(info):
+                if index % 2 == 0:  # even
+                    council_members.append(info[index])
+                else:
+                    status.append(info[index])
+                index += 1
+
+            for council_member, status in zip(council_members, status):
+                yield CityCouncilAttendanceListItem(
+                    crawled_at=datetime_utcnow_aware(),
+                    crawled_from=response.url,
+                    date=from_str_to_date(a_date),
+                    council_member=council_member.strip(),
+                    status=get_status(status),
+                    description=response.meta["event"],
+                )
 
 
 class MinuteSpider(BaseSpider):
     name = "citycouncil_minutes"
-    base_url = "https://www.feiradesantana.ba.leg.br"
-    initial_date = date(2015, 1, 1)
-    pages_by_type = {
-        "sessao_ordinaria": "atas.asp?ida=1&nma=Sessão Ordinária",
-        "sessao_solene": "atas.asp?ida=2&nma=Sessão Solene",
-        "sessao_especial": "atas.asp?ida=3&nma=Sessões Especiais",
-        "audiencia_publica": "atas.asp?ida=4&nma=Audiência Pública",
-        "sessao_extraordinaria": "atas.asp?ida=5&nma=Sessão Extraordinária",
-        "termo_de_encerramento": "atas.asp?ida=6&nma=Termo de Encerramento",
+    initial_date = date(2018, 1, 1)
+    base_url = "https://www.feiradesantana.ba.leg.br/atas"
+    events = {
+        "sessao_ordinaria": "1",
+        "sessao_solene": "2",
+        "sessao_especial": "3",
+        "audiencia_publica": "4",
+        "sessao_extraordinaria": "5",
+        "termo_de_encerramento": "6",
     }
 
     def start_requests(self):
-        self.logger.info(f"Data inicial: {self.start_date}")
-        today = datetime_utcnow_aware().date()
+        for month, year in months_and_years(self.initial_date, date.today()):
+            month = str(f"0{month}" if month < 10 else month)
+            year = str(year)
+            for event, event_number in self.events.items():
+                url = (
+                    f"https://www.feiradesantana.ba.leg.br/atas?"
+                    f"mes={month}&"
+                    f"ano={year}&"
+                    f"Acessar=OK#{event_number}"
+                )
+                data = {"mes": month, "ano": year, "Acessar": "OK"}
 
-        for month, year in months_and_years(self.start_date, today):
-            for event_type, type_url in self.pages_by_type.items():
-                # formato esperado 2021-07-01
-                next_month = month + 1 if month < 12 else 1
-                next_month_year = year + 1 if month == 12 else year
-
-                from_date = str(date(year, month, 1))
-                to_date = str(date(next_month_year, next_month, 1))
-                url = f"{self.base_url}/{type_url}&txtbus={from_date}&txtbus1={to_date}"
-
-                yield scrapy.Request(
-                    url,
-                    callback=self.parse,
-                    meta={"event_type": event_type, "url_without_page": url},
+                yield scrapy.FormRequest(
+                    url, formdata=data, callback=self.parse, meta={"event": event}
                 )
 
     def parse(self, response):
-        dates = response.css("section div.row div div h3 ::text").getall()
-        dates = [date_txt.replace("Data: ", "") for date_txt in dates]
-        event_titles = response.css("section div.row div div ul li ::text").getall()
-        file_urls = response.css("section div.row div div a::attr(href)").extract()
+        dates = response.xpath("//table/tbody/tr/td[1]/strong/text()").getall()
+        event_titles = response.xpath("//table/tbody/tr/td[2]/p/strong/text()").getall()
+        file_urls = response.xpath("//table/tbody/tr/td[2]/p/a/@href").getall()
         file_urls = [f"https://www.feiradesantana.ba.leg.br/{url}" for url in file_urls]
 
         for event_date, title, file_url in zip(dates, event_titles, file_urls):
@@ -176,20 +180,6 @@ class MinuteSpider(BaseSpider):
                 crawled_from=response.url,
                 date=event_date,
                 title=title.strip(),
-                event_type=response.meta["event_type"],
+                event_type=response.meta["event"],
                 files=[response.urljoin(file_url)],
             )
-
-        pagination = response.css("section div ul.pagination li a")
-        if pagination:
-            current_page = response.css(
-                "section div ul.pagination li.active ::text"
-            ).get()
-            if not current_page:
-                current_page = response.css(
-                    "section div ul.pagination li.current ::text"
-                ).get()
-            if current_page:
-                next_page = int(current_page) + 1
-                url = f"{response.meta['url_without_page']}&p={next_page}"
-                yield scrapy.Request(url, callback=self.parse, meta=response.meta)
