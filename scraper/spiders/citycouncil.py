@@ -107,11 +107,13 @@ class AttendanceListSpider(BaseSpider):
 
     def parse_list_page(self, response):
         dates = response.css("div#myTabContent2 h4::text").extract()
-        dates = self.remove_invalid_dates(dates)
 
         tables = response.css("table.table")
 
         for a_date in dates:
+            if a_date.strip() == "":
+                continue
+
             table = tables.pop()
             info = table.css("div.TITULO::text").extract()
             council_members = []
@@ -133,17 +135,6 @@ class AttendanceListSpider(BaseSpider):
                     status=get_status(status),
                     description=response.meta["event"],
                 )
-
-    @staticmethod
-    def remove_invalid_dates(dates):
-        for c_date in range(0, len(dates)):
-            if c_date >= len(dates):
-                break
-
-            if "      " in dates[c_date]:
-                dates.pop(c_date)
-
-        return dates
 
 
 class MinuteSpider(BaseSpider):
