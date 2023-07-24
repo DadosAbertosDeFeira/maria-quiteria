@@ -1,4 +1,5 @@
 from spidermon import MonitorSuite
+from spidermon.contrib.actions.discord import SendDiscordMessage
 from spidermon.contrib.actions.telegram import SendTelegramMessage
 
 
@@ -44,6 +45,38 @@ class CustomSendTelegramMessage(SendTelegramMessage):
         return message
 
 
+class CustomSendDiscordMessage(SendDiscordMessage):
+    def get_message(self):
+        stats = self.data.stats
+        n_scraped_items = stats.get("item_scraped_count", 0)
+
+        exceptions = find_exceptions(stats)
+        exceptions_message = ""
+        if exceptions:
+            exceptions_message = "\n".join(exceptions)
+
+        number_of_failures = len(self.result.failures)
+        number_of_exceptions = len(exceptions)
+        failed = any(
+            [
+                number_of_failures > 0,
+                (n_scraped_items - number_of_exceptions) < 0,
+            ]
+        )
+        emoji = "💀" if failed else "🎉"
+
+        message = "\n".join(
+            [
+                f"{emoji} Spider `{self.data.spider.name}` {stats['finish_reason']}",
+                f"- Duração em segundos: {round(stats['elapsed_time_seconds'], 1)}",
+                f"- Itens raspados: {n_scraped_items}",
+                f"- Erros: {number_of_failures}",
+                f"- Exceções: {number_of_exceptions}\n{exceptions_message}",
+            ]
+        )
+        return message
+
+
 class SpiderCloseMonitorSuite(MonitorSuite):
 
-    monitors_finished_actions = [CustomSendTelegramMessage]
+    monitors_finished_actions = [CustomSendTelegramMessage, CustomSendDiscordMessage]
