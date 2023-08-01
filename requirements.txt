@@ -24,5 +24,5 @@ spidermon==1.18.0
 tika==1.24
 whitenoise==6.5.0
 xlrd==2.0.1
-PyJWT==2.7.0
+PyJWT==2.8.0
 notifiers==1.2.1
