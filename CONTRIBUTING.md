@@ -3,7 +3,7 @@
 Ficamos muito felizes que você está lendo este guia de contribuição, sempre precisamos
 de pessoas voluntárias que acreditem na ideia e queiram contribuir com o projeto.
 
-Se você ainda não fez isso, junte-se a nós no [nosso grupo aberto do Telegram](https://t.me/dadosabertosdefeira) 
+Se você ainda não fez isso, junte-se a nós no [nosso grupo aberto do Telegram](https://t.me/dadosabertosdefeira)
 ou no nosso [Discord](https://discord.gg/bPZ9TSjdUn) e participe das discussões.
 Não hesite em nos procurar para tirar todas as suas dúvidas e conhecer mais sobre o projeto.
 

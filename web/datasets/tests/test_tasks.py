@@ -6,6 +6,7 @@ import pytest
 from django.conf import settings
 from model_bakery import baker
 from requests import HTTPError
+
 from web.datasets.models import (
     CityCouncilBid,
     CityCouncilContract,

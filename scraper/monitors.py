@@ -78,5 +78,4 @@ class CustomSendDiscordMessage(SendDiscordMessage):
 
 
 class SpiderCloseMonitorSuite(MonitorSuite):
-
     monitors_finished_actions = [CustomSendTelegramMessage, CustomSendDiscordMessage]

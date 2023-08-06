@@ -4,10 +4,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet, ViewSet
+
+from web.api.constants import AVAILABLE_ENDPOINTS_BY_PUBLIC_AGENCY
 from web.api.filters import CityHallBidFilter, GazetteFilter
 from web.api.serializers import (
     CityCouncilAgendaSerializer,
@@ -16,7 +18,6 @@ from web.api.serializers import (
     CityHallBidSerializer,
     GazetteSerializer,
 )
-from web.api.constants import AVAILABLE_ENDPOINTS_BY_PUBLIC_AGENCY
 from web.datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,

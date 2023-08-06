@@ -1,6 +1,7 @@
-from web.datasets.models import File
 from django.contrib.postgres.search import SearchVector
 from django.core.management.base import BaseCommand
+
+from web.datasets.models import File
 
 
 class Command(BaseCommand):

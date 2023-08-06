@@ -4,6 +4,7 @@ from datetime import datetime
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
+
 from web.datasets.adapters import (
     to_citycouncil_bid,
     to_citycouncil_bid_file,

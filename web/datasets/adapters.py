@@ -1,6 +1,7 @@
 import logging
 
 from django.contrib.admin.options import get_content_type_for_model
+
 from web.datasets.models import CityCouncilBid, CityCouncilContract
 from web.datasets.parsers import (
     city_council_bid_modality_mapping,

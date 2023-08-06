@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta
 import pytest
 from django.utils.timezone import make_aware
 from model_bakery import baker
+
 from web.datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
