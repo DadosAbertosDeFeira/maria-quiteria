@@ -2,6 +2,11 @@ import json
 import os
 
 from django.core.management.base import BaseCommand
+from scrapy import signals
+from scrapy.crawler import CrawlerProcess
+from scrapy.signalmanager import dispatcher
+from scrapy.utils.project import get_project_settings
+
 from scraper.items import (
     CityCouncilAttendanceListItem,
     CityCouncilMinuteItem,
@@ -15,10 +20,6 @@ from scraper.spiders.gazette import (
     ExecutiveAndLegislativeGazetteSpider,
     LegacyGazetteSpider,
 )
-from scrapy import signals
-from scrapy.crawler import CrawlerProcess
-from scrapy.signalmanager import dispatcher
-from scrapy.utils.project import get_project_settings
 from web.datasets.models import (
     CityCouncilAttendanceList,
     CityCouncilMinute,

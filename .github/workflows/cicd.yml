@@ -1,6 +1,6 @@
 name: CI
 
-on: [ push, pull_request ]
+on: [ push ]
 
 jobs:
   build:
@@ -17,8 +17,7 @@ jobs:
           pip install -r dev_requirements.txt
       - name: Lint
         run: |
-          black --check .
-          flake8 .
+          pre-commit run --all-files
       - name: Check migrations
         env:
           DJANGO_SETTINGS_MODULE: "web.settings"

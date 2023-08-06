@@ -1,6 +1,7 @@
 from datetime import date
 
 import scrapy
+
 from scraper.items import (
     CityCouncilAgendaItem,
     CityCouncilAttendanceListItem,

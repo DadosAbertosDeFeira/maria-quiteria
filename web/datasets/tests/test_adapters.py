@@ -3,6 +3,7 @@ from datetime import date, datetime
 import pytest
 from django.contrib.admin.options import get_content_type_for_model
 from model_bakery import baker
+
 from web.datasets.adapters import (
     to_citycouncil_bid,
     to_citycouncil_bid_file,

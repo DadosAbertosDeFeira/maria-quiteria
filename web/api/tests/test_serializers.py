@@ -3,6 +3,7 @@ from datetime import date, datetime
 import pytest
 from dateutil.parser import parse
 from model_bakery import baker
+
 from web.api.serializers import (
     CityCouncilAgendaSerializer,
     CityCouncilAttendanceListSerializer,

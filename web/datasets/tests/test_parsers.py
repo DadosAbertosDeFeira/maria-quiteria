@@ -1,6 +1,7 @@
 from datetime import date, datetime
 
 import pytest
+
 from web.datasets.parsers import (
     city_council_bid_modality_mapping,
     currency_to_float,

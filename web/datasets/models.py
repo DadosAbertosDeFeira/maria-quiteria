@@ -6,8 +6,9 @@ from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.db.models import F
-from scraper.spiders.utils import get_git_commit
 from simple_history.models import HistoricalRecords
+
+from scraper.spiders.utils import get_git_commit
 
 CITY_COUNCIL_EVENT_TYPE = (
     ("sessao_ordinaria", "Sessão Ordinária"),

@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from web.datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,
@@ -66,7 +67,6 @@ class CityHallBidEventSerializer(serializers.ModelSerializer):
 
 
 class CityHallBidSerializer(serializers.ModelSerializer):
-
     events = CityHallBidEventSerializer(many=True, read_only=True)
     files = FileSerializer(many=True, read_only=True)
 

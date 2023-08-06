@@ -1,6 +1,7 @@
 from datetime import date
 
 from model_bakery.recipe import Recipe, foreign_key
+
 from web.datasets.models import (
     CityCouncilAgenda,
     CityCouncilAttendanceList,

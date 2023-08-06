@@ -1,13 +1,14 @@
 from django.urls import include, path
 from rest_framework import routers
+
 from web.api.views import (
     CityCouncilAgendaView,
     CityCouncilAttendanceListView,
     CityCouncilMinuteView,
     CityHallBidView,
+    FrontendEndpoint,
     GazetteView,
     HealthCheckView,
-    FrontendEndpoint,
 )
 
 router = routers.DefaultRouter()
