@@ -5,6 +5,7 @@ import pytest
 from django.core import exceptions
 from django.urls import reverse
 from model_bakery import baker
+
 from web.api.tests.constants import AVAILABLE_ENDPOINTS_BY_PUBLIC_AGENCY
 
 pytestmark = pytest.mark.django_db
@@ -105,7 +106,6 @@ class TestCityCouncilAttendanceListView:
     def test_should_filter_city_council_attendance(
         self, api_client_authenticated, data, quantity_expected
     ):
-
         baker.make_recipe("datasets.CityCouncilAttendanceList", _quantity=3)
 
         response = api_client_authenticated.get(self.url, data=data)

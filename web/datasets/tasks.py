@@ -11,6 +11,7 @@ from django.contrib.admin.options import get_content_type_for_model
 from notifiers import get_notifier
 from requests import HTTPError
 from tika import parser
+
 from web.datasets.adapters import (
     to_citycouncil_bid,
     to_citycouncil_contract,

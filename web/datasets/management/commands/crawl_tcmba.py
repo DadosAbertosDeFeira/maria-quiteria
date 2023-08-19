@@ -10,6 +10,7 @@ from scrapy.signalmanager import dispatcher
 from scrapy.utils.project import get_project_settings
 from tcmba.items import DocumentItem
 from tcmba.spiders.consulta_publica import ConsultaPublicaSpider
+
 from web.datasets.management.commands._tcmba import save_document
 
 

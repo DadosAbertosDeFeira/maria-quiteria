@@ -1,8 +1,9 @@
 from datetime import date
 
 from dateutil.parser import parse
-from scraper.items import GazetteItem, LegacyGazetteItem
 from scrapy import Request
+
+from scraper.items import GazetteItem, LegacyGazetteItem
 from web.datasets.parsers import from_str_to_date
 
 from . import BaseSpider

@@ -1,8 +1,9 @@
 import re
 
 import pytest
-from web.datasets.management.commands.searchvector import Command
 from model_bakery import baker
+
+from web.datasets.management.commands.searchvector import Command
 
 
 @pytest.mark.django_db

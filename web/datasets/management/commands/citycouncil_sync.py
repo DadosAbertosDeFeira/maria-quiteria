@@ -3,6 +3,7 @@ from datetime import date, timedelta
 from celery import chain
 from dateutil.parser import parse
 from django.core.management.base import BaseCommand
+
 from web.datasets.tasks import (
     distribute_city_council_objects_to_sync,
     get_city_council_updates,
