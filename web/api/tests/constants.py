@@ -1,6 +1,6 @@
-GAZZETES_API = "api/gazettes"
-CITY_HALL_API = "api/city-hall"
-CITY_COUNCIL_API = "api/city-council"
+GAZZETES_API = "api/datasets/gazettes"
+CITY_HALL_API = "api/datasets/city-hall"
+CITY_COUNCIL_API = "api/datasets/city-council"
 
 AVAILABLE_ENDPOINTS_BY_PUBLIC_AGENCY = {
     "city-council": {
