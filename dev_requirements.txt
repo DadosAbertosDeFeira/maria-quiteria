@@ -1,7 +1,7 @@
 -r requirements.txt
 django-debug-toolbar==4.2.0
 model-bakery==1.15.0
-pre-commit==3.3.2
+pre-commit==3.3.3
 pytest==7.4.0
 pytest-django==4.5.2
 pytest-dotenv==0.5.2
