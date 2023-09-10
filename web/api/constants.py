@@ -1,6 +1,6 @@
-GAZZETES_API = "api/gazettes"
-CITY_HALL_API = "api/city-hall"
-CITY_COUNCIL_API = "api/city-council"
+GAZETTES_API = "api/datasets/gazettes"
+CITY_HALL_API = "api/datasets/city-hall"
+CITY_COUNCIL_API = "api/datasets/city-council"
 
 AVAILABLE_ENDPOINTS_BY_PUBLIC_AGENCY = {
     "city-council": {
@@ -16,7 +16,7 @@ AVAILABLE_ENDPOINTS_BY_PUBLIC_AGENCY = {
             },
             {
                 "friendly_name": "Diário Oficial - Legislativo",
-                "endpoint": f"{GAZZETES_API}/?power=legislative",
+                "endpoint": f"{GAZETTES_API}/?power=legislative",
             },
             {
                 "friendly_name": "Lista de presença dos vereadores",
@@ -29,7 +29,7 @@ AVAILABLE_ENDPOINTS_BY_PUBLIC_AGENCY = {
         "endpoints": [
             {
                 "friendly_name": "Diário Oficial - Executivo",
-                "endpoint": f"{GAZZETES_API}/?power=executive",
+                "endpoint": f"{GAZETTES_API}/?power=executive",
             },
             {
                 "friendly_name": "Licitações",

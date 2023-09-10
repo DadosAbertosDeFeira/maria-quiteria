@@ -13,26 +13,26 @@ from web.api.views import (
 
 router = routers.DefaultRouter()
 router.register("", HealthCheckView, basename="root")
-router.register("gazettes", GazetteView, basename="gazettes")
+router.register("datasets/gazettes", GazetteView, basename="gazettes")
 
 
 urlpatterns = [
     path("", include(router.urls)),
     path(
-        "city-council/agenda/",
+        "datasets/city-council/agenda/",
         CityCouncilAgendaView.as_view(),
         name="city-council-agenda",
     ),
     path(
-        "city-council/attendance-list/",
+        "datasets/city-council/attendance-list/",
         CityCouncilAttendanceListView.as_view(),
         name="city-council-attendance-list",
     ),
     path(
-        "city-council/minute/",
+        "datasets/city-council/minute/",
         CityCouncilMinuteView.as_view(),
         name="city-council-minute",
     ),
-    path("city-hall/bids/", CityHallBidView.as_view(), name="city-hall-bids"),
-    path("endpoints", FrontendEndpoint.as_view(), name="frontend-endpoints"),
+    path("datasets/city-hall/bids/", CityHallBidView.as_view(), name="city-hall-bids"),
+    path("datasets/endpoints", FrontendEndpoint.as_view(), name="frontend-endpoints"),
 ]
