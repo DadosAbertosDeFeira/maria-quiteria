@@ -20,7 +20,7 @@ PyJWT==2.8.0
 python-dateutil==2.8.2
 python-dotenv==1.0.0
 schematics==2.1.1
-scrapy==2.10.1
+scrapy==2.11.0
 sentry-sdk==1.30.0
 spidermon==1.19.0
 tika==2.6.0
