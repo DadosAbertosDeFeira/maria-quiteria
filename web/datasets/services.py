@@ -3,6 +3,7 @@ from pathlib import Path
 
 import boto3
 import requests
+from django.conf import settings
 
 
 class S3Client:
@@ -23,17 +24,18 @@ class S3Client:
             )
 
     def upload_file(self, location_or_url, relative_file_path, prefix=""):
+        bucket_file_path = f"{self.bucket_folder}/files/{relative_file_path}"
+
         location = Path(location_or_url)
         if not location.exists():
             # se não é um arquivo local, assumimos que é uma url
             file_name, temp_file_path = self.create_temp_file(
-                location_or_url, relative_file_path, prefix
+                location_or_url, bucket_file_path, prefix
             )
         else:
-            file_name, temp_file_path = location.name, str(location)
+            file_name, temp_file_path = location.name, str(location.absolute())
 
-        bucket_file_path = f"{self.bucket_folder}/files/{relative_file_path}"
-        bucket_file_path = f"{bucket_file_path}{file_name}"
+        bucket_file_path = f"{bucket_file_path}/{file_name}"
         url = (
             f"https://{self.bucket}.s3.{self.bucket_region}.amazonaws.com/"
             f"{bucket_file_path}"
@@ -45,27 +47,26 @@ class S3Client:
 
     @staticmethod
     def create_temp_file(url, relative_file_path="", prefix=""):
-        temporary_directory = f"{Path.cwd()}/data/tmp/{relative_file_path}"
-        Path(temporary_directory).mkdir(parents=True, exist_ok=True)
+        temporary_directory = Path(settings.DATA_DIR) / relative_file_path
+        temporary_directory.mkdir(parents=True, exist_ok=True)
 
         response = requests.get(url)
         start_index = url.rfind("/") + 1
         temp_file_name = f"{url[start_index:]}"
         if prefix:
             temp_file_name = f"{prefix}-{temp_file_name}"
-        temp_file_path = f"{temporary_directory}{temp_file_name}"
-        with open(temp_file_path, "wb") as tmp_file:
-            tmp_file.write(response.content)
-        return temp_file_name, temp_file_path
+        temp_file_path = temporary_directory / temp_file_name
+
+        temp_file_path.write_bytes(response.content)
+        return temp_file_name, str(temp_file_path.absolute())
 
     def download_file(self, s3_file_path):
-        temporary_directory = f"{Path.cwd()}/data/tmp/"
-        Path(temporary_directory).mkdir(parents=True, exist_ok=True)
+        Path(settings.DATA_DIR).mkdir(parents=True, exist_ok=True)
 
         start_index = s3_file_path.rfind("/") + 1
         file_name = s3_file_path[start_index:]
 
-        local_path = f"{temporary_directory}{file_name}"
+        local_path = Path(settings.DATA_DIR) / file_name
         with open(local_path, "wb") as file_:
             self.client.download_fileobj(self.bucket, s3_file_path, file_)
 
@@ -81,7 +82,11 @@ class FakeS3Client(S3Client):
         pass
 
     def download_file(self, s3_file_path):
-        return f"{Path.cwd()}/data/tmp/{s3_file_path}"
+        return f"{settings.DATA_DIR}/{s3_file_path}"
+
+    @staticmethod
+    def delete_temp_file(temp_file_path):
+        pass
 
 
 def get_s3_client(settings):

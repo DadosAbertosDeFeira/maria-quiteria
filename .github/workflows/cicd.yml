@@ -28,6 +28,7 @@ jobs:
           DJANGO_SETTINGS_MODULE: "web.settings"
           DJANGO_CONFIGURATION: "Test"
           DATABASE_URL: "postgres://postgres:postgres@localhost:5432/mariaquiteria"
+          DATA_DIR: ${{ github.workspace }}
         run: |
           python manage.py collectstatic
           pytest

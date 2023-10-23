@@ -36,7 +36,7 @@ class WebserviceException(Exception):
 
 
 @shared_task
-def content_from_file(file_pk=None, path=None, keep_file=True):
+def content_from_file(file_pk=None, path=None):
     if not any([file_pk, path]):
         raise Exception("Ou `file_pk` ou `path` devem ser informados.")
 
@@ -48,7 +48,6 @@ def content_from_file(file_pk=None, path=None, keep_file=True):
             return a_file.content
 
         path = client.download_file(a_file.s3_file_path)
-        keep_file = False
 
     if not Path(path).exists():
         info(f"Arquivo {path} não encontrado.")
@@ -56,8 +55,8 @@ def content_from_file(file_pk=None, path=None, keep_file=True):
 
     raw = parser.from_file(path)
 
-    if not keep_file:
-        Path(path).unlink()
+    if raw is not None:
+        Path(path).unlink(missing_ok=True)
 
     if a_file:
         a_file.content = raw["content"] or ""
@@ -82,7 +81,7 @@ def backup_file(file_id):
     model_name = file_obj.content_object._meta.model_name
     relative_file_path = (
         f"{model_name}/{file_obj.created_at.year}/"
-        f"{file_obj.created_at.month}/{file_obj.created_at.day}/"
+        f"{file_obj.created_at.month}/{file_obj.created_at.day}"
     )
 
     location = file_obj.local_path or file_obj.url
